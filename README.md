@@ -1,5 +1,15 @@
 # Jooby/Kotlin + Svelte/Bootstrap app template
 
+* Server API is built with Jooby in Kotlin
+    * Postgres is used for DB (runnable using docker-compose)
+    * Liquibase migrates the DB
+    * Server unit tests use Junit5/Mockk
+    * Repository integration tests run in in-memory H2 to avoid any dependencies
+* UI is built with Svelte
+    * UI tests use Jest and TypeScript (there is no IDE support for Svelte+TS yet)
+* E2E tests use Selenide to drive the actual browser backed by H2
+* The whole 4-stage build runs using `docker build`, see below 
+
 ## Running in Docker
 
 `docker-compose up --build`
@@ -32,10 +42,6 @@ To run tests:
 * `./gradlew e2eTest` - for in-browser End-to-End tests
 
 ## Running from IDE
-
-Rollup + Svelte is used for client-side.
-
-Jooby + Kotlin is used for server-side.
 
 # UI
 ## Static/landing pages
