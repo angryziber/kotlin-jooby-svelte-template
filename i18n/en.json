@@ -30,14 +30,7 @@
   },
   "admin": {
     "dashboard": {
-      "title": "Dashboard",
-      "companies": "Companies",
-      "companiesDescription": "Add or edit companies with verified tags.",
-      "users": "Users",
-      "usersDescription": "Add or edit users with management/admin rights.",
-      "tags": "Tags",
-      "tagsDescription": "See all tags within the company.",
-      "manage": "Manage"
+      "title": "Dashboard"
     }
   },
   "notfound": {
