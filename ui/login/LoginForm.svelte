@@ -35,7 +35,7 @@
     <label for="userPhone">
       {$_('login.login')}
     </label>
-    <input type="text" bind:value={data.login} class="form-control-lg" required autofocus={true}/>
+    <input type="text" name="login" bind:value={data.login} class="form-control form-control-lg" required autofocus={true}/>
   </div>
 
   <div class="form-group" transition:slide|local>

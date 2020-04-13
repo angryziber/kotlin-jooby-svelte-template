@@ -1,7 +1,7 @@
 package ui
 
 import app.invoke
-import com.codeborne.selenide.Condition.*
+import com.codeborne.selenide.Condition.visible
 import com.codeborne.selenide.Selectors.byName
 import com.codeborne.selenide.Selectors.byText
 import com.codeborne.selenide.Selenide.clearBrowserCookies
@@ -10,7 +10,6 @@ import com.codeborne.selenide.WebDriverRunner.url
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Test
-import org.openqa.selenium.Keys
 
 class LoginUITest: UITest() {
   @Test
@@ -31,9 +30,8 @@ class LoginUITest: UITest() {
 
   private fun loginWithPassword(login: String) {
     open("/en/app/login")
-    el(byName("phone")).value = login
-    el(byName("password")).value = "secret"
-    elByText("login.submit").click()
+    el(byName("login")).value = login
+    el(byName("password")).setValue("secret").pressEnter()
   }
 
   @AfterEach

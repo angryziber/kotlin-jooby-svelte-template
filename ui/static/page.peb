@@ -1,12 +1,10 @@
 {% extends "base.peb" %}
 
 {% block body %}
-  <div class="public-header">
+  <header class="mt-4 container container-wide d-flex justify-content-between">
 
     <a href="/">
-      <div class="navbar-brand">
-        <span>{{title}}</span>
-      </div>
+      <h1>{{title}}</h1>
     </a>
 
     <div class="d-flex align-items-center">
@@ -25,7 +23,7 @@
       </div>
 
     </div>
-  </div>
+  </header>
 
   {% block content %}{% endblock %}
 

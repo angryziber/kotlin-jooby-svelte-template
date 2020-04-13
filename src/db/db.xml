@@ -34,4 +34,9 @@
       <column name="login"/>
     </createIndex>
   </changeSet>
+
+  <changeSet id="demo admin user" author="Codeborne" context="test-data">
+    <!-- admin/secret -->
+    <sql>insert into users (id, login, name, role, passwordHash) values ('ad781678-3cf0-11ea-b77f-2e728ce88125', 'admin', 'Demo Admin', 'ADMIN', 'EKquZCQo/g1EzlTVOvb6muWybt1uR9LUEBlSdLmMeHt3hIEO1A6XksokwWMRCfKsm1eNznyxGHsUeNhtzrtlUQ==')</sql>
+  </changeSet>
 </databaseChangeLog>
