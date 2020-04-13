@@ -1,6 +1,6 @@
-@import "custom/variables";
-@import "custom/bootstrap";
-@import "custom/components";
+@import "variables";
+@import "bootstrap";
+@import "components";
 
 html {
   font-size: 14px;
@@ -9,9 +9,11 @@ html {
 }
 
 html.loading * {
+  // set by gateway for global loading state
   cursor: wait !important;
 }
 
 a {
+  // make links without href work
   cursor: pointer;
 }

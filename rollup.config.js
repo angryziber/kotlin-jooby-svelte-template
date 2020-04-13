@@ -21,9 +21,9 @@ const scssPluginWithWatch = scss({
 })
 const scssTransform = scssPluginWithWatch.transform
 scssPluginWithWatch.transform = function(...args) {
-  this.addWatchFile('ui/assets/scss/custom')
-  this.addWatchFile('ui/assets/scss/custom/components')
-  this.addWatchFile('ui/assets/scss/custom/components/utilities')
+  this.addWatchFile('ui/assets/scss')
+  this.addWatchFile('ui/assets/scss/components')
+  this.addWatchFile('ui/assets/scss/components/utilities')
   return scssTransform(...args)
 }
 
