@@ -1,0 +1,30 @@
+@mixin badge-variant-light($bg) {
+  color: darken($bg, 15);
+  background-color: rgba($bg, 0.18);
+
+  &[href] {
+    @include hover-focus {
+      color: $bg;
+      text-decoration: none;
+      background-color: rgba($bg, 0.4);
+    }
+  }
+}
+
+.badge {
+  vertical-align: bottom;
+}
+
+$circle-size: 18px;
+
+.badge-circle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: $font-size-xs;
+  width: $circle-size;
+  height: $circle-size;
+  border-radius: $circle-size;
+  vertical-align: middle;
+}
+

@@ -1,0 +1,29 @@
+.toasts-container {
+  position: fixed;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  top: 0;
+  padding-top: $spacer;
+  left: $spacer;
+  right: $spacer;
+  overflow: hidden;
+  z-index: $zindex-modal + 1;
+  pointer-events: none;
+}
+
+.toast-header {
+  background-color: transparent;
+  color: inherit;
+  border-bottom: 0;
+}
+
+.toast {
+  opacity: 1;
+  min-width: $small-container-min-width;
+  pointer-events: all;
+}
+
+.toast-body {
+  padding: $toast-padding-y $toast-padding-x;
+}

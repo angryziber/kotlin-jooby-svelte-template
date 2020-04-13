@@ -1,0 +1,28 @@
+package app
+
+import io.jooby.ServiceKey
+import io.jooby.ServiceRegistry
+import io.jooby.exception.RegistryException
+import org.slf4j.LoggerFactory
+
+class AutoCreatingServiceRegistry(private val original: ServiceRegistry): ServiceRegistry by original {
+  private val log = LoggerFactory.getLogger(javaClass)
+
+  override fun <T: Any?> getOrNull(key: ServiceKey<T>): T? =
+    original.getOrNull(key) ?: autoCreateService(key.type).also { put(key, it) }
+
+  @Suppress("UNCHECKED_CAST")
+  private fun <T> autoCreateService(type: Class<T>): T? {
+    if (type.packageName == "java.lang") return null
+    val constructor = type.constructors.minBy { it.parameterCount } ?: return null
+    try {
+      val args = constructor.parameters.map { require(it.type) }.toTypedArray()
+      return (constructor.newInstance(*args) as T).also {
+        log.info("Auto-created ${type.simpleName}${args.map {it.javaClass.simpleName}}")
+      }
+    }
+    catch (e: RegistryException) {
+      throw RegistryException("Failed to auto-create ${type.simpleName} with dependencies on ${constructor.parameters.map{it.type.simpleName}}: ${e.message}")
+    }
+  }
+}

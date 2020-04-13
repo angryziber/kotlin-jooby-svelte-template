@@ -1,0 +1,31 @@
+<configuration debug="false">
+
+  <appender name="console" class="ch.qos.logback.core.ConsoleAppender">
+    <encoder>
+      <pattern>%d{yyyy-MM-dd HH:mm:ss} [%X{requestId}] %-5p %c{1}:%L - %m%n</pattern>
+    </encoder>
+  </appender>
+
+  <appender name="request" class="ch.qos.logback.core.rolling.RollingFileAppender">
+    <file>logs/request.log</file>
+    <encoder>
+      <pattern>%d{yyyy-MM-dd HH:mm:ss} [%X{requestId}] %m%n</pattern>
+    </encoder>
+    <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+      <fileNamePattern>logs/request.%d{yyyy-MM-dd}.log</fileNamePattern>
+      <maxHistory>90</maxHistory>
+      <totalSizeCap>1GB</totalSizeCap>
+    </rollingPolicy>
+  </appender>
+
+  <logger name="io.mockk.proxy.jvm.transformation.InliningClassTransformer" level="ERROR"/>
+
+  <logger name="request" level="INFO">
+    <appender-ref ref="request"/>
+  </logger>
+
+  <root level="INFO">
+    <appender-ref ref="console"/>
+  </root>
+
+</configuration>

@@ -1,0 +1,53 @@
+{
+  "title": "App Template",
+  "login": {
+    "title": "Access System",
+    "login": "Login",
+    "admin": "Admin login",
+    "password": "Password",
+    "failed": "Invalid credentials",
+    "submit": "Login",
+    "safetyReminder": "Don't forget to logout if you don't trust this computer"
+  },
+  "logout": {
+    "linkTitle": "Log out"
+  },
+  "pages": {
+    "home": {
+      "title": "Welcome to the app",
+      "lead": "This is an app template"
+    }
+  },
+  "footer": {
+    "title": "Footer info is here"
+  },
+  "user": {
+    "welcome": {
+      "menu": "Overview",
+      "title": "Welcome!",
+      "description": "Description"
+    }
+  },
+  "admin": {
+    "dashboard": {
+      "title": "Dashboard",
+      "companies": "Companies",
+      "companiesDescription": "Add or edit companies with verified tags.",
+      "users": "Users",
+      "usersDescription": "Add or edit users with management/admin rights.",
+      "tags": "Tags",
+      "tagsDescription": "See all tags within the company.",
+      "manage": "Manage"
+    }
+  },
+  "notfound": {
+    "message": "Page Not Found",
+    "back": "Back to previous page"
+  },
+  "errors": {
+    "alreadyExists": "Already exists",
+    "technical": "Technical error, please try again",
+    "networkUnavailable": "Cannot connect to the server, please try again later",
+    "notJson": "Communication with server is blocked, please check your network connection"
+  }
+}

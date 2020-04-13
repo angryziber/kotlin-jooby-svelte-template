@@ -1,0 +1,12 @@
+{
+  "dest": "public",
+  "shape": {
+    "transform": []
+  },
+  "mode": {
+    "symbol": {
+      "dest": "gen",
+      "example": true
+    }
+  }
+}

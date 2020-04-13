@@ -1,0 +1,28 @@
+{% import "../macros/icon.peb" %}
+<!DOCTYPE html>
+<html lang="{{lang}}" class="theme-default">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+
+  <title>{% block title %}{% endblock %} {{title}}</title>
+
+  <link rel="icon" type="image/png" href="/favicon.ico">
+  <link rel="stylesheet" href="/build/bundle.css?{{ assetsTime }}">
+
+  {% block head %}{% endblock %}
+
+  {% if envs contains "test" %}
+    <style>
+      * {
+        animation: none !important;
+        transition: none !important;
+      }
+    </style>
+  {% endif %}
+</head>
+
+<body>
+  {% block body %}{% endblock %}
+</body>
+</html>

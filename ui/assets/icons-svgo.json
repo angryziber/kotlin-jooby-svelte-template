@@ -1,0 +1,18 @@
+{
+  "plugins": [
+    {
+      "removeViewBox": false
+    },
+    {
+      "convertColors": {
+        "currentColor": true
+      }
+    },
+    {
+      "mergePaths": false
+    },
+    {
+      "convertShapeToPath": false
+    }
+  ]
+}

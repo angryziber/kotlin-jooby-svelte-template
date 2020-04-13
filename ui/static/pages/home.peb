@@ -1,0 +1,10 @@
+{% extends "page.peb" %}
+
+{% block content %}
+
+<div class="container container-wide">
+  <h1 class="text-muted display-4 mb-4 mt-4 pt-4 mt-md-0 pt-md-0">{{ pages.home.title }}</h1>
+  <p class="lead mb-5">{{ pages.home.lead | raw }}</p>
+</div>
+
+{% endblock %}

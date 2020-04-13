@@ -1,0 +1,15 @@
+/node_modules/
+/public/build/
+/out
+/tmp
+/build/
+/.gradle/
+/.rpt2_cache/
+/.idea/
+/.git/
+/Jenkinsfile
+/Dockerfile
+/docker-compose*
+/README.*
+
+.DS_Store

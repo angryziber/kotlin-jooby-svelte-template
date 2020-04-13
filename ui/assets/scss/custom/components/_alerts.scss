@@ -1,0 +1,13 @@
+.alert-with-icon {
+  .icon {
+    float: left;
+  }
+
+  .icon-lg {
+    margin-top: -3px;
+  }
+
+  .alert-text {
+    margin-left: $spacer * 3;
+  }
+}

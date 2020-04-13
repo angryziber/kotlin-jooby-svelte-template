@@ -1,0 +1,14 @@
+{% extends "base.peb" %}
+
+{% block head %}
+  <link rel="stylesheet" href="/build/components.css?{{ assetsTime }}">
+  <script>
+    window.initialUser = {{userJson | raw}}
+  </script>
+  <script defer src="/build/main.js?{{ assetsTime }}"></script>
+{% endblock %}
+
+{%block body %}
+  <div id="app"></div>
+  {% include "footer.peb" %}
+{% endblock %}

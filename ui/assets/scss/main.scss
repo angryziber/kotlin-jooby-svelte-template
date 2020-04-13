@@ -1,0 +1,17 @@
+@import "custom/variables";
+@import "custom/bootstrap";
+@import "custom/components";
+
+html {
+  font-size: 14px;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+html.loading * {
+  cursor: wait !important;
+}
+
+a {
+  cursor: pointer;
+}

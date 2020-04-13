@@ -1,0 +1,3 @@
+<div id="footer" class="container-fluid py-4 px-lg-5 border-top">
+  <h4 class="card-title my-5 text-center">{{footer.title}}</h4>
+</div>

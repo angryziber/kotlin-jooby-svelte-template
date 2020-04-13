@@ -1,0 +1,10 @@
+/logs/
+/node_modules/
+/public/build/
+/out
+/tmp
+/build/
+/.gradle/
+/.rpt2_cache/
+
+.DS_Store

@@ -1,0 +1,160 @@
+$blue: #0030AE;
+$indigo: #6610f2;
+$purple: #4829B2;
+$pink: #e83e8c;
+$red: #FC2C3B;
+$orange: #f46b45;
+$yellow: #E3C038;
+$green: #54AF5D;
+$teal: #20c997;
+$cyan: #17a2b8;
+
+$white: #fff;
+$gray-100: #f9fbfd;
+$gray-200: #f5f5f5;
+$gray-300: #dee2e6;
+$gray-500: #b0bcce;
+$gray-600: #95aac9;
+$gray-650: #8098bb;
+
+$body-bg: $gray-100;
+$body-color: #12263f;
+$link-color: $blue;
+$link-hover-color: darken($blue, 5%);
+
+$primary: $body-color;
+$secondary: $gray-650;
+$warning: $yellow;
+$danger: $red;
+$info: $cyan;
+$success: $green;
+$highlight-bg: lighten($orange, 33%);
+
+$text-muted: $gray-650;
+
+@import url('https://fonts.googleapis.com/css?family=Rubik:300,400,500&subset=japanese');
+$font-family-base: 'Rubik', sans-serif;
+$font-weight-normal: 400;
+$font-weight-bold: 500;
+$font-size-xs: .75rem;
+
+$headings-font-weight: $font-weight-bold;
+
+$display4-size: 3.2rem;
+
+$enable-responsive-font-sizes: true;
+
+$container-max-widths: (
+  sm: 540px,
+  md: 720px,
+  lg: 740px,
+  xl: 760px
+);
+
+$spacer: 1rem;
+$spacers: ();
+$spacers: map-merge(
+  (
+    0: 0,
+    1: ($spacer * .25),
+    2: ($spacer * .5),
+    3: $spacer,
+    4: ($spacer * 1.5),
+    5: ($spacer * 2),
+    6: ($spacer * 3),
+  ),
+  $spacers
+);
+
+$border-color: $gray-300;
+
+$alert-border-level: -9;
+$alert-bg-level: -10;
+$alert-color-level: 8;
+$alert-padding-y: $spacer * 1.25;
+$alert-padding-x: $spacer * 1.5;
+
+$toast-padding-x: $spacer * 1.5;
+$toast-padding-y: $spacer;
+
+$grid-gutter-width: $spacer * 2;
+$navbar-padding-x: $grid-gutter-width;
+$navbar-padding-y: $spacer / 2;
+$navbar-padding-y: $spacer;
+$navbar-nav-link-padding-x: $spacer;
+
+$navbar-light-color: $text-muted;
+$navbar-light-active-color: $body-color;
+
+$navbar-expand-breakpoint: lg;
+$navbar-collapse-breakpoint: md;
+
+$navbar-brand-font-size: 1.1rem;
+
+$sidebar-left-width: 250px;
+$sidebar-right-width: 250px;
+
+$card-border-color: $gray-300;
+$card-cap-bg: $body-bg;
+$card-spacer-y: $spacer * 0.75;
+$card-spacer-x: $spacer;
+$card-border-radius: $spacer / 2;
+
+$table-head-bg: $gray-100;
+$table-head-color: $gray-600;
+
+$badge-font-weight: $font-weight-normal;
+$badge-font-size: .8rem;
+$badge-padding-y: 0.25rem;
+
+$pagination-color: $body-color;
+$pagination-hover-color: $pagination-color;
+
+$icon-size: 16px;
+$icon-size-sm: 12px;
+$icon-size-md: 18px;
+$icon-size-lg: 21px;
+$icon-size-xl: 32px;
+$icon-vertical-shift: -0.25rem;
+$icon-and-text-spacing: 0.25rem;
+
+$yiq-contrasted-threshold: 175;
+
+$modal-padding-x: $spacer * 2;
+$modal-header-border-width: 0;
+$modal-header-padding: ($spacer * 1.5) $modal-padding-x;
+$modal-inner-padding: ($spacer * .5) $modal-padding-x ($spacer * 2);
+$modal-content-bg: $white;
+$modal-backdrop-opacity: 0.4;
+$modal-backdrop-bg: $primary;
+
+$modal-chat-width: 700px;
+$modal-chat-header-height: 64px;
+$modal-chat-footer-height: 185px;
+$modal-chat-footer-height-xs: 100px;
+
+$close-font-weight: 300;
+$close-font-size: 2.2rem;
+
+$default-easing: cubic-bezier(0.4, 0, 0.2, 1);
+$default-transition-duration: 250ms;
+
+$elevate-shadow: 4px 4px 16px rgba(0, 0, 20, 0.2);
+$elevate-shadow-clicked: 2px 2px 4px rgba(0, 0, 20, 0.2);
+$elevate-shadow-row-hover: 0 0 10px 0 rgba(125, 125, 125, 0.4);
+
+$input-btn-line-height-lg: 2.5;
+$input-btn-padding-x-lg: 1.25rem;
+
+$small-container-min-width: 27rem;
+
+$spinner-width:         1.5rem;
+$spinner-height:        1.5rem;
+$spinner-border-width:  .1em;
+
+$popover-header-bg: $gray-200;
+$popover-border-color: $gray-300;
+$popover-body-padding-x: $spacer;
+$popover-body-padding-y: $spacer;
+$popover-header-padding-x: $spacer;
+$popover-header-padding-y: $spacer;

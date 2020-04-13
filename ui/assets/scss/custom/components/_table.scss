@@ -1,0 +1,52 @@
+.table {
+  thead {
+    th {
+      font-size: $font-size-xs;
+      text-transform: uppercase;
+      color: $table-head-color;
+    }
+  }
+
+  .table-cell-status {
+    padding-bottom: $table-cell-padding / 2;
+    padding-top: $table-cell-padding / 2;
+    font-size: $font-size-lg;
+  }
+
+  .card & {
+    margin-bottom: 0;
+
+    thead {
+      th {
+        border-top: 0;
+      }
+    }
+  }
+
+  .table-cell-actions {
+    padding-top: 0;
+    padding-bottom: 0;
+    vertical-align: middle;
+  }
+}
+
+.table-hover {
+  tbody tr {
+    &:hover {
+      background-color: $card-bg;
+      box-shadow: $elevate-shadow-row-hover;
+    }
+
+    &:focus {
+      box-shadow: $elevate-shadow-row-hover;
+      outline: none;
+    }
+  }
+}
+
+.table-align-middle {
+  th,
+  td {
+    vertical-align: middle;
+  }
+}
