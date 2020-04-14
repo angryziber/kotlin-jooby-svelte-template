@@ -2,31 +2,42 @@ pipeline {
   agent any
 
   environment {
-    APP = "app" 
-    BUILD_ID = "${JOB_NAME}-${BUILD_NUMBER}"
-    // label build containers before running tests, so we can retrieve test results in case of failure
-    LABEL_ARGS = "--build-arg BUILD_ID=${BUILD_ID}"
+    APP = "app"
+    BUILD = "${JOB_NAME.replace('/', '-')}-${BUILD_NUMBER}"
   }
 
   stages {
     stage('Build UI') {
       steps {
-        sh 'docker build $LABEL_ARGS --target ui-build -t ${APP}_ui .'
+        sh 'docker build --target ui-build -t ${BUILD}_ui .'
+      }
+    }
+    stage('Test UI') {
+      steps {
+        sh 'docker run --name=${BUILD}_ui ${BUILD}_ui npm test'
       }
     }
     stage('Build Server') {
       steps {
-        sh 'docker build $LABEL_ARGS --target server-build -t ${APP}_server .'
+        sh 'docker build --target server-build -t ${BUILD}_server .'
+      }
+    }
+    stage('Test Server') {
+      steps {
+        sh 'docker run --name=${BUILD}_server ${BUILD}_server ./gradlew --no-daemon --info test'
       }
     }
     stage('E2E Tests') {
       steps {
-        sh 'docker build $LABEL_ARGS --target e2e-tests -t ${APP}_e2e .'
+        sh 'docker run --name=${BUILD}_e2e ${BUILD}_server ./gradlew --no-daemon --info -Pheadless e2eTest'
       }
     }
     stage('Build final') {
+      when {
+        branch 'master'
+      }
       steps {
-        sh 'docker build $LABEL_ARGS --target final -t ${APP}_${APP} .'
+        sh 'docker --target final -t ${APP}_${APP} .'
       }
     }
     stage('Deploy') {
@@ -42,9 +53,9 @@ pipeline {
   post {
     always {
       sh 'rm -fr build && mkdir -p build/test-results'
-      sh 'docker cp `docker ps -aqf label=ui-build=$BUILD_ID | grep . || docker create ${APP}_ui`:/app/build/test-results build/'
-      sh 'docker cp `docker ps -aqf label=server-build=$BUILD_ID | grep . || docker create ${APP}_server`:/app/build/test-results build/'
-      sh 'docker cp `docker ps -aqf label=e2e-tests=$BUILD_ID | grep . || docker create ${APP}_e2e`:/app/build/test-results build/'
+      sh 'docker cp ${BUILD}_ui:/app/build/test-results build/ && docker rm ${BUILD}_ui'
+      sh 'docker cp ${BUILD}_server:/app/build/test-results build/ && docker rm ${BUILD}_server'
+      sh 'docker cp ${BUILD}_e2e:/app/build/test-results build/ && docker rm ${BUILD}_e2e'
       sh 'touch build/test-results/*/*.xml'
       junit 'build/test-results/**/*.xml'
       script {
