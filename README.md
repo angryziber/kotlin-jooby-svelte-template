@@ -7,11 +7,10 @@ For people asking me at conferences what would I recommend from technical perspe
     * Postgres is used for DB (runnable using docker-compose)
     * Liquibase migrates the DB
     * Server unit tests use Junit5/Mockk
-    * Repository integration tests run in in-memory H2 to avoid any dependencies
+    * Repository integration tests run in in-memory H2 DB to avoid any dependencies
 * UI is built with Svelte + Rollup with TypeScript support
     * UI tests use Jest and TypeScript (there is no IDE support for Svelte+TS yet)
-* E2E tests use Selenide to drive the actual browser backed by H2
-* The whole 4-stage build runs using `docker build`, see below
+* E2E tests use Selenide to drive the actual browser backed by H2 DB
 
 ## Noteworthy features
 
@@ -54,7 +53,7 @@ Then:
 
 ```
 npm run watch
-# or just npm run build
+# or just `npm run build`
 ./gradlew run
 ```
 
@@ -66,18 +65,16 @@ To run tests:
 
 ## Running from IDE
 
-# UI
-## Static/landing pages
+Some [IDEA](.idea) config is committed to share code style, run configurations, etc with the team.
 
-Are generated using Pebble templates in `ui/static`
-
-## Dynamic pages
-
-Pages after login use Svelte framework with components in `ui`
+* Open the directory as project
+* Click "Import gradle project"
+* `npm run watch` will run automatically to compile changing UI assets on the fly
+* Choose "LauncherKt" run configuration to start the server (Jooby/Netty)
 
 ## Adding icons
 
-The design uses Feather icon set available at https://feather.netlify.com/.
+Uses Feather icon set available at https://feather.netlify.com/.
 
 To add an icon:
 
