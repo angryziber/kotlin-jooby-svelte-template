@@ -65,12 +65,20 @@ To run tests:
 
 ## Running from IDE
 
-Some [IDEA](.idea) config is committed to share code style, run configurations, etc with the team.
+Some [IntelliJ IDEA config](.idea) is committed to share code style, run configurations, etc with the team.
 
 * Open the directory as project
 * Click "Import gradle project"
 * `npm run watch` will run automatically to compile changing UI assets on the fly
+* Install "Svelte" plugin for working with UI components
 * Choose "LauncherKt" run configuration to start the server (Jooby/Netty)
+
+## Deployment
+
+* [Jenkinsfile](Jenkinsfile) would deploy the app using `docker-compose`
+* In addition, deployment to [Heroku](https://heroku.com) is supported using the same Docker container
+* Env-specific configuration is provided using env vars (docker-compose.yml files or Heroku), according to [12-factor apps](https://12factor.net)
+* All env vars are optional, so that everything would run out of the box in development
 
 ## Adding icons
 
