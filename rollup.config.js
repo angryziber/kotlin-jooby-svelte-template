@@ -13,20 +13,6 @@ const svelteOptions = require('./svelte.config')
 
 const production = !process.env.ROLLUP_WATCH
 
-// TODO: a hack to enable watching of scss changes until master of plugin is released: https://github.com/thgh/rollup-plugin-scss/issues/43
-const scssPluginWithWatch = scss({
-  output: 'public/build/bundle.css',
-  outputStyle: production && 'compressed',
-  processor: css => postcss(autoprefixer).process(css, {from: undefined}).then(result => result.css)
-})
-const scssTransform = scssPluginWithWatch.transform
-scssPluginWithWatch.transform = function(...args) {
-  this.addWatchFile('ui/assets/scss')
-  this.addWatchFile('ui/assets/scss/components')
-  this.addWatchFile('ui/assets/scss/components/utilities')
-  return scssTransform(...args)
-}
-
 export default {
   input: 'ui/main.ts',
   output: {
@@ -41,7 +27,16 @@ export default {
   },
   plugins: [
     json(),
-    scssPluginWithWatch,
+    scss({
+      output: 'public/build/bundle.css',
+      outputStyle: production && 'compressed',
+      processor: css => postcss(autoprefixer).process(css, {from: undefined}).then(result => result.css),
+      watch: [
+        'ui/assets/scss',
+        'ui/assets/scss/components',
+        'ui/assets/scss/components/utilities'
+      ]
+    }),
     svelte({
       ...svelteOptions,
       // enable run-time checks when not in production
