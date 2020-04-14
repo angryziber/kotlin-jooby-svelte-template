@@ -10,13 +10,8 @@
 </script>
 
 <div class="toasts-container">
-
   {#each $toastStore as toast (toast.id)}
-    {#if toast.modal}
-      <Modal modalClass="modal-dialog-centered" title={toast.title} show={true}>
-        <div class="alert alert-success font-weight-normal h5 mb-0" style="white-space: pre-wrap">{toast.message}</div>
-      </Modal>
-    {:else}
+    {#if !toast.modal}
       <div aria-atomic="true" aria-live="assertive" role="alert" class="toast slide-in-blurred-top toast-{toast.type}" out:out>
         <div class="toast-header">
           <strong class="mr-auto">{toast.title || toast.message}</strong>
@@ -33,3 +28,13 @@
     {/if}
   {/each}
 </div>
+
+{#each $toastStore as toast (toast.id)}
+  {#if toast.modal}
+    <Modal modalClass="modal-dialog-centered" title={toast.title} show={true}>
+      <div class="alert alert-{toast.type} font-weight-normal h5 mb-0" style="white-space: pre-wrap">
+        {toast.message}
+      </div>
+    </Modal>
+  {/if}
+{/each}
