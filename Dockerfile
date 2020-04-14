@@ -1,3 +1,4 @@
+# Build client side
 FROM node:12-alpine as ui-build
 RUN apk add openssl && rm -rf /var/cache/apk
 
@@ -10,7 +11,7 @@ COPY i18n i18n
 COPY public public
 RUN npm run build
 
-# -----------------------------------------------
+# This image builds server side, but also is used for E2E tests in Chromium, see Jenkinsfile
 FROM ubuntu:latest as server-build
 RUN apt-get update && apt-get install -y chromium-browser openjdk-11-jre-headless && apt-get clean
 RUN ln -s /usr/bin/chromium-browser /usr/bin/google-chrome
@@ -28,21 +29,19 @@ COPY . ./
 COPY --from=ui-build /app/public public/
 RUN ./gradlew installDist
 
-# -----------------------------------------------
+# The final image - Bellsoft alpine OpenJDK images are the smallest
 FROM bellsoft/liberica-openjdk-alpine:11 as final
-RUN apk add goaccess && rm -rf /var/cache/apk
 RUN adduser -S user
 
 COPY --from=server-build /app/build/install /
 WORKDIR /app
-COPY .goaccessrc ./
 
 RUN mkdir logs tmp; chown -R user logs tmp
+# Run under non-privileged user with minimal write permissions
 USER user
 
 ENV JAVA_OPTS="-Xmx512M"
-
-CMD (while :; do sleep 10; goaccess -a -p .goaccessrc -o logs/overview.html logs/request*.log 2>/dev/null || echo "GoAccess failed $?"; done &); bin/app
+CMD bin/app
 
 ENV PORT=8080
 EXPOSE $PORT
