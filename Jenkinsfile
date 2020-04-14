@@ -38,7 +38,7 @@ pipeline {
         branch 'master'
       }
       steps {
-        sh "docker --target final -t ${APP}_${APP} ."
+        sh "docker build --target final -t ${APP}_${APP} ."
       }
     }
     stage('Deploy') {
