@@ -4,23 +4,20 @@ import auth.AuthController
 import auth.AuthModule
 import auth.FakeLoginForTestingController
 import auth.User
-import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.SerializationFeature.WRITE_DATES_AS_TIMESTAMPS
 import com.fasterxml.jackson.module.kotlin.KotlinModule
 import com.mitchellbosecke.pebble.loader.ClasspathLoader
 import com.mitchellbosecke.pebble.loader.FileLoader
 import com.typesafe.config.Config
 import db.DBModule
-import io.jooby.*
-import io.jooby.exception.UnauthorizedException
+import io.jooby.Context
+import io.jooby.Environment
+import io.jooby.Kooby
+import io.jooby.ModelAndView
 import io.jooby.json.JacksonModule
 import io.jooby.pebble.PebbleModule
 import org.slf4j.LoggerFactory.getLogger
 import java.io.File
-import java.util.*
-
-val Environment.isHttps get() = isActive("https")
-val Environment.isDev get() = isActive("dev")
 
 class App: Kooby({
   serverOptions { port = System.getenv("PORT")?.toInt() ?: 8080 }
@@ -88,10 +85,3 @@ private fun Kooby.registerServicesAndControllers() {
   mvc<AuthController>()
   if (environment.isActive("test")) mvc<FakeLoginForTestingController>()
 }
-
-inline fun <reified T> Kooby.isStub() = environment.isDev || System.getProperty(T::class.simpleName!!) == "stub"
-
-val Context.user: User get() = getUser() ?: throw UnauthorizedException()
-fun Context.userJson(): String? = require<ObjectMapper>().writeValueAsString(getUser())
-
-fun String.toId(): UUID = UUID.fromString(this)

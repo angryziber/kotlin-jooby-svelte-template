@@ -56,7 +56,7 @@ class RequestDecoratorTest {
 
   @Test
   fun `canonical host is enforced`() {
-    assertThat(handler.checkHost(ctx,  ProxyHeaders(ctx), true, "app.ee")).isInstanceOf(Context::class.java)
+    assertThat(handler.checkHost(ctx,  true, "app.ee")).isInstanceOf(Context::class.java)
     verify { ctx.sendRedirect("https://app.ee/path?q=hello") }
   }
 

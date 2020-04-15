@@ -38,5 +38,3 @@ private fun Translations.resolve(key: String) =
 @Suppress("UNCHECKED_CAST")
 fun Translations.getMany(key: String) = resolve(key) as? Map<String, String> ?: emptyMap()
 operator fun Translations.invoke(key: String) = resolve(key) as? String ?: key
-
-val Context.baseUrl get() = getRequestURL("/${Lang.lang(this)}/app", true)

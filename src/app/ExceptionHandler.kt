@@ -17,7 +17,7 @@ class ExceptionHandler: Extension {
     errorCode(MissingKotlinParameterException::class.java, BAD_REQUEST)
     errorCode(IllegalArgumentException::class.java, BAD_REQUEST)
     errorCode(BusinessException::class.java, UNPROCESSABLE_ENTITY)
-    error(SERVER_ERROR) { ctx, e, statusCode ->
+    error(SERVER_ERROR) { ctx, _, statusCode ->
       if (ctx.accept(listOf(html, json)) == json)
         ctx.sendJson(mapOf("statusCode" to statusCode.value(), "message" to "error.technical"))
     }

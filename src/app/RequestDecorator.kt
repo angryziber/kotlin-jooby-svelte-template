@@ -25,14 +25,14 @@ class RequestDecorator(
       val proxyHeaders = ProxyHeaders(ctx)
       runWithLogging(ctx, proxyHeaders) {
         db.withTransaction {
-          checkHost(ctx, proxyHeaders, app.environment.isHttps, canonicalHost) ?: next.apply(ctx)
+          checkHost(ctx, app.environment.isHttps, canonicalHost) ?: next.apply(ctx)
         }
       }
     }
   }
 
-  fun checkHost(ctx: Context, proxyHeaders: ProxyHeaders, isHttps: Boolean, canonicalHost: String?) =
-    if (canonicalHost != null && (ctx.header("Host").value() != canonicalHost || proxyHeaders.isHttps != isHttps))
+  fun checkHost(ctx: Context, isHttps: Boolean, canonicalHost: String?) =
+    if (canonicalHost != null && (ctx.host != canonicalHost || ctx.isHttps != isHttps))
       ctx.sendRedirect("http${if (isHttps) "s" else ""}://$canonicalHost${ctx.requestPath}${ctx.queryString()}")
     else null
 
@@ -65,10 +65,9 @@ class RequestDecorator(
   }
 }
 
-data class ProxyHeaders(val requestId: String?, val ip: String?, val isHttps: Boolean) {
+data class ProxyHeaders(val requestId: String?, val ip: String?) {
   constructor(ctx: Context): this(
     ctx.header("X-Request-Id").valueOrNull(),
-    ctx.header("X-Forwarded-For").valueOrNull(),
-    ctx.header("X-Forwarded-Proto").valueOrNull() == "https"
+    ctx.header("X-Forwarded-For").valueOrNull()
   )
 }

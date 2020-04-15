@@ -1,6 +1,5 @@
 package auth
 
-import app.toId
 import db.BaseIntegrationTest
 import io.mockk.every
 import io.mockk.mockk

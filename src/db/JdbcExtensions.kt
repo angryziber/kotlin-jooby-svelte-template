@@ -105,6 +105,8 @@ fun ResultSet.getId(column: String = "id") = UUID.fromString(getString(column))
 fun ResultSet.getIdNullable(column: String) = getString(column)?.let { UUID.fromString(it) }
 fun ResultSet.getIntNullable(column: String) = getObject(column)?.let { getInt(column) }
 
+fun String.toId(): UUID = UUID.fromString(this)
+
 inline fun <reified T: Enum<T>> ResultSet.getEnum(column: String) = enumValueOf<T>(getString(column))
 inline fun <reified T: Enum<T>> ResultSet.getEnumNullable(column: String): T? = getString(column)?.let { enumValueOf<T>(it) }
 

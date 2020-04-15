@@ -1,5 +1,6 @@
 package app
 
+import io.jooby.Jooby
 import io.jooby.ServiceKey
 import io.jooby.ServiceRegistry
 import io.jooby.exception.RegistryException
@@ -26,3 +27,5 @@ class AutoCreatingServiceRegistry(private val original: ServiceRegistry): Servic
     }
   }
 }
+
+inline fun <reified T> Jooby.isStub() = environment.isDev || System.getProperty(T::class.simpleName!!) == "stub"

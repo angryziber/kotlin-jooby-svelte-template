@@ -1,7 +1,7 @@
 package auth
 
 import app.isHttps
-import app.toId
+import db.toId
 import io.jooby.*
 import io.jooby.exception.BadRequestException
 import io.jooby.exception.ForbiddenException
