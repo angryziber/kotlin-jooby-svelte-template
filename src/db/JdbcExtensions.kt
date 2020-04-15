@@ -103,7 +103,7 @@ fun ResultSet.getInstantNullable(column: String) = getTimestamp(column)?.toInsta
 
 fun ResultSet.getId(column: String = "id") = UUID.fromString(getString(column))
 fun ResultSet.getIdNullable(column: String) = getString(column)?.let { UUID.fromString(it) }
-fun ResultSet.getIntNullable(column: String) = getObject(column)?.let { getInt(column) }
+fun ResultSet.getIntNullable(column: String) = getObject(column)?.let { (it as Number).toInt() }
 
 fun String.toId(): UUID = UUID.fromString(this)
 
