@@ -1,5 +1,6 @@
 package app
 
+import auth.User
 import com.zaxxer.hikari.util.DriverDataSource
 import db.withConnection
 import io.jooby.*
@@ -12,24 +13,21 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.slf4j.Logger
 import org.slf4j.MDC
-import auth.User
 import javax.sql.DataSource
 
 class RequestDecoratorTest {
   val ctx = mockk<Context>(relaxed = true) {
-    every { remoteAddress } returns "127.0.0.13"
     every { method } returns "GET"
     every { requestPath } returns "/path"
     every { queryString() } returns "?q=hello"
     every { path("userIdHash").valueOrNull() } returns null
     every { header(any()).valueOrNull() } returns null
-    every { header("Referer").valueOrNull() } returns "http://referrer"
-    every { header("User-Agent").valueOrNull() } returns "User-Agent"
+    every { header("Referer").value("") } returns "http://referrer"
+    every { header("User-Agent").value("") } returns "User-Agent"
     every { responseLength } returns 12345
     every { responseCode } returns ACCEPTED
     every { getUser<User>() } returns TestData.user
   }
-  val db = mockk<DriverDataSource>(relaxed = true)
 
   val requestLog = mockk<Logger>(relaxed = true)
   val handler = RequestDecorator(requestLog)
@@ -62,7 +60,10 @@ class RequestDecoratorTest {
 
   @Test
   fun `successful request log without proxy`() {
-    handler.runWithLogging(ctx, ProxyHeaders(ctx)) {
+    every { ctx.remoteAddress } returns "127.0.0.13"
+    every { ctx.header("X-Forwarded-For").value("127.0.0.13") } returns "127.0.0.13"
+
+    handler.runWithLogging(ctx) {
       assertThat(MDC.get("requestId")).endsWith("-1")
     }
     runCompleteHandler()
@@ -76,24 +77,15 @@ class RequestDecoratorTest {
   @Test
   fun `successful request log with proxy headers`() {
     every { ctx.header("X-Request-Id").valueOrNull() } returns "r-id"
-    every { ctx.header("X-Forwarded-For").valueOrNull() } returns "192.168.33.44"
+    every { ctx.header("X-Forwarded-For").value(any()) } returns "192.168.33.44"
 
-    handler.runWithLogging(ctx, ProxyHeaders(ctx)) {
+    handler.runWithLogging(ctx) {
       assertThat(MDC.get("requestId")).isEqualTo("r-id")
     }
 
     runCompleteHandler()
     verify { requestLog.info(match { it.contains(" 192.168.33.44 ")})}
     assertThat(MDC.get("requestId")).isNull()
-  }
-
-  @Test
-  fun `removes userIdHash from path`() {
-    every { ctx.requestPath } returns "/api/1234567/endpoint"
-    every { ctx.path("userIdHash").valueOrNull() } returns "1234567"
-    handler.runWithLogging(ctx, ProxyHeaders(ctx)) {}
-    runCompleteHandler()
-    verify { requestLog.info(match { it.contains("GET /api/***/endpoint?q=hello")})}
   }
 
   private fun runCompleteHandler() {

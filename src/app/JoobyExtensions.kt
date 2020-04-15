@@ -6,7 +6,6 @@ import io.jooby.Context
 import io.jooby.Environment
 import io.jooby.exception.UnauthorizedException
 import io.jooby.require
-import java.util.*
 
 val Environment.isDev get() = isActive("dev")
 val Environment.isHttps get() = isActive("https")
@@ -17,3 +16,6 @@ fun Context.userJson(): String? = require<ObjectMapper>().writeValueAsString(get
 val Context.proto get() = header("X-Forwarded-Proto").value("http")
 val Context.isHttps get() = proto == "https"
 val Context.baseUrl get() = "$proto://${getHostAndPort(false)}/${Lang.lang(this)}/app"
+
+val Context.requestId get() = header("X-Request-Id").valueOrNull()
+val Context.ip get() = header("X-Forwarded-For").value(remoteAddress)
