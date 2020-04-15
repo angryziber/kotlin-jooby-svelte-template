@@ -5,6 +5,9 @@ pipeline {
     APP = "app"
     BUILD = "${JOB_NAME.replace('/', '-')}-${BUILD_NUMBER}"
     RUN_TESTS = "docker run -v `pwd`/build/test-results:/app/build/test-results"
+    // EMAIL = "developers@domain"
+    GIT_LAST_CHANGE = sh(script: 'git show', returnStdout: true)
+    EMAIL_BODY = "Project: ${JOB_NAME}\nBuild Number: ${BUILD_NUMBER}\n\nLast change:\n\n${env.GIT_LAST_CHANGE}"
   }
 
   stages {
@@ -47,7 +50,11 @@ pipeline {
       }
       steps {
         sh "docker-compose -f docker-compose.yml -f docker-compose.codeborne.yml -p ${APP} up -d --remove-orphans"
-        sh "sleep 5 && docker logs ${APP}_${APP}_1 | grep -A1 'listening on:'"
+        script {
+          def startLogs = sh script: "sleep 5 && docker logs ${APP}_${APP}_1 | grep -B50 -A1 'listening on:'", returnStdout: true
+          println(startLogs)
+          if (EMAIL) mail to: EMAIL, subject: "$APP deployed to test", body: EMAIL_BODY + "\n\nStart logs:\n...\n$startLogs"
+        }
       }
     }
   }
@@ -55,16 +62,11 @@ pipeline {
     always {
       sh "touch build/test-results/**/*.xml"
       junit 'build/test-results/**/*.xml'
+    }
+    failure {
       script {
-        env.GIT_LAST_CHANGE = sh(script: 'git show', returnStdout: true)
-        env.EMAIL_BODY = "Project: ${JOB_NAME}\nBuild Number: ${BUILD_NUMBER}\n\nLast change:\n\n${env.GIT_LAST_CHANGE}"
+        if (EMAIL) mail to: EMAIL, subject: "$APP ($BRANCH_NAME) build failed", body: EMAIL_BODY
       }
     }
-//     success {
-//       mail to: "${APP}@email", subject: "Deployed to test: ${JOB_NAME} #${BUILD_NUMBER}", body: EMAIL_BODY
-//     }
-//     failure {
-//       mail to: "${APP}@email", subject: "Build failed: ${JOB_NAME} #${BUILD_NUMBER}", body: EMAIL_BODY
-//     }
   }
 }
