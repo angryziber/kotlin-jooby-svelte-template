@@ -40,8 +40,10 @@ RUN mkdir logs tmp; chown -R user logs tmp
 # Run under non-privileged user with minimal write permissions
 USER user
 
-ENV JAVA_OPTS="-Xmx512M"
+# Fit into Heroku's 512m total limit
+ENV JAVA_OPTS="-Xmx330m -Xss512k"
 CMD bin/app
 
+# Heroku redefines exposed port
 ENV PORT=8080
 EXPOSE $PORT
