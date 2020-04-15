@@ -13,7 +13,7 @@ val Environment.isHttps get() = isActive("https")
 val Context.user: User get() = getUser() ?: throw UnauthorizedException()
 fun Context.userJson(): String? = require<ObjectMapper>().writeValueAsString(getUser())
 
-val Context.proto get() = header("X-Forwarded-Proto").value("http")
+val Context.proto get() = header("X-Forwarded-Proto").value(protocol)
 val Context.isHttps get() = proto == "https"
 val Context.baseUrl get() = "$proto://${getHostAndPort(false)}/${Lang.lang(this)}/app"
 
