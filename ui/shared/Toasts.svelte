@@ -20,7 +20,7 @@
           </button>
         </div>
         {#if toast.title}
-          <div class="toast-body" style="white-space: pre-wrap">
+          <div class="toast-body text-preserve-lines">
             {toast.message}
           </div>
         {/if}
@@ -32,7 +32,7 @@
 {#each $toastStore as toast (toast.id)}
   {#if toast.modal}
     <Modal modalClass="modal-dialog-centered" title={toast.title} show={true}>
-      <div class="alert alert-{toast.type} font-weight-normal h5 mb-0" style="white-space: pre-wrap">
+      <div class="alert alert-{toast.type} font-weight-normal h5 mb-0 text-preserve-lines">
         {toast.message}
       </div>
     </Modal>
