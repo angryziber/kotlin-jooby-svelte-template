@@ -1,15 +1,12 @@
 import * as i18n from 'svelte-i18n'
 import {get} from 'svelte/store'
-
-import en from '../i18n/en.json'
-
-const dictionary = {en}
+import langs from '../i18n/langs'
 
 const LANG_COOKIE = 'LANG'
 export const PATH_LANG_REGEX = /^\/([a-z]{2})\//
 
 export function init() {
-  Object.entries(dictionary).forEach(([key, value]) => i18n.addMessages(key, value))
+  Object.entries(langs).forEach(([key, value]) => i18n.addMessages(key, value))
 
   i18n.init({
     fallbackLocale: 'en',

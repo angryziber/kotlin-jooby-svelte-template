@@ -3,13 +3,14 @@ package app
 import com.fasterxml.jackson.databind.ObjectMapper
 import io.jooby.Context
 import io.jooby.Cookie
+import java.io.InputStreamReader
 
 typealias Translations = Map<String, Any>
 
 object Lang {
   const val COOKIE = "LANG"
 
-  val available = listOf("en")
+  val available = readAvailableLangs("/langs.ts")
   val translations = available.map { lang -> lang to load(lang) }.toMap()
 
   fun detect(ctx: Context) = lang(ctx).also { remember(ctx, it) }
@@ -26,6 +27,9 @@ object Lang {
   fun translations(ctx: Context): Translations = translations[lang(ctx)]!!
 
   private fun acceptLanguage(accept: String?) = accept?.replace("[-,;].*$".toRegex(), "")
+
+  private fun readAvailableLangs(jsFile: String) = InputStreamReader(javaClass.getResourceAsStream(jsFile)).readLines()
+    .filter { it.startsWith("import") }.map { it.split(" ")[1] }
 
   @Suppress("UNCHECKED_CAST")
   private fun load(lang: String) =

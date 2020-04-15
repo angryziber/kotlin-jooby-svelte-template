@@ -43,6 +43,11 @@ class LangTest {
     assertThat(Lang.detect(ctx)).isEqualTo("en")
   }
 
+  @Test
+  fun readAvailableLangs() {
+    assertThat(Lang.available).contains("en")
+  }
+
   @Test @Suppress("UNCHECKED_CAST")
   fun translations() {
     assertThat((Lang.translations["en"]!!["login"] as Map<String, *>)["title"] as String).startsWith("Access")
