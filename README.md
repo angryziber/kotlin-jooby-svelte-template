@@ -88,4 +88,4 @@ To add an icon:
 
 1. Download any icon from that repository as svg. For custom ones, use existing ones as a basis for consistency.
 2. Add the icon to `public/img/icons`.
-3. Generate the sprites using the run configuration in IDEA or `npm run-script generate-sprite`
+3. Generate the sprites using the run configuration in IDEA or `npm run gen-icon-sprite`

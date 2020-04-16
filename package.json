@@ -5,7 +5,7 @@
     "clean": "rm -fr public/build .rpt2_cache",
     "build": "npm run clean && rollup -c",
     "watch": "npm run clean && rollup -c -w",
-    "generate-sprite": "npx svgo --config ui/assets/icons-svgo.json -f ui/assets/icons && npx svg-sprite --config ui/assets/icons-svg-sprite.json ui/assets/icons/*.svg",
+    "gen-icon-sprite": "npx svgo --config ui/assets/icons-svgo.json -f ui/assets/icons && npx svg-sprite --config ui/assets/icons-svg-sprite.json ui/assets/icons/*.svg",
     "test": "jest"
   },
   "devDependencies": {
