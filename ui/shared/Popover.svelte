@@ -1,5 +1,5 @@
- <script>
-  import {tick} from 'svelte'
+<script>
+  import {tick, onDestroy} from 'svelte'
   export let title = undefined
   export let text = undefined
   export let containerClass = ''
@@ -7,7 +7,7 @@
   let show = false, top = 0, left = 0, arrowLeft = 0
   let slotRef, popoverRef, arrowRef
 
-  export async function showPopover() {
+  async function showPopover() {
     show = true
     await tick()
     document.body.appendChild(popoverRef)
@@ -18,14 +18,16 @@
 
     top = slotRect.y - popoverHeight
 
-    if (top < 0) {
-      top = slotRect.y + slotRect.height / 2 + arrowRect.height
-      position = 'bottom'
-    }
+    position = (top < 0) ? 'bottom' : 'top'
+    if (top < 0) top = slotRect.bottom
+
+    top += scrollY
 
     left = slotRect.x + slotRect.width / 2 - popoverRect.width / 2
     arrowLeft = popoverRect.width / 2 - arrowRect.width / 2
   }
+
+  onDestroy(() => popoverRef && document.body.removeChild(popoverRef))
 </script>
 
 <style>
@@ -35,9 +37,9 @@
 </style>
 
 <span class="{containerClass}" style="display: inline-block; position: relative"
-    bind:this={slotRef}
-    on:mouseenter={showPopover}
-    on:mouseleave={() => show = false}>
+      bind:this={slotRef}
+      on:mouseenter={showPopover}
+      on:mouseleave={() => show = false}>
   <slot/>
 </span>
 
