@@ -46,7 +46,7 @@ class RequestDecorator(
       val referrer = ctx.header("Referer").value("")
       val userAgent = ctx.header("User-Agent").value("")
       runWith(requestId) {
-        requestLog.info("""$user ${ctx.ip} "${ctx.method} ${ctx.requestPath}${ctx.queryString()}" $statusCode ${ctx.responseLength} $millis ms $referrer "$userAgent"""")
+        requestLog.info("""$user ${ctx.remoteAddress} "${ctx.method} ${ctx.requestPath}${ctx.queryString()}" $statusCode ${ctx.responseLength} $millis ms $referrer "$userAgent"""")
       }
     }
     return runWith(requestId, block)

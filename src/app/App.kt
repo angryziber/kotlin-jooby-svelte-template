@@ -20,7 +20,10 @@ import org.slf4j.LoggerFactory.getLogger
 import java.io.File
 
 class App: Kooby({
-  serverOptions { port = System.getenv("PORT")?.toInt() ?: 8080 }
+  serverOptions {
+    port = System.getenv("PORT")?.toInt() ?: 8080
+    isTrustProxy = true
+  }
   registry(AutoCreatingServiceRegistry(services))
   install(DBModule())
   install(JacksonModule(JacksonModule.create().disable(WRITE_DATES_AS_TIMESTAMPS).registerModule(KotlinModule())))

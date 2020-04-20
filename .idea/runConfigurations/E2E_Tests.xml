@@ -1,6 +1,6 @@
 <component name="ProjectRunConfigurationManager">
   <configuration default="false" name="E2E Tests" type="JUnit" factoryName="JUnit">
-    <module name="anonima.test" />
+    <module name="app.test" />
     <useClassPathOnly />
     <option name="PACKAGE_NAME" value="^(ui).*" />
     <option name="MAIN_CLASS_NAME" value="" />

@@ -17,6 +17,7 @@ import javax.sql.DataSource
 
 class RequestDecoratorTest {
   val ctx = mockk<Context>(relaxed = true) {
+    every { remoteAddress } returns "127.0.0.13"
     every { method } returns "GET"
     every { requestPath } returns "/path"
     every { queryString() } returns "?q=hello"
@@ -60,9 +61,6 @@ class RequestDecoratorTest {
 
   @Test
   fun `successful request log without proxy`() {
-    every { ctx.remoteAddress } returns "127.0.0.13"
-    every { ctx.header("X-Forwarded-For").value("127.0.0.13") } returns "127.0.0.13"
-
     handler.runWithLogging(ctx) {
       assertThat(MDC.get("requestId")).endsWith("-1")
     }
@@ -75,17 +73,12 @@ class RequestDecoratorTest {
   }
 
   @Test
-  fun `successful request log with proxy headers`() {
+  fun `request-id from X-Request-Id header`() {
     every { ctx.header("X-Request-Id").valueOrNull() } returns "r-id"
-    every { ctx.header("X-Forwarded-For").value(any()) } returns "192.168.33.44"
 
     handler.runWithLogging(ctx) {
       assertThat(MDC.get("requestId")).isEqualTo("r-id")
     }
-
-    runCompleteHandler()
-    verify { requestLog.info(match { it.contains(" 192.168.33.44 ")})}
-    assertThat(MDC.get("requestId")).isNull()
   }
 
   private fun runCompleteHandler() {
