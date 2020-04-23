@@ -65,9 +65,10 @@ class App: Kooby({
     ctx.setResponseHeader("Content-Security-Policy", csp)
     ctx.setResponseHeader("X-Frame-Options", "SAMEORIGIN")
     if (environment.isHttps) ctx.setResponseHeader("Strict-Transport-Security", "max-age=31536000")
-    ModelAndView("pages/$page.peb", Lang.translations[lang]!!).put("assetsTime", assetsTime())
+    val translations = Lang.translations(ctx)
+    ModelAndView("pages/$page.peb", translations).put("assetsTime", assetsTime())
       .put("lang", lang).put("langs", Lang.available).put("envs", environment.activeNames)
-      .put("userJson", ctx.userJson())
+      .put("userJson", ctx.userJson()).put("globalWarning", ctx.warnLegacyBrowsers(translations))
   }
 
   post("/js-error") {
@@ -87,4 +88,13 @@ private fun Kooby.registerServicesAndControllers() {
 
   mvc<AuthController>()
   if (environment.isActive("test")) mvc<FakeLoginForTestingController>()
+}
+
+fun Context.warnLegacyBrowsers(translate: Translations): String? {
+  val userAgent = header("User-Agent").value("")
+  return when {
+    userAgent.contains("Edge/") -> translate("errors.upgradeLegacyEdgeBrowser")
+    userAgent.contains("MSIE") || userAgent.contains("Trident") -> translate("errors.unsupportedIEBrowser")
+    else -> null
+  }
 }

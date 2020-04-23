@@ -23,6 +23,7 @@
 </head>
 
 <body>
+  {% if globalWarning %}<div class="alert alert-danger global-warning">{{ globalWarning | raw }}</div>{% endif %}
   {% block body %}{% endblock %}
 </body>
 </html>
