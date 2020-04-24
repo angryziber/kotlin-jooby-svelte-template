@@ -12,7 +12,7 @@ COPY public public
 RUN npm run build
 
 # This image builds server side, but also is used for E2E tests in Chromium, see Jenkinsfile
-FROM ubuntu:latest as server-build
+FROM ubuntu:bionic as server-build
 RUN apt-get update && apt-get install -y chromium-browser openjdk-11-jre-headless && apt-get clean
 RUN ln -s /usr/bin/chromium-browser /usr/bin/google-chrome
 
