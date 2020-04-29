@@ -3,6 +3,7 @@ import * as i18n from './i18n'
 import router from './routing/Router'
 import App from './App.svelte'
 import jsErrorHandler from './jsErrorHandler'
+import './shared/jsExtensions'
 
 i18n.init()
 router.interceptHrefs()

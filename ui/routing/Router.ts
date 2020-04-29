@@ -22,8 +22,9 @@ class Router {
     const pageParts = page.split('/')
     const params = {}
     if (patternParts.length !== pageParts.length) return false
-    for (const i in patternParts) {
-      const patternPart = patternParts[i], pagePart = pageParts[i]
+    let i = 0
+    for (let patternPart of patternParts) {
+      const pagePart = pageParts[i++]
       if (patternPart.startsWith(':') && pagePart)
         params[patternPart.substring(1)] = pagePart
       else if (pagePart !== patternPart)
