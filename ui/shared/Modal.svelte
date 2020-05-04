@@ -1,6 +1,7 @@
 <script>
-  import { afterUpdate } from 'svelte'
   import { fade, fly } from 'svelte/transition'
+  import {onDestroy} from 'svelte'
+
   export let title
   export let show = true
   export let modalClass = ''
@@ -8,16 +9,18 @@
   export let squashFooter = false
   let backdrop
 
-  afterUpdate(() => {
-    backdrop && document.body.appendChild(backdrop)
+  $: if (backdrop) document.body.appendChild(backdrop)
 
+  $: {
     if (show) {
       document.body.classList.add('modal-open')
       squashFooter && moveElementsFromFooterSlotToParent()
     }
     else
       document.body.classList.remove('modal-open')
-  })
+  }
+
+  onDestroy(() => document.body.classList.remove('modal-open'))
 
   function moveElementsFromFooterSlotToParent() {
     const footer = document.querySelector('[slot="footer"]')
