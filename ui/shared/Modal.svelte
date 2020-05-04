@@ -36,10 +36,6 @@
     show = false
   }
 
-  function closeByBackdrop(e) {
-    if (e.target.classList.contains('modal')) close()
-  }
-
   function onKeyUp(e) {
     if (show && e.keyCode === 27) close()
   }
@@ -58,7 +54,7 @@
 <svelte:window on:keyup={onKeyUp}/>
 
 {#if show}
-  <div class="modal" tabindex="-1" role="dialog" on:click={closeByBackdrop}>
+  <div class="modal" tabindex="-1" role="dialog">
     <div class="modal-dialog {modalClass}" role="document" transition:fly={flyParams}>
       <div class="modal-content">
         <div class="modal-header">
