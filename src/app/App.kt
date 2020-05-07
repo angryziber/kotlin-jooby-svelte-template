@@ -11,6 +11,7 @@ import com.mitchellbosecke.pebble.loader.FileLoader
 import com.typesafe.config.Config
 import db.DBModule
 import io.jooby.*
+import io.jooby.exception.NotFoundException
 import io.jooby.json.JacksonModule
 import io.jooby.pebble.PebbleModule
 import org.slf4j.LoggerFactory.getLogger
@@ -58,12 +59,14 @@ class App: Kooby({
   }
 
   get("/{lang:[a-z]{2}}/{page}/*") {
-    val lang = ctx.path("lang").value().also { Lang.remember(ctx, it) }
+    val lang = ctx.path("lang").value()
     val page = ctx.path("page").value()
+    val translations = Lang.translations[lang] ?: throw NotFoundException(ctx.requestPath)
+    Lang.remember(ctx, lang)
     ctx.setResponseHeader("Content-Security-Policy", csp)
     ctx.setResponseHeader("X-Frame-Options", "SAMEORIGIN")
     if (environment.isHttps) ctx.setResponseHeader("Strict-Transport-Security", "max-age=31536000")
-    val translations = Lang.translations(ctx)
+
     ModelAndView("pages/$page.peb", translations).put("assetsTime", assetsTime())
       .put("lang", lang).put("langs", Lang.available).put("envs", environment.activeNames)
       .put("userJson", ctx.userJson()).put("globalWarning", ctx.warnLegacyBrowsers(translations))
