@@ -10,10 +10,7 @@ import com.mitchellbosecke.pebble.loader.ClasspathLoader
 import com.mitchellbosecke.pebble.loader.FileLoader
 import com.typesafe.config.Config
 import db.DBModule
-import io.jooby.Context
-import io.jooby.Environment
-import io.jooby.Kooby
-import io.jooby.ModelAndView
+import io.jooby.*
 import io.jooby.json.JacksonModule
 import io.jooby.pebble.PebbleModule
 import org.slf4j.LoggerFactory.getLogger
@@ -24,6 +21,7 @@ class App: Kooby({
     port = System.getenv("PORT")?.toInt() ?: 8080
     isTrustProxy = true
   }
+  decorator(HeadHandler())
   registry(AutoCreatingServiceRegistry(services))
   install(DBModule())
   install(JacksonModule(JacksonModule.create().disable(WRITE_DATES_AS_TIMESTAMPS).registerModule(KotlinModule())))
