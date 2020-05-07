@@ -20,6 +20,7 @@ class RequestDecoratorTest {
     every { remoteAddress } returns "127.0.0.13"
     every { method } returns "GET"
     every { requestPath } returns "/path"
+    every { attributes } returns emptyMap()
     every { queryString() } returns "?q=hello"
     every { path("userIdHash").valueOrNull() } returns null
     every { header(any()).valueOrNull() } returns null
@@ -61,8 +62,9 @@ class RequestDecoratorTest {
 
   @Test
   fun `successful request log without proxy`() {
+    every { ctx.requestId } returns "r-id"
     handler.runWithLogging(ctx) {
-      assertThat(MDC.get("requestId")).endsWith("-1")
+      assertThat(MDC.get("requestId")).endsWith("r-id")
     }
     runCompleteHandler()
 
@@ -70,15 +72,6 @@ class RequestDecoratorTest {
       """USER:${TestData.user.id} 127.0.0.13 "GET /path\?q=hello" 202 12345 \d+ ms http://referrer "User-Agent"""".toRegex()
     )})}
     assertThat(MDC.get("requestId")).isNull()
-  }
-
-  @Test
-  fun `request-id from X-Request-Id header`() {
-    every { ctx.header("X-Request-Id").valueOrNull() } returns "r-id"
-
-    handler.runWithLogging(ctx) {
-      assertThat(MDC.get("requestId")).isEqualTo("r-id")
-    }
   }
 
   private fun runCompleteHandler() {
