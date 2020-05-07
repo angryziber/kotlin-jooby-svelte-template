@@ -3,6 +3,7 @@ package app
 import io.jooby.Context
 import io.mockk.every
 import io.mockk.mockk
+import io.mockk.verify
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
@@ -27,5 +28,21 @@ class JoobyExtensionsTest {
   fun `requestId from load balancer eg Heroku`() {
     every { ctx.header("X-Request-Id").valueOrNull() } returns "r-id-123"
     assertThat(ctx.requestId).isEqualTo("r-id-123")
+  }
+
+  @Test
+  fun `generated requestId`() {
+    every { ctx.header("X-Request-Id").valueOrNull() } returns null
+    every { ctx.attributes["requestId"] } returns null
+    val requestId = ctx.requestId
+    assertThat(requestId).matches(".+-1")
+    verify { ctx.attribute("requestId", requestId) }
+  }
+
+  @Test
+  fun `remembered requestId`() {
+    every { ctx.header("X-Request-Id").valueOrNull() } returns null
+    every { ctx.attributes["requestId"] } returns "remembered-id"
+    assertThat(ctx.requestId).isEqualTo("remembered-id")
   }
 }

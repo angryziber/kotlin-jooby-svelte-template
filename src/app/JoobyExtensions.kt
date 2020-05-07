@@ -6,6 +6,7 @@ import io.jooby.Context
 import io.jooby.Environment
 import io.jooby.exception.UnauthorizedException
 import io.jooby.require
+import java.util.concurrent.atomic.AtomicLong
 
 val Environment.isDev get() = isActive("dev")
 val Environment.isHttps get() = isActive("https")
@@ -16,4 +17,11 @@ fun Context.userJson(): String? = require<ObjectMapper>().writeValueAsString(get
 val Context.isHttps get() = scheme == "https"
 val Context.baseUrl get() = getRequestURL("/${Lang.lang(this)}/app")
 
-val Context.requestId get() = header("X-Request-Id").valueOrNull()
+val Context.requestId: String get() = header("X-Request-Id").valueOrNull() ?:
+  attributes["requestId"] as String? ?: requestIdGenerator.generate().also { attribute("requestId", it) }
+
+private val requestIdGenerator = object {
+  val prefix = (0xFFFF * Math.random()).toInt().toString(16)
+  val counter = AtomicLong()
+  fun generate() = "$prefix-${counter.incrementAndGet()}"
+}
