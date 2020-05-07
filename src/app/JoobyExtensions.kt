@@ -14,6 +14,6 @@ val Context.user: User get() = getUser() ?: throw UnauthorizedException()
 fun Context.userJson(): String? = require<ObjectMapper>().writeValueAsString(getUser())
 
 val Context.isHttps get() = scheme == "https"
-val Context.baseUrl get() = "$requestURL/${Lang.lang(this)}/app"
+val Context.baseUrl get() = getRequestURL("/${Lang.lang(this)}/app")
 
 val Context.requestId get() = header("X-Request-Id").valueOrNull()
