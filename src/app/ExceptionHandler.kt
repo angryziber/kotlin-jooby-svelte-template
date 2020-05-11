@@ -8,7 +8,6 @@ import io.jooby.*
 import io.jooby.MediaType.html
 import io.jooby.MediaType.json
 import io.jooby.StatusCode.*
-import io.jooby.exception.StatusCodeException
 
 class ExceptionHandler: Extension {
   override fun install(app: Jooby): Unit = (app as Kooby).run {
@@ -19,7 +18,7 @@ class ExceptionHandler: Extension {
     errorCode(BusinessException::class.java, UNPROCESSABLE_ENTITY)
     error(SERVER_ERROR) { ctx, _, statusCode ->
       if (ctx.accept(listOf(html, json)) == json)
-        ctx.sendJson(mapOf("statusCode" to statusCode.value(), "message" to "error.technical"))
+        ctx.sendJson(mapOf("statusCode" to statusCode.value(), "message" to "errors.technical"))
     }
   }
 
