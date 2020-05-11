@@ -5,4 +5,8 @@ i18n.init()
 
 window.fetch = jest.fn().mockReturnValue(new Promise(() => {}))
 
-global['scrollTo'] = jest.fn()
+beforeEach(() => jest.clearAllTimers())
+
+process.on('unhandledRejection', e => {
+  throw e
+})

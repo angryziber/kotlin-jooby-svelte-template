@@ -13,12 +13,10 @@ module.exports = {
     '\\.svelte$': ['svelte-test/transform']
   },
   setupFilesAfterEnv: [
-    '@testing-library/jest-dom/extend-expect'
-  ],
-  restoreMocks: true,
-  setupFiles: [
+    '@testing-library/jest-dom/extend-expect',
     './ui/setup-tests.ts'
   ],
+  restoreMocks: true,
   reporters: [ 'default', ['jest-junit', {
     suiteName: 'UI tests',
     suiteNameTemplate: '{filename}',
