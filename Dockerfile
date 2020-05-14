@@ -1,6 +1,5 @@
 # Build client side
-FROM node:12-alpine as ui-build
-RUN apk add openssl && rm -rf /var/cache/apk
+FROM node:14-alpine as ui-build
 
 WORKDIR /app
 
