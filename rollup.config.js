@@ -7,7 +7,7 @@ import {terser} from 'rollup-plugin-terser'
 import scss from 'rollup-plugin-scss'
 import autoprefixer from 'autoprefixer'
 import postcss from 'postcss'
-import typescript from 'rollup-plugin-typescript2'
+import typescript from '@rollup/plugin-typescript'
 
 const svelteOptions = require('./svelte.config')
 

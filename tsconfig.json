@@ -1,6 +1,7 @@
 {
   "include": [
-    "ui/**/*"
+    "ui/**/*",
+    "i18n/*"
   ],
   "exclude": [
     "node_modules/*"
@@ -13,10 +14,11 @@
     "allowSyntheticDefaultImports": true,
     "esModuleInterop": true,
     "resolveJsonModule": true,
-    "alwaysStrict":true,
+    "alwaysStrict": true,
     "strictNullChecks": true,
     "strictBindCallApply": true,
     "strictFunctionTypes": true,
-    "strictPropertyInitialization": true
+    "strictPropertyInitialization": true,
+    "importHelpers": true
   }
 }
