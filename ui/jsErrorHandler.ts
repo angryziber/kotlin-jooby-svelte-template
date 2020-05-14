@@ -6,7 +6,7 @@ export default async function jsErrorHandler(message, source, line, column, erro
       message, source, line, column,
       href: location.href,
       userAgent: navigator.userAgent,
-      stack: error && error.stack
+      stack: error?.stack
     })
   } catch (e) {
     console.error(e)

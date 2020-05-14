@@ -7,8 +7,8 @@
     "node_modules/*"
   ],
   "compilerOptions": {
-    "target": "esnext",
-    "module": "esnext",
+    "target": "ES2019",
+    "module": "ESNext",
     "moduleResolution": "node",
     "types": ["svelte", "jest", "testing-library__jest-dom", "node"],
     "allowSyntheticDefaultImports": true,

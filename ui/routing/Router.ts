@@ -6,7 +6,7 @@ class Router {
   handleGlobalClick = (e: MouseEvent) => {
     let href, element = e.target as HTMLAnchorElement
     while (element && !(href = element.href)) element = element.parentElement as HTMLAnchorElement
-    if (element && href && href.length && href.startsWith('app:')) {
+    if (element && href?.startsWith('app:')) {
       e.preventDefault()
       this.navigateTo(href.substring(4))
     }

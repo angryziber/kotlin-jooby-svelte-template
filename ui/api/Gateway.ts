@@ -3,18 +3,18 @@ export const headers = {'Content-Type': 'application/json', 'Accept': 'applicati
 class Gateway {
   request(path: string, init?: RequestInit | {body: object}, fetch = window.fetch) {
     document.documentElement.classList.add('loading')
-    const disabledButtons = this.disableSubmitButtons(init && (init as RequestInit).method)
+    const disabledButtons = this.disableSubmitButtons((init as RequestInit)?.method)
 
     return fetch(path, {
       ...init, headers,
-      body: init && init.body && JSON.stringify(init.body)
+      body: init?.body && JSON.stringify(init.body)
     })
     .then(this.tryToExtractPayload)
     .then(this.checkStatusCode)
     .catch(this.handleFetchFailure)
     .finally(() => {
       document.documentElement.classList.remove('loading')
-      disabledButtons && disabledButtons.forEach(btn => btn.disabled = false)
+      disabledButtons?.forEach(btn => btn.disabled = false)
     })
   }
 
@@ -36,7 +36,7 @@ class Gateway {
   }
 
   private checkStatusCode(data) {
-    if (data && data.statusCode) throw {...data, message: data.message || data.reason}
+    if (data?.statusCode) throw {...data, message: data.message || data.reason}
     else return data
   }
 
