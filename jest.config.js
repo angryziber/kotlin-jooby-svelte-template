@@ -10,8 +10,10 @@ module.exports = {
     '**/ui/**/*.test.ts'
   ],
   transform: {
-    '\\.svelte$': ['svelte-test/transform']
+    '\\.svelte$': ['svelte-jester', {preprocess: true}],
+    'node_modules/.+\\.js$': 'babel-jest'
   },
+  moduleFileExtensions: ['js', 'ts', 'svelte'],
   setupFilesAfterEnv: [
     '@testing-library/jest-dom/extend-expect',
     './ui/setup-tests.ts'
