@@ -9,8 +9,7 @@ class Gateway {
       ...init, headers,
       body: init?.body && JSON.stringify(init.body)
     })
-    .then(this.tryToExtractPayload)
-    .then(this.checkStatusCode)
+    .then(this.extractJsonHandlingErrors)
     .catch(this.handleFetchFailure)
     .finally(() => {
       document.documentElement.classList.remove('loading')
@@ -18,26 +17,24 @@ class Gateway {
     })
   }
 
-  private handleFetchFailure(error) {
-    if (error.message === 'Failed to fetch') {
-      throw {message: 'errors.networkUnavailable'}
-    } else {
-      throw error
-    }
-  }
-
-  private async tryToExtractPayload(response: Response): Promise<object|undefined> {
+  private async extractJsonHandlingErrors(response: Response): Promise<any> {
+    let data
     try {
-      return response.status == 204 ? undefined: await response.json()
+      data = response.status == 204 ? undefined : await response.json()
     } catch (e) {
       console.error('Not a JSON', e)
       throw {message: 'errors.notJson'}
     }
+    if (response.status < 200 || response.status >= 400) {
+      data.message = data.message || data.reason
+      throw data
+    }
+    return data
   }
 
-  private checkStatusCode(data) {
-    if (data?.statusCode) throw {...data, message: data.message || data.reason}
-    else return data
+  private handleFetchFailure(error) {
+    if (error.message === 'Failed to fetch') throw {message: 'errors.networkUnavailable'}
+    else throw error
   }
 
   async get(path: string) {

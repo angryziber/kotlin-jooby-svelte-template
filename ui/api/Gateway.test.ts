@@ -22,7 +22,7 @@ it('supports No Content response', async () => {
 })
 
 it('handles http error', () => {
-  const fetch = jest.fn().mockResolvedValue({json: () => Promise.resolve({statusCode: 403, message: '', reason: 'Forbidden'})})
+  const fetch = jest.fn().mockResolvedValue({status: 403, json: () => Promise.resolve({statusCode: 403, message: '', reason: 'Forbidden'})})
   return gateway.request('/path', {headers}, fetch).then(() => {throw 'should be rejected'}, e => {
     expect(e).toEqual({statusCode: 403, message: 'Forbidden', reason: 'Forbidden'})
     expect(document.documentElement.classList.contains('loading')).toBe(false)
@@ -55,18 +55,14 @@ it('sends patch', () => {
 
 it('gives a specific error when failed to parse JSON', () => {
   const fetch = jest.fn().mockResolvedValue({json: () => { throw 'Invalid json'}})
-  const message = 'errors.notJson'
-
   expect.assertions(1)
-  return expect(gateway.request('/path', {headers: {'Accept': 'application/json'}}, fetch)).rejects.toEqual({message})
+  return expect(gateway.request('/path', undefined, fetch)).rejects.toEqual({message: 'errors.notJson'})
 })
 
 it('gives a network error', () => {
   const fetch = jest.fn().mockRejectedValue({message: 'Failed to fetch'})
-  const message = 'errors.networkUnavailable'
-
   expect.assertions(1)
-  return expect(gateway.request('/path', {headers: {'Accept': 'application/json'}}, fetch)).rejects.toEqual({message})
+  return expect(gateway.request('/path', undefined, fetch)).rejects.toEqual({message: 'errors.networkUnavailable'})
 })
 
 describe('disabling form buttons on submit', () => {
