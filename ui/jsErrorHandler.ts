@@ -1,14 +1,11 @@
 import gateway from './api/Gateway'
 
-export default async function jsErrorHandler(message, source, line, column, error) {
-  try {
-    await gateway.post('/js-error', {
-      message, source, line, column,
-      href: location.href,
-      userAgent: navigator.userAgent,
-      stack: error?.stack
-    })
-  } catch (e) {
-    console.error(e)
-  }
+export default function jsErrorHandler(message, source, line, column, error) {
+  gateway.post('/js-error', {
+    message, source, line, column,
+    href: location.href,
+    userAgent: navigator.userAgent,
+    stack: error?.stack
+  }).catch(e => console.error(e))
+  alert('Technical error occurred, you will need to reload the page:\n' + message)
 }
