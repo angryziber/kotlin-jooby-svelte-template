@@ -16,7 +16,7 @@ class Session {
   }
 
   set user(user: User|null) {
-    if (user) Object.setPrototypeOf(user, new User())
+    if (user) Object.setPrototypeOf(user, User.prototype)
     this.userStore.set(user)
   }
 
@@ -30,7 +30,7 @@ const session = new Session()
 export default session
 export const user = session.userStore
 
-export async function finishLogin(user, page?) {
+export async function finishLogin(user: User, page?: string) {
   session.user = user
   router.navigateTo(page || user.role)
 }
