@@ -6,31 +6,25 @@
   export let show = true
   export let modalClass = ''
   export let flyParams = {y: -500}
-  export let squashFooter = false
-  let backdrop
+  let backdrop, modal
 
   $: if (backdrop) document.body.appendChild(backdrop)
+  $: if (modal) document.body.appendChild(modal)
 
   $: {
-    if (show) {
+    if (show)
       document.body.classList.add('modal-open')
-      squashFooter && moveElementsFromFooterSlotToParent()
-    }
     else
       document.body.classList.remove('modal-open')
   }
 
-  onDestroy(() => document.body.classList.remove('modal-open'))
-
-  function moveElementsFromFooterSlotToParent() {
-    const footer = document.querySelector('[slot="footer"]')
-    if (footer) {
-      const parent = footer.parentElement
-      while (footer.childNodes.length > 0) {
-        parent.appendChild(footer.childNodes[0])
-      }
-    }
-  }
+  onDestroy(() => {
+    document.body.classList.remove('modal-open')
+    setTimeout(() => {
+      if (backdrop) backdrop.remove()
+      if (modal) modal.remove()
+    })
+  })
 
   function close() {
     show = false
@@ -54,7 +48,7 @@
 <svelte:window on:keyup={onKeyUp}/>
 
 {#if show}
-  <div class="modal" tabindex="-1" role="dialog">
+  <div bind:this={modal} class="modal" tabindex="-1" role="dialog">
     <div class="modal-dialog {modalClass}" role="document" transition:fly={flyParams}>
       <div class="modal-content">
         <div class="modal-header">
@@ -67,9 +61,7 @@
         <div class="modal-body">
           <slot/>
         </div>
-        <div class="modal-footer">
-          <slot name="footer"/>
-        </div>
+        <slot name="footer"/>
       </div>
     </div>
   </div>

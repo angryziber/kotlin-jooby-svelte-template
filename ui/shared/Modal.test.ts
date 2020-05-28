@@ -22,7 +22,7 @@ test('Modal is shown', (done) => {
 })
 
 test('body.modal-open is added on show and removed on destroy', () => {
-  const {container, component} = render(Modal, {title: 'Title', show: true, flyParams: {duration: 0}})
+  const {component} = render(Modal, {title: 'Title', show: true, flyParams: {duration: 0}})
   expect(document.body).toHaveClass('modal-open')
   component.$destroy()
   expect(document.body).not.toHaveClass('modal-open')
