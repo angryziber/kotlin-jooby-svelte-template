@@ -11,6 +11,29 @@ describe('Array extensions', () => {
     expect([].last()).toBe(undefined)
   })
 
+  test('sum', () => {
+    expect([1, 2].sum()).toBe(3)
+    expect([{x: 1}, {x: 2}].sum(e => e.x)).toBe(3)
+  })
+
+  test('max', () => {
+    expect([1, 3, 5].max()).toBe(5)
+    expect([{x: 1}, {x: 10}, {x: 5}].max(e => e.x)).toBe(10)
+    expect([].max()).toBe(undefined)
+    expect([].max(e => e.x)).toBe(undefined)
+  })
+
+  test('min', () => {
+    expect([1, 3, 5].min()).toBe(1)
+    expect([{x: -10}, {x: 10}, {x: 5}].min(e => e.x)).toBe(-10)
+    expect([].min()).toBe(undefined)
+    expect([].min(e => e.x)).toBe(undefined)
+  })
+
+  test('groupBy', () => {
+    expect([{x: 10}, {x: 10}, {x: 5}].groupBy(e => e.x, (r, e) => r + e.x, 0)).toEqual({'10': 20, '5': 5})
+  })
+
   test('iteration', () => {
     const a = ['x']
     // for (let i in a) expect(i).toBe('0') - old-school iteration is broken
