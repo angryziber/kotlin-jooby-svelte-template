@@ -42,6 +42,7 @@
     "technical": "Technical error, please try again",
     "networkUnavailable": "Cannot connect to the server, please try again later",
     "notJson": "Communication with server is blocked, please check your network connection",
+    "apiVersionMismatch": "Server has been updated, will reload the page to ensure compatibility",
     "upgradeLegacyEdgeBrowser": "You are using a legacy version of Microsoft Edge browser, which is not supported. For all features to work properly, please <a href='https://microsoft.com/edge'>upgrade to the new Edge</a>.",
     "unsupportedIEBrowser": "You are using Internet Explorer, which was released in 2013 and doesn't support all the latest web standards that make this app work. Please upgrade to a modern web browser, like Chrome, Firefox or <a href='https://microsoft.com/edge'>the new Microsoft Edge</a>."
   }
