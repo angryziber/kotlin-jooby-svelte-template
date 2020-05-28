@@ -1,5 +1,6 @@
 <script>
   import {onMount, onDestroy} from 'svelte'
+  import jsErrorHandler from './jsErrorHandler'
   import router from './routing/Router'
   import session, {user} from './auth/Session'
   import {showToast} from './shared/toastStore'
@@ -26,19 +27,21 @@
 
   function handleError(e) {
     console.error(e)
-    let error = e.message
-    if (!error) {
-      if (e.reason.message) {
-        error = $_(e.reason.message)
-        if (e.reason.message === 'errors.apiVersionMismatch') {
-          alert(error)
-          return location.reload()
-        }
-      }
-      else error = $_('errors.technical') + ': ' + e.reason
+    if (e.reason.stack) {
+      jsErrorHandler(e.reason.message, undefined, undefined, undefined, e.reason)
+      return
     }
+    let error = e.reason.message
+    if (error) {
+      if (error === 'errors.apiVersionMismatch') {
+        alert(error)
+        return location.reload()
+      }
+      error = $_(e.reason.message)
+    }
+    else error = $_('errors.technical') + ': ' + e.reason
     showToast(error, {type: 'danger'})
-    if (e.reason && e.reason.statusCode === 403)
+    if (e.reason.statusCode === 403)
       setTimeout(() => router.navigateWithReload('/logout'), 1000)
   }
 

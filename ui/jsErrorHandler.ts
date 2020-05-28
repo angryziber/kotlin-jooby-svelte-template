@@ -7,5 +7,5 @@ export default function jsErrorHandler(message, source, line, column, error) {
     userAgent: navigator.userAgent,
     stack: error?.stack
   }).catch(e => console.error(e))
-  alert('Technical error occurred, you will need to reload the page:\n' + message)
+  alert('Technical error occurred, please reload the page:\n' + message)
 }
