@@ -28,7 +28,14 @@
     console.error(e)
     let error = e.message
     if (!error) {
-      error = e.reason.message ? $_(e.reason.message) : $_('errors.technical') + ': ' + e.reason
+      if (e.reason.message) {
+        error = $_(e.reason.message)
+        if (e.reason.message === 'errors.apiVersionMismatch') {
+          alert(error)
+          return location.reload()
+        }
+      }
+      else error = $_('errors.technical') + ': ' + e.reason
     }
     showToast(error, {type: 'danger'})
     if (e.reason && e.reason.statusCode === 403)

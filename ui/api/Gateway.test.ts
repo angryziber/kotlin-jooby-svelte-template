@@ -1,7 +1,9 @@
 import gateway, {headers} from './Gateway'
 
+const mockResponse = {status: 200, headers: {get: () => undefined}, json: () => 'data'}
+
 it('extracts json', async () => {
-  const fetch = jest.fn().mockResolvedValue({json: () => 'data'})
+  const fetch = jest.fn().mockResolvedValue(mockResponse)
   const promise = gateway.request('/path', {body: {data: 'data'}}, fetch)
   expect(document.documentElement.classList.contains('loading')).toBe(true)
   expect(await promise).toBe('data')
@@ -9,14 +11,22 @@ it('extracts json', async () => {
   expect(document.documentElement.classList.contains('loading')).toBe(false)
 })
 
+it('errors on api version mismatch', () => {
+  window['apiVersion'] = '2.3'
+  const fetch = jest.fn().mockResolvedValue({...mockResponse, headers: {get: () => '2.2'}})
+  const promise = gateway.request('/path', {body: {data: 'data'}}, fetch)
+  window['apiVersion'] = undefined
+  return expect(promise).rejects.toEqual({message: 'errors.apiVersionMismatch'})
+})
+
 it('supports null json response', async () => {
-  const fetch = jest.fn().mockResolvedValue({json: () => null})
+  const fetch = jest.fn().mockResolvedValue({...mockResponse, json: () => null})
   const promise = gateway.request('/path', {body: {data: 'data'}}, fetch)
   expect(await promise).toBe(null)
 })
 
 it('supports No Content response', async () => {
-  const fetch = jest.fn().mockResolvedValue({status: 204})
+  const fetch = jest.fn().mockResolvedValue({...mockResponse, status: 204})
   const promise = gateway.request('/path', {body: {data: 'data'}}, fetch)
   expect(await promise).toBe(undefined)
 })
@@ -70,7 +80,7 @@ describe('disabling form buttons on submit', () => {
   let fetch
 
   beforeEach(() => {
-    fetch = jest.fn().mockResolvedValue({json: () => 'data'})
+    fetch = jest.fn().mockResolvedValue(mockResponse)
 
     form = document.createElement('form')
     button = document.createElement('button')

@@ -28,12 +28,14 @@ class Gateway {
     if (response.status < 200 || response.status >= 400) {
       data.message = data.message || data.reason
       throw data
+    } else if (response.headers.get('x-api-version') !== window['apiVersion']) {
+      throw {message: 'errors.apiVersionMismatch'}
     }
     return data
   }
 
   private handleFetchFailure(error) {
-    if (error.message === 'Failed to fetch') throw {message: 'errors.networkUnavailable'}
+    if (error.message === 'Failed to fetch' || error.errno) throw {message: 'errors.networkUnavailable'}
     else throw error
   }
 
