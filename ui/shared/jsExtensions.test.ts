@@ -31,6 +31,7 @@ describe('Array extensions', () => {
   })
 
   test('groupBy', () => {
+    expect([{x: 10}, {x: 5}].groupBy(e => e.x)).toEqual({10: {x:10}, 5: {x: 5}})
     expect([{x: 10}, {x: 10}, {x: 5}].groupBy(e => e.x, (r, e) => r + e.x, 0)).toEqual({'10': 20, '5': 5})
   })
 

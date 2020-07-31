@@ -5,7 +5,7 @@ interface Array<T> {
   sum(by?: (T) => number): number
   max<R>(by?: (T) => R): R
   min<R>(by?: (T) => R): R
-  groupBy<R>(by: (T) => string|number, combiner: (r, t: T) => R, initial?: R): {[by: string]: R}
+  groupBy<R>(by: (T) => string|number, combiner?: (r, t: T) => R, initial?: R): {[by: string]: R}
 }
 
 Array.prototype.first = function() {return this[0]}
@@ -22,7 +22,7 @@ Array.prototype.min = function(by = v => v) {return this.reduce((r, e) => {
   return v < r ? v : r
 }, this.length ? by(this.first()) : undefined)}
 
-Array.prototype.groupBy = function(by, combiner, initial) {return this.reduce((r, e) => {
+Array.prototype.groupBy = function(by, combiner = (r, e) => e, initial) {return this.reduce((r, e) => {
   const v = by(e)
   r[v] = combiner(r[v] ?? initial, e)
   return r
