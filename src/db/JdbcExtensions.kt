@@ -2,8 +2,8 @@ package db
 
 import java.sql.PreparedStatement
 import java.sql.ResultSet
-import java.sql.Timestamp
 import java.time.Instant
+import java.time.Period
 import java.time.ZoneOffset.UTC
 import java.util.*
 import javax.sql.DataSource
@@ -28,7 +28,7 @@ fun DataSource.exec(query: String, values: List<Any>? = null): Int = withConnect
 fun <R> DataSource.query(table: String, where: Map<String, Any?>, mapper: ResultSet.() -> R): List<R> = query(table, where, "", mapper)
 
 fun <R> DataSource.query(table: String, where: Map<String, Any?>, suffix: String, mapper: ResultSet.() -> R): List<R> =
-    select("select * from $table", where, suffix, mapper)
+  select("select * from $table", where, suffix, mapper)
 
 fun <R> DataSource.select(select: String, where: Map<String, Any?>, mapper: ResultSet.() -> R) = select(select, where, "", mapper)
 
@@ -77,7 +77,6 @@ private fun whereExpr(k: String, v: Any?) = when(v) {
 
 operator fun PreparedStatement.set(i: Int, value: Any?): Unit = when (value) {
   is SqlOperator -> set(i, value.value)
-  is Instant -> setTimestamp(i, Timestamp.from(value))
   else -> setObject(i, value)
 }
 
@@ -95,11 +94,17 @@ private fun dbSafe(v: Any?): Any? = when(v) {
   is Enum<*> -> v.name
   is UUID -> v.toString()
   is Instant -> v.atOffset(UTC)
+  is Period -> v.toString()
   else -> v
 }
 
 fun ResultSet.getInstant(column: String) = getTimestamp(column).toInstant()
 fun ResultSet.getInstantNullable(column: String) = getTimestamp(column)?.toInstant()
+
+fun ResultSet.getLocalDate(column: String) = getDate(column).toLocalDate()
+fun ResultSet.getLocalDateNullable(column: String) = getDate(column)?.toLocalDate()
+fun ResultSet.getPeriod(column: String) = Period.parse(getString(column))
+fun ResultSet.getPeriodNullable(column: String) = getString(column)?.let { Period.parse(it) }
 
 fun ResultSet.getId(column: String = "id") = UUID.fromString(getString(column))
 fun ResultSet.getIdNullable(column: String) = getString(column)?.let { UUID.fromString(it) }

@@ -2,11 +2,10 @@ package db
 
 import com.zaxxer.hikari.util.DriverDataSource
 import db.DBModule.Companion.testDBUrl
+import org.junit.jupiter.api.extension.AfterEachCallback
+import org.junit.jupiter.api.extension.BeforeEachCallback
 import org.junit.jupiter.api.extension.ExtensionContext
-import org.junit.jupiter.api.extension.InvocationInterceptor
-import org.junit.jupiter.api.extension.ReflectiveInvocationContext
 import org.junit.jupiter.api.extension.RegisterExtension
-import java.lang.reflect.Method
 import java.util.*
 
 abstract class BaseIntegrationTest {
@@ -17,11 +16,13 @@ abstract class BaseIntegrationTest {
   @RegisterExtension @JvmField @Suppress("unused")
   val autoRollback = InTransactionRunner()
 
-  class InTransactionRunner: InvocationInterceptor {
-    override fun interceptTestMethod(invocation: InvocationInterceptor.Invocation<Void>?, invocationContext: ReflectiveInvocationContext<Method>?, extensionContext: ExtensionContext?) {
-      db.withTransaction(rollbackOnly = true) {
-        invocation!!.proceed()
-      }
+  class InTransactionRunner: BeforeEachCallback, AfterEachCallback {
+    override fun beforeEach(context: ExtensionContext?) {
+      Transaction(db)
+    }
+
+    override fun afterEach(context: ExtensionContext?) {
+      Transaction.current()!!.close(commit = false)
     }
   }
 }

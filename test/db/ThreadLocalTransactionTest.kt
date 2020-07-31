@@ -5,26 +5,25 @@ import io.mockk.mockk
 import io.mockk.verify
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.assertThrows
 
 class ThreadLocalTransactionTest {
   val db = mockk<DriverDataSource>(relaxed = true)
 
   @Test
   fun `transaction does not open connection at start`() {
-    db.withTransaction {
-      // no db access here
-    }
+    val tx = Transaction(db)
+    verify(exactly = 0) { db.connection }
+    tx.close(true)
     verify(exactly = 0) { db.connection }
   }
 
   @Test
   fun `transaction creates and reuses connection on demand`() {
-    db.withTransaction {
-      val conn = db.withConnection { this }
-      assertThat(db.withConnection { this }).isSameAs(conn)
-      verify { conn.autoCommit = false }
-    }
+    val tx = Transaction(db)
+    val conn = db.withConnection { this }
+    assertThat(db.withConnection { this }).isSameAs(conn)
+    verify { conn.autoCommit = false }
+    tx.close(true)
     verify(exactly = 1) {
       db.connection.apply {
         commit()
@@ -36,29 +35,12 @@ class ThreadLocalTransactionTest {
 
   @Test
   fun `transaction with rollbackOnly rolls back`() {
-    db.withTransaction(rollbackOnly = true) {
-      val conn = db.withConnection { this }
-      verify { conn.autoCommit = false }
-    }
+    val tx = Transaction(db)
+    val conn = db.withConnection { this }
+    verify { conn.autoCommit = false }
+    tx.close(false)
     verify(exactly = 1) {
       db.connection.apply {
-        rollback()
-        autoCommit = true
-        close()
-      }
-    }
-  }
-
-  @Test
-  fun `transaction rolls back on exception`() {
-    assertThrows<RuntimeException> {
-      db.withTransaction {
-        db.withConnection { throw RuntimeException() }
-      }
-    }
-    verify(exactly = 1) {
-      db.connection.apply {
-        autoCommit = false
         rollback()
         autoCommit = true
         close()

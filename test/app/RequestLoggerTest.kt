@@ -1,9 +1,8 @@
 package app
 
 import auth.User
-import com.zaxxer.hikari.util.DriverDataSource
-import db.withConnection
-import io.jooby.*
+import io.jooby.Context
+import io.jooby.Route
 import io.jooby.StatusCode.ACCEPTED
 import io.mockk.every
 import io.mockk.mockk
@@ -13,9 +12,8 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.slf4j.Logger
 import org.slf4j.MDC
-import javax.sql.DataSource
 
-class RequestDecoratorTest {
+class RequestLoggerTest {
   val ctx = mockk<Context>(relaxed = true) {
     every { remoteAddress } returns "127.0.0.13"
     every { method } returns "GET"
@@ -32,46 +30,34 @@ class RequestDecoratorTest {
   }
 
   val requestLog = mockk<Logger>(relaxed = true)
-  val handler = RequestDecorator(requestLog)
 
-  @Test
-  fun `decorator starts transaction and preserves return value`() {
-    val decorator = slot<DecoratorContext.() -> Any>()
-    val app = mockk<Kooby>(relaxed = true)
-    val db = mockk<DriverDataSource>(relaxed = true)
-    every { app.require<DataSource>() } returns db
-    handler.install(app)
-    verify { app.decorator(capture(decorator)) }
-
-    val next = mockk<Route.Handler> {
-      every { apply(ctx) } answers {
-        db.withConnection { }
-        db.withConnection { }
-        "Result"
-      }
-    }
-    assertThat(decorator.captured.invoke(DecoratorContext(ctx, next))).isEqualTo("Result")
-    verify(exactly = 1) { db.connection }
-  }
-
-  @Test
-  fun `canonical host is enforced`() {
-    assertThat(handler.checkHost(ctx,  true, "app.ee")).isInstanceOf(Context::class.java)
-    verify { ctx.sendRedirect("https://app.ee/path?q=hello") }
-  }
+  val handler = RequestLogger(requestLog)
 
   @Test
   fun `successful request log without proxy`() {
     every { ctx.requestId } returns "r-id"
-    handler.runWithLogging(ctx) {
-      assertThat(MDC.get("requestId")).endsWith("r-id")
-    }
+    handler.logOnComplete(ctx)
+    assertThat(MDC.get("requestId")).endsWith("r-id")
     runCompleteHandler()
 
-    verify { requestLog.info(match { it.matches(
-      """USER:${TestData.user.id} 127.0.0.13 "GET /path\?q=hello" 202 12345 \d+ ms http://referrer "User-Agent"""".toRegex()
-    )})}
+    val user = TestData.user
+    verify {
+      requestLog.info(match { it.matches(
+        """USER:${user.id} "GET /path\?q=hello" 202 12345 \d+ ms http://referrer "User-Agent"""".toRegex()
+      )})
+    }
     assertThat(MDC.get("requestId")).isNull()
+  }
+
+  @Test
+  fun `removes userIdHash from path`() {
+    every { ctx.requestPath } returns "/api/1234567/endpoint"
+    every { ctx.path("userIdHash").valueOrNull() } returns "1234567"
+    handler.logOnComplete(ctx)
+    runCompleteHandler()
+    verify {
+      requestLog.info(match { it.contains("GET /api/***/endpoint?q=hello") })
+    }
   }
 
   private fun runCompleteHandler() {

@@ -44,7 +44,7 @@ repositories {
   jcenter()
 }
 
-val joobyVersion = "2.8.1"
+val joobyVersion = "2.8.9"
 
 dependencies {
   kapt("io.jooby:jooby-apt:$joobyVersion")

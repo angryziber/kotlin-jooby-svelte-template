@@ -4,6 +4,8 @@ import auth.AuthController
 import auth.AuthModule
 import auth.FakeLoginForTestingController
 import auth.User
+import com.fasterxml.jackson.annotation.JsonInclude.Include.NON_NULL
+import com.fasterxml.jackson.databind.DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES
 import com.fasterxml.jackson.databind.SerializationFeature.WRITE_DATES_AS_TIMESTAMPS
 import com.fasterxml.jackson.module.kotlin.KotlinModule
 import com.mitchellbosecke.pebble.loader.ClasspathLoader
@@ -25,11 +27,12 @@ class App: Kooby({
   decorator(HeadHandler())
   registry(AutoCreatingServiceRegistry(services))
   install(DBModule())
-  install(JacksonModule(JacksonModule.create().disable(WRITE_DATES_AS_TIMESTAMPS).registerModule(KotlinModule())))
+  install(JacksonModule(JacksonModule.create().disable(WRITE_DATES_AS_TIMESTAMPS).setSerializationInclusion(NON_NULL).configure(FAIL_ON_UNKNOWN_PROPERTIES, false).registerModule(KotlinModule())))
   val pebbleLoader = if (environment.isDev) FileLoader().apply { prefix = "ui/static" } else ClasspathLoader()
   install(PebbleModule(PebbleModule.create().setTemplateLoader(pebbleLoader).build(environment)))
+  install(RequestLogger())
   install(ExceptionHandler())
-  install(RequestDecorator())
+  install(RequestTransactionHandler())
   install(AuthModule())
 
   registerServicesAndControllers()

@@ -5,47 +5,46 @@ import java.sql.SQLException
 import javax.sql.DataSource
 
 class Transaction(private val db: DataSource) {
+  companion object {
+    private val threadContext = ThreadLocal<Transaction>()
+    fun current(): Transaction? = threadContext.get()
+  }
+
   private var conn: Connection? = null
+
+  init {
+    if (current() != null) throw IllegalStateException("tx is already active")
+    threadContext.set(this)
+  }
 
   val connection: Connection
     get() = conn ?: db.connection.also { it.autoCommit = false; conn = it }
 
   fun close(commit: Boolean) {
-    conn?.apply {
-      if (commit) commit() else rollback()
-      autoCommit = true
-      close()
+    try {
+      conn?.apply {
+        if (commit) commit() else rollback()
+        autoCommit = true
+        close()
+      }
+    } finally {
+      conn = null
+      detachFromThread()
     }
-    conn = null
+  }
+
+  fun detachFromThread() {
+    threadContext.remove()
   }
 }
 
-private val threadContext = ThreadLocal<Transaction>()
-
 fun <R> DataSource.withConnection(block: Connection.() -> R): R {
-  val tx = threadContext.get()
+  val tx = Transaction.current()
   try {
     return if (tx != null) tx.connection.block()
     else connection.use(block)
   }
   catch (e: SQLException) {
     throw if (e.message?.contains("unique constraint") == true) AlreadyExistsException(e) else e
-  }
-}
-
-fun <R> DataSource.withTransaction(rollbackOnly: Boolean = false, block: () -> R): R {
-  if (threadContext.get() != null) throw IllegalStateException("tx is already active")
-  val tx = Transaction(this)
-  try {
-    threadContext.set(tx)
-    return block()
-  }
-  catch (e: Exception) {
-    tx.close(false)
-    throw e
-  }
-  finally {
-    tx.close(!rollbackOnly)
-    threadContext.remove()
   }
 }
