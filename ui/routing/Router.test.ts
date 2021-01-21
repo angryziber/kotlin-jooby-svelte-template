@@ -1,14 +1,17 @@
 import router from './Router'
 
 describe('router', () => {
+  it('empty path', () => {
+    expect(router.currentPage('/')).toBe('')
+    expect(router.currentPage('/en/app/')).toBe('')
+  })
+
   it('extracts current page path', () => {
-    const path = '/en/app/login/'
-    expect(router.currentPage(path)).toBe('login/')
+    expect(router.currentPage('/en/app/login/')).toBe('login/')
   })
 
   it('extracts nested paths', () => {
-    const path = '/en/app/admin/myapp/tags/'
-    expect(router.currentPage(path)).toBe('admin/myapp/tags/')
+    expect(router.currentPage('/en/app/admin/myapp/tags/')).toBe('admin/myapp/tags/')
   })
 
   it('fires "popstate" event', () => {
@@ -25,16 +28,16 @@ describe('router', () => {
   })
 
   it('keeps /app/ prefix when navigating', () => {
-    history.pushState(null, '', '/app/login/')
+    history.pushState(null, '', '/en/app/login/')
 
     const push = spyOn(history, 'pushState')
     router.navigateTo('admin/myapp/tags')
 
-    expect(push).toHaveBeenCalledWith(null, '', '/app/admin/myapp/tags')
+    expect(push).toHaveBeenCalledWith(null, '', '/en/app/admin/myapp/tags')
   })
 
   it('generates full url', () => {
-    expect(router.fullUrl('user/blah', 'https://app.ee/en/app/some/page')).toBe('https://app.ee/en/app/user/blah')
+    expect(router.fullUrl('user/blah', 'https://anonima.jp')).toBe('https://anonima.jp/en/app/user/blah')
   })
 })
 

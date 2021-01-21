@@ -1,3 +1,5 @@
+import {get} from 'svelte/store'
+import {lang} from '@ui/i18n'
 class Router {
   interceptHrefs() {
     document.addEventListener('click', this.handleGlobalClick)
@@ -13,7 +15,7 @@ class Router {
   }
 
   currentPage(path: string): string {
-    return path.replace(/^.*?\/app\//, '')
+    return path.replace(/^\/(.*?\/app\/)?/, '')
   }
 
   matches(pattern: string, page: string): object|false {
@@ -33,12 +35,16 @@ class Router {
     return params
   }
 
-  fullUrl(page: string, href = location.href): string {
-    return href.replace(/\/app\/.*$/, '/app/') + page
+  fullUrl(page: string, origin = location.origin): string {
+    return origin + this.fullPath(page)
+  }
+
+  fullPath(page: string): string {
+    return `/${get(lang)}/app/${page}`
   }
 
   navigateTo(page: string, options = {replaceHistory: false}) {
-    const fullPath = this.fullUrl(page, location.pathname)
+    const fullPath = this.fullPath(page)
     if (options.replaceHistory) history.replaceState(null, '', fullPath)
     else history.pushState(null, '', fullPath)
     window.dispatchEvent(new Event('popstate'))

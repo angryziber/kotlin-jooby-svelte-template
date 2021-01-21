@@ -1,19 +1,21 @@
 import './assets/scss/main.scss'
-import * as i18n from './i18n'
 import router from './routing/Router'
 import App from './App.svelte'
 import jsErrorHandler from './jsErrorHandler'
-import './shared/jsExtensions'
+import './shared/ArrayExtensions'
 
-i18n.init()
 router.interceptHrefs()
 window.onerror = jsErrorHandler
 
-const app = new App({
-	target: document.getElementById('app')!,
-	props: {
-		initialUser: window['initialUser']
-	}
-})
+const app = new App({target: document.getElementById('app')!})
 
 export default app
+
+// Hot Module Replacement (HMR) - Remove this snippet to remove HMR.
+// Learn more: https://www.snowpack.dev/#hot-module-replacement
+if (import.meta['hot']) {
+	import.meta['hot'].accept()
+	import.meta['hot'].dispose(() => {
+		app.$destroy()
+	})
+}

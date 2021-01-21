@@ -1,11 +1,9 @@
-import * as i18n from './i18n'
-import './shared/jsExtensions'
-
-i18n.init()
+import './shared/ArrayExtensions'
 
 window.fetch = jest.fn().mockReturnValue(new Promise(() => {}))
 
-beforeEach(() => jest.clearAllTimers())
+window['scrollTo'] = jest.fn()
+window['config'] = {}
 
 process.on('unhandledRejection', e => {
   throw e
