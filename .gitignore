@@ -1,10 +1,9 @@
 /logs/
 /node_modules/
-/public/build/
+/public/css/
 /out
 /tmp
 /build/
 /.gradle/
-/.rpt2_cache/
 
 .DS_Store
