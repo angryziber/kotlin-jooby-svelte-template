@@ -39,6 +39,8 @@ RUN mkdir logs tmp; chown -R user logs tmp
 # Run under non-privileged user with minimal write permissions
 USER user
 
+ENV API_VERSION=1
+
 # Fit into Heroku's 512m total limit
 ENV JAVA_OPTS="-Xmx330m -Xss512k"
 CMD bin/app
