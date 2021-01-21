@@ -8,7 +8,8 @@
   <title>{% block title %}{% endblock %} {{title}}</title>
 
   <link rel="icon" type="image/png" href="/favicon.ico">
-  <link rel="stylesheet" href="/build/bundle.css?{{ assetsTime }}">
+  <link rel="stylesheet" href="/css/main.css?{{ assetsTime }}">
+  <link rel="stylesheet" href="/css/_dist_/ui/main.css?{{ assetsTime }}">
 
   {% block head %}{% endblock %}
 

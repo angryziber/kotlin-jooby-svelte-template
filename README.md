@@ -8,8 +8,8 @@ For people asking me at conferences what would I recommend from technical perspe
     * Liquibase migrates the DB
     * Server unit tests use Junit5/Mockk
     * Repository integration tests run in in-memory H2 DB to avoid any dependencies
-* UI is built with Svelte + Rollup with TypeScript support
-    * UI tests use Jest and TypeScript (there is no IDE support for Svelte+TS yet)
+* UI is built with Svelte + Snowpack with TypeScript support
+    * UI tests use Jest and TypeScript
 * E2E tests use Selenide to drive the actual browser backed by H2 DB
 
 ## Noteworthy features

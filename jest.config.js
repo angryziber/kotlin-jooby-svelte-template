@@ -7,23 +7,23 @@ module.exports = {
   },
   preset: 'ts-jest',
   testMatch: [
-    '**/ui/**/*.test.ts'
+    '**/{ui,i18n}/**/*.test.ts'
   ],
   transform: {
-    '\\.svelte$': ['svelte-jester', {preprocess: true}],
-    'node_modules/.+\\.js$': 'babel-jest'
+    '\\.svelte$': ['svelte-jester', {preprocess: true}]
   },
-  moduleFileExtensions: ['js', 'ts', 'svelte'],
+  moduleNameMapper: {
+    "^@ui(.*)$": "<rootDir>/ui$1",
+  },
+  moduleFileExtensions: ['js', 'ts', 'd.ts', 'svelte'],
   setupFilesAfterEnv: [
     '@testing-library/jest-dom/extend-expect',
     './ui/setup-tests.ts'
   ],
   restoreMocks: true,
   reporters: [ 'default', ['jest-junit', {
-    suiteName: 'UI tests',
-    suiteNameTemplate: '{filename}',
-    classNameTemplate: '{classname}',
-    titleTemplate: '{title}',
-    outputDirectory: 'build/test-results/ui',
+    suiteNameTemplate: "{filepath}",
+    titleTemplate: "{title}",
+    outputDirectory: 'build/test-results/ui'
   }]],
 }

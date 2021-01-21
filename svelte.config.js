@@ -1,6 +1,6 @@
 const preprocess = {
   script(input) {
-    input.content = `import { _, locale, format } from 'svelte-i18n'\n` + input.content;
+    input.content = `import {_, formatDate, formatDateTime} from '@ui/i18n'\n` + input.content;
     return {code: input.content}
   }
 };
