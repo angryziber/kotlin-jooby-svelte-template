@@ -37,8 +37,7 @@ class App: Kooby({
   install(AuthModule())
 
   val apiVersion = System.getenv("API_VERSION") ?: "%API_VERSION%"
-  val uiConfigJson = require<ObjectMapper>().writeValueAsString(
-    config.getConfig("ui").entrySet().map { e -> e.key to e.value.unwrapped() }.toMap() + ("apiVersion" to apiVersion))
+  val uiConfigJson = require<ObjectMapper>().writeValueAsString(mapOf("apiVersion" to apiVersion))
 
   before {
     ctx.setResponseHeader("x-api-version", apiVersion)
