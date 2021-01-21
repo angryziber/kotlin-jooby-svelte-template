@@ -39,7 +39,7 @@ class App: Kooby({
 
   val assetsDir = File("public")
   val assetsDirModified = assetsDir.lastModified()
-  val assetsTime = if (environment.isDev) {{ File(assetsDir, "build").listFiles()!!.map { it.lastModified() }.max() }}
+  val assetsTime = if (environment.isDev) {{ File(assetsDir, "build").listFiles()!!.map { it.lastModified() }.maxOrNull() }}
                    else {{ assetsDirModified }}
 
   val devRollupLivereload = if (environment.isDev) "http://localhost:35729 ws://localhost:35729" else ""

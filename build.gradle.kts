@@ -44,7 +44,7 @@ repositories {
   jcenter()
 }
 
-val joobyVersion = "2.8.9"
+val joobyVersion = "2.9.5"
 
 dependencies {
   kapt("io.jooby:jooby-apt:$joobyVersion")
@@ -58,7 +58,7 @@ dependencies {
   implementation("io.jooby:jooby-pebble:$joobyVersion")
   implementation("io.jooby:jooby-jackson:$joobyVersion")
   implementation("io.jooby:jooby-hikari:$joobyVersion")
-  implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.10.2")
+  implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.12.0")
   implementation("ch.qos.logback:logback-classic:1.2.3")
   implementation("org.liquibase:liquibase-core:3.8.5")
   implementation("org.postgresql:postgresql:42.2.9")
