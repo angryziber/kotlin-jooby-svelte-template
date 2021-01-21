@@ -6,6 +6,7 @@ import auth.FakeLoginForTestingController
 import auth.User
 import com.fasterxml.jackson.annotation.JsonInclude.Include.NON_NULL
 import com.fasterxml.jackson.databind.DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES
+import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.SerializationFeature.WRITE_DATES_AS_TIMESTAMPS
 import com.fasterxml.jackson.module.kotlin.KotlinModule
 import com.mitchellbosecke.pebble.loader.ClasspathLoader
@@ -13,7 +14,7 @@ import com.mitchellbosecke.pebble.loader.FileLoader
 import com.typesafe.config.Config
 import db.DBModule
 import io.jooby.*
-import io.jooby.exception.NotFoundException
+import io.jooby.StatusCode.MOVED_PERMANENTLY
 import io.jooby.json.JacksonModule
 import io.jooby.pebble.PebbleModule
 import org.slf4j.LoggerFactory.getLogger
@@ -35,12 +36,18 @@ class App: Kooby({
   install(RequestTransactionHandler())
   install(AuthModule())
 
+  val apiVersion = System.getenv("API_VERSION") ?: "%API_VERSION%"
+  val uiConfigJson = require<ObjectMapper>().writeValueAsString(
+    config.getConfig("ui").entrySet().map { e -> e.key to e.value.unwrapped() }.toMap() + ("apiVersion" to apiVersion))
+
+  before {
+    ctx.setResponseHeader("x-api-version", apiVersion)
+  }
+
   registerServicesAndControllers()
 
-  val assetsDir = File("public")
-  val assetsDirModified = assetsDir.lastModified()
-  val assetsTime = if (environment.isDev) {{ File(assetsDir, "build").listFiles()!!.map { it.lastModified() }.maxOrNull() }}
-                   else {{ assetsDirModified }}
+  val assetsDir = File("build/public").takeIf { it.exists() } ?: File("public")
+  val assetsTime = assetsDir.lastModified()
 
   val devRollupLivereload = if (environment.isDev) "http://localhost:35729 ws://localhost:35729" else ""
   val csp = "default-src 'self' 'unsafe-inline' $devRollupLivereload ${config.getString("csp.allowedExternalSrc")}; " +
@@ -64,15 +71,17 @@ class App: Kooby({
   get("/{lang:[a-z]{2}}/{page}/*") {
     val lang = ctx.path("lang").value()
     val page = ctx.path("page").value()
-    val translations = Lang.translations[lang] ?: throw NotFoundException(ctx.requestPath)
+    val translations = Lang.translations[lang] ?:
+      return@get ctx.sendRedirect(MOVED_PERMANENTLY, ctx.requestPath.replace("/$lang/", "/${Lang.lang(ctx)}/"))
     Lang.remember(ctx, lang)
     ctx.setResponseHeader("Content-Security-Policy", csp)
     ctx.setResponseHeader("X-Frame-Options", "SAMEORIGIN")
     if (environment.isHttps) ctx.setResponseHeader("Strict-Transport-Security", "max-age=31536000")
 
-    ModelAndView("pages/$page.peb", translations).put("assetsTime", assetsTime())
+    ModelAndView("pages/$page.peb", translations).put("assetsTime", assetsTime)
       .put("lang", lang).put("langs", Lang.available).put("envs", environment.activeNames)
-      .put("userJson", ctx.userJson()).put("globalWarning", ctx.warnLegacyBrowsers(translations))
+      .put("globalWarning", ctx.warnLegacyBrowsers(translations))
+      .put("configJson", uiConfigJson)
   }
 
   post("/js-error") {
