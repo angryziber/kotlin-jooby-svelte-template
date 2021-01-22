@@ -1,5 +1,6 @@
 import org.gradle.internal.deprecation.DeprecatableConfiguration
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+import java.io.ByteArrayOutputStream
 
 plugins {
   kotlin("jvm") version "1.4.21"
@@ -23,6 +24,25 @@ tasks.withType<KotlinCompile> {
     jvmTarget = "11"
     freeCompilerArgs = listOf("-Xjsr305=strict -progressive")
     javaParameters = true
+  }
+  finalizedBy("generateTSTypes")
+}
+
+val excludeClassNamesRegex = ".*(Service|Repository|Controller|Logger|Job|Module)\$"
+val packagesToGenerateTypesFor = "auth"
+
+tasks.register("generateTSTypes") {
+  dependsOn("classes")
+  doLast {
+    File("ui/api/types.ts").writeText(ByteArrayOutputStream().use { out ->
+      project.exec {
+        standardOutput = out
+        commandLine = """java -classpath ${sourceSets.main.get().runtimeClasspath.asPath}${File.pathSeparator}${sourceSets.main.get().compileClasspath.asPath}
+          jvm2dts.Main -exclude $excludeClassNamesRegex 
+          $packagesToGenerateTypesFor""".split("\\s+".toRegex())
+      }
+      out.toString()
+    })
   }
 }
 
@@ -70,6 +90,8 @@ dependencies {
   testImplementation("org.assertj:assertj-core:3.15.0")
   testImplementation("com.codeborne:selenide:5.10.0")
   runtimeOnly("com.h2database:h2:1.4.200")
+
+  compileOnly("com.codeborne:jvm2dts:1.1.3")
 }
 
 tasks.register("downloadDeps") {
