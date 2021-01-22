@@ -38,10 +38,8 @@ test('if translation fails it should return translation key', () => {
 
 test('ensureSupportedLang', () => {
   expect(ensureSupportedLang('en')).toBe('en')
-  expect(ensureSupportedLang('ja')).toBe('ja')
   expect(ensureSupportedLang('??')).toBe('en')
 })
-
 
 test('translate strings with plurals', () => {
   const key = 'bup.bap.plural.test'

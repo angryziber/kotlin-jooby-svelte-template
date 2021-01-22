@@ -29,6 +29,6 @@ test('datetime formatting', () => {
 })
 
 test('translate keys with special prefix', () => {
-  const key = 'i18n:tags.support.description'
-  expect(tryTranslate(key)).toBe($_('tags.support.description'))
+  const key = 'i18n:title'
+  expect(tryTranslate(key)).toBe($_('App Template'))
 })
