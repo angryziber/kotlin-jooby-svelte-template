@@ -19,6 +19,8 @@ For people asking me at conferences what would I recommend from technical perspe
 * [Internationalization](i18n) (both client-side and server-side)
 * Supports static server-side rendered pages using [Pebble templates](ui/static)
 * Selenide/Selenium tests work inside of Docker
+* Automatic TypeScript types from Kotlin classes in [UI API](ui/api/types.ts) 
+  (configurable in [Gradle build script](build.gradle.kts))
 
 No frameworks needed for this:
 
