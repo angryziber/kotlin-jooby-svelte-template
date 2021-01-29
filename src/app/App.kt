@@ -48,8 +48,7 @@ class App: Kooby({
   val assetsDir = File("build/public").takeIf { it.exists() } ?: File("public")
   val assetsTime = assetsDir.lastModified()
 
-  val devRollupLivereload = if (environment.isDev) "http://localhost:35729 ws://localhost:35729" else ""
-  val csp = "default-src 'self' 'unsafe-inline' $devRollupLivereload ${config.getString("csp.allowedExternalSrc")}; " +
+  val csp = "default-src 'self' 'unsafe-inline' ${config.getString("csp.allowedExternalSrc")}; " +
             "img-src 'self' data:; " +
             "report-uri /csp-report"
 
