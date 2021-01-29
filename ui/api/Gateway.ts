@@ -28,7 +28,7 @@ class Gateway {
     if (response.status < 200 || response.status >= 400) {
       data.message = data.message || data.reason
       throw data
-    } else if (response.headers.get('x-api-version') != window['apiVersion']) {
+    } else if (response.headers.get('x-api-version') != window['config']?.apiVersion) {
       throw {message: 'errors.apiVersionMismatch'}
     }
     return data
