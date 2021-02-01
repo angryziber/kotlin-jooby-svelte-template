@@ -1,11 +1,12 @@
-const preprocess = {
-  script(input) {
-    input.content = `import {_, formatDate, formatDateTime} from '@ui/i18n'\n` + input.content;
-    return {code: input.content}
+const sveltePreprocess = require('svelte-preprocess')
+
+const preprocess = sveltePreprocess({
+  javascript: {
+    prependData: `import {_, formatDate, formatDateTime} from '@ui/i18n'\n`
   }
-};
+})
 
 module.exports = {
   dev: process.env.NODE_ENV === 'development',
-  preprocess,
+  preprocess
 }
