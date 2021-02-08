@@ -1,13 +1,9 @@
 <script>
-  import {langs, rememberLang} from '@ui/i18n'
-
-  const onLanguageSelection = (e) => {
-    rememberLang(langs[e.target.selectedIndex])
-  }
+  import {lang, langs, rememberLang} from '@ui/i18n'
 </script>
 
-<div className="language-selection">
-  <select className="custom-control custom-select" on:change={onLanguageSelection}>
+<div class="language-selection">
+  <select class="custom-control custom-select" bind:value={$lang} on:change={e => rememberLang(e.target.value)}>
     {#each Object.keys($langs) as lang}
       <option value={lang}>{lang.toUpperCase()}</option>
     {/each}
