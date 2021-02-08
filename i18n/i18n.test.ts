@@ -59,3 +59,9 @@ test('translate template with plurals and regular substitution', () => {
   createEntry('en', key, 'Tere {username}! You have {n|one:# message|other:# messages} since {date}')
   expect(translate('en', key, {values: {n: 5, date: '2020/01/27', username: 'Piret'}})).toEqual('Tere Piret! You have 5 messages since 2020/01/27')
 })
+
+test('empty token', () => {
+  const key = 'messages.since'
+  createEntry('en', key, '{n|zero:|one:one|other:# messages}')
+  expect(translate('en', key, {values: {n: 0}})).toEqual('')
+})

@@ -16,7 +16,7 @@ export function translate(lang: string, key: string, options?: { values: object 
   }
 
   if (result && options?.values) result = replaceValues(lang, result, options.values)
-  return result || key
+  return result ?? key
 }
 
 function replaceValues(lang: string, text: string, values: object) {
