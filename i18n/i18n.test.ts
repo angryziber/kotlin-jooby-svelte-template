@@ -43,19 +43,19 @@ test('ensureSupportedLang', () => {
 
 test('translate strings with plurals', () => {
   const key = 'bup.bap.plural.test'
-  createEntry(
-    'en',
-    key,
-    'Testing {count|null:nothing|one:a single translation|other:# translations!}'
-  )
-  createEntry(
-    'en',
-    key + '2',
-    'Testing {count|null:nothing|one:a single translation|other:# translations but don\'t \#change this!}'
-  )
+  createEntry('en', key,
+    'Testing {count|zero:nothing|one:a single translation|other:# translations!}')
+  createEntry('en', key + '2',
+    'Testing {count|zero:nothing|one:a single translation|other:# translations but don\'t \#change this!}')
   expect(translate('en', key, {values: {count: 0}})).toBe("Testing nothing")
   expect(translate('en', key, {values: {count: 1}})).toBe("Testing a single translation")
   expect(translate('en', key, {values: {count: 5}})).toBe("Testing 5 translations!")
 
   expect(translate('en', key + '2', {values: {count: 12}})).toBe("Testing 12 translations but don't #change this!")
+})
+
+test('translate template with plurals and regular substitution', () => {
+  const key = 'messages.since'
+  createEntry('en', key, 'Tere {username}! You have {n|one:# message|other:# messages} since {date}')
+  expect(translate('en', key, {values: {n: 5, date: '2020/01/27', username: 'Piret'}})).toEqual('Tere Piret! You have 5 messages since 2020/01/27')
 })
