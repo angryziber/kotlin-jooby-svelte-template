@@ -50,7 +50,7 @@ class App: Kooby({
 
   val csp = "default-src 'self' 'unsafe-inline' ${config.getString("csp.allowedExternalSrc")}; " +
             "img-src 'self' data:; " +
-            "report-uri /csp-report"
+            "report-uri /api/csp-report"
 
   assets("/*", assetsDir.toPath())
 
@@ -82,11 +82,11 @@ class App: Kooby({
       .put("configJson", uiConfigJson)
   }
 
-  post("/js-error") {
+  post("/api/js-error") {
     getLogger("js-error").error(ctx.body().value())
   }
 
-  post("/csp-report") {
+  post("/api/csp-report") {
     getLogger("csp-report").warn(ctx.body().value())
   }
 })

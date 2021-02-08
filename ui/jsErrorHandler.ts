@@ -1,7 +1,7 @@
 import gateway from './api/Gateway'
 
 export default function jsErrorHandler(message, source, line, column, error) {
-  gateway.post('/js-error', {
+  gateway.post('/api/js-error', {
     message, source, line, column,
     href: location.href,
     userAgent: navigator.userAgent,
