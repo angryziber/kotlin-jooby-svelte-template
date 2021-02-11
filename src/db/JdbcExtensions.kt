@@ -2,11 +2,15 @@ package db
 
 import java.sql.PreparedStatement
 import java.sql.ResultSet
+import java.sql.Timestamp
 import java.time.Instant
 import java.time.Period
 import java.time.ZoneOffset.UTC
 import java.util.*
 import javax.sql.DataSource
+import kotlin.reflect.KType
+import kotlin.reflect.full.primaryConstructor
+import kotlin.reflect.jvm.jvmErasure
 
 fun DataSource.insert(table: String, values: Map<String, *>): Int = withConnection {
   val valuesByIndex = values.values.map { if (it is SelectMax) it.value else it }
@@ -82,19 +86,24 @@ operator fun PreparedStatement.set(i: Int, value: Any?): Unit = when (value) {
 
 fun PreparedStatement.set(values: Iterable<Any?>) = values
   .flatMap { it.toIterable() }
-  .forEachIndexed { i, v -> this[i + 1] = dbSafe(v) }
+  .forEachIndexed { i, v -> this[i + 1] = toDBType(v) }
 
 private fun Any?.toIterable(): Iterable<Any?> = when (this) {
-  is Array<*> -> toList<Any?>()
+  is Array<*> -> toList()
   is Iterable<*> -> this
   else -> listOf(this)
 }
 
-private fun dbSafe(v: Any?): Any? = when(v) {
+private fun toDBType(v: Any?): Any? = when(v) {
   is Enum<*> -> v.name
   is UUID -> v.toString()
   is Instant -> v.atOffset(UTC)
   is Period -> v.toString()
+  else -> v
+}
+
+fun fromDBType(v: Any?, type: KType): Any? = when(type.jvmErasure) {
+  Instant::class -> (v as Timestamp).toInstant()
   else -> v
 }
 
@@ -114,6 +123,10 @@ fun String.toId(): UUID = UUID.fromString(this)
 
 inline fun <reified T: Enum<T>> ResultSet.getEnum(column: String) = enumValueOf<T>(getString(column))
 inline fun <reified T: Enum<T>> ResultSet.getEnumNullable(column: String): T? = getString(column)?.let { enumValueOf<T>(it) }
+
+inline fun <reified T: Any> ResultSet.fromValues() = T::class.primaryConstructor!!.let { constructor ->
+  constructor.call(*constructor.parameters.map { fromDBType(getObject(it.name), it.type) }.toTypedArray())
+}
 
 data class SelectMax(val by: Pair<String, Any>) {
   fun sql(field: String, table: String) = "(select coalesce(max($field), 0) + 1 from $table where ${by.first} = ?)"
