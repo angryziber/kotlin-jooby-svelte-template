@@ -81,12 +81,12 @@ private fun whereExpr(k: String, v: Any?) = when(v) {
 
 operator fun PreparedStatement.set(i: Int, value: Any?): Unit = when (value) {
   is SqlOperator -> set(i, value.value)
-  else -> setObject(i, value)
+  else -> setObject(i, toDBType(value))
 }
 
 fun PreparedStatement.set(values: Iterable<Any?>) = values
   .flatMap { it.toIterable() }
-  .forEachIndexed { i, v -> this[i + 1] = toDBType(v) }
+  .forEachIndexed { i, v -> this[i + 1] = v }
 
 private fun Any?.toIterable(): Iterable<Any?> = when (this) {
   is Array<*> -> toList()
@@ -133,4 +133,5 @@ data class SelectMax(val by: Pair<String, Any>) {
   val value get() = by.second
 }
 
-data class SqlOperator(val op: String, val value: Any)
+data class SqlOperator(val op: String, val value: Any?)
+infix fun Pair<String, String>.op(value: Any?) = first to SqlOperator(second, value)
