@@ -92,7 +92,7 @@ dependencies {
   testImplementation("com.codeborne:selenide:5.10.0")
   runtimeOnly("com.h2database:h2:1.4.200")
 
-  compileOnly("com.codeborne:jvm2dts:1.1.3")
+  compileOnly("com.codeborne:jvm2dts:1.2.3")
 }
 
 tasks.register("downloadDeps") {
