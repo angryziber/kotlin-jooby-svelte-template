@@ -21,6 +21,7 @@
     </rollingPolicy>
   </appender>
 
+  <logger name="liquibase.servicelocator" level="ERROR"/>
   <logger name="io.mockk.proxy.jvm.transformation.InliningClassTransformer" level="ERROR"/>
 
   <logger name="request" level="INFO">
