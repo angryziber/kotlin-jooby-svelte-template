@@ -80,6 +80,7 @@ dependencies {
   implementation("io.jooby:jooby-hikari:$joobyVersion")
   implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.12.0")
   implementation("ch.qos.logback:logback-classic:1.2.3")
+  implementation("org.slf4j:jul-to-slf4j:1.7.30")
   implementation("org.liquibase:liquibase-core:3.8.5")
   implementation("org.postgresql:postgresql:42.2.9")
   implementation("javax.mail:mail:1.4.7")
