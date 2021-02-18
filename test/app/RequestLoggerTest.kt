@@ -20,7 +20,6 @@ class RequestLoggerTest {
     every { requestPath } returns "/path"
     every { attributes } returns emptyMap()
     every { queryString() } returns "?q=hello"
-    every { path("userIdHash").valueOrNull() } returns null
     every { header(any()).valueOrNull() } returns null
     every { header("Referer").value("") } returns "http://referrer"
     every { header("User-Agent").value("") } returns "User-Agent"
@@ -47,17 +46,6 @@ class RequestLoggerTest {
       )})
     }
     assertThat(MDC.get("requestId")).isNull()
-  }
-
-  @Test
-  fun `removes userIdHash from path`() {
-    every { ctx.requestPath } returns "/api/1234567/endpoint"
-    every { ctx.path("userIdHash").valueOrNull() } returns "1234567"
-    handler.logOnComplete(ctx)
-    runCompleteHandler()
-    verify {
-      requestLog.info(match { it.contains("GET /api/***/endpoint?q=hello") })
-    }
   }
 
   private fun runCompleteHandler() {
