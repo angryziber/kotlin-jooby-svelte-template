@@ -9,18 +9,6 @@
     </encoder>
   </appender>
 
-  <appender name="request" class="ch.qos.logback.core.rolling.RollingFileAppender">
-    <file>logs/request.log</file>
-    <encoder>
-      <pattern>%d{yyyy-MM-dd HH:mm:ss} [%X{requestId}] %m%n</pattern>
-    </encoder>
-    <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-      <fileNamePattern>logs/request.%d{yyyy-MM-dd}.log</fileNamePattern>
-      <maxHistory>90</maxHistory>
-      <totalSizeCap>1GB</totalSizeCap>
-    </rollingPolicy>
-  </appender>
-
   <logger name="liquibase.servicelocator" level="ERROR"/>
   <logger name="io.mockk.proxy.jvm.transformation.InliningClassTransformer" level="ERROR"/>
 
@@ -31,5 +19,4 @@
   <root level="INFO">
     <appender-ref ref="console"/>
   </root>
-
 </configuration>
