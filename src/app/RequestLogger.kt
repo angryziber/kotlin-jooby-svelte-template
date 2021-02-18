@@ -24,7 +24,7 @@ class RequestLogger(private val requestLog: Logger = LoggerFactory.getLogger("re
       val userInfo = user?.run { "$role:$id" } ?: "?"
       val referrer = ctx.header("Referer").value("")
       val userAgent = ctx.header("User-Agent").value("")
-      val path = ctx.path("userIdHash").valueOrNull()?.let { ctx.requestPath.replace(it, "***") } ?: ctx.requestPath
+      val path = ctx.requestPath
       val url = "${path}${ctx.queryString()}"
       MDC.put("requestId", requestId)
       requestLog.info("""$userInfo "${ctx.method} $url" $statusCode ${ctx.responseLength} $millis ms $referrer "$userAgent"""")
