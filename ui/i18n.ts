@@ -3,7 +3,7 @@ import dictionary from '../i18n/langs'
 import {defaultLang, translate} from '../i18n/i18n'
 
 const LANG_COOKIE = 'LANG'
-export const PATH_LANG_REGEX = /^\/([a-z]{2})\//
+export const PATH_LANG_REGEX = /^\/([a-z]{2})\/?/
 
 export const lang = writable(location.pathname.match(PATH_LANG_REGEX)?.[1] ?? defaultLang)
 lang.subscribe(lang => window['ga']?.('set', 'language', lang))
