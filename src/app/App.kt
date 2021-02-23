@@ -100,8 +100,10 @@ private fun Kooby.registerServicesAndControllers() {
   services.put(Config::class.java, config)
   services.put(ObjectMapper::class, objectMapper)
 
-  mvc<AuthController>()
-  if (environment.isActive("test")) mvc<FakeLoginForTestingController>()
+  coroutine {
+    mvc<AuthController>()
+    if (environment.isActive("test")) mvc<FakeLoginForTestingController>()
+  }
 }
 
 fun Context.warnLegacyBrowsers(translate: Translations): String? {
