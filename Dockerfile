@@ -34,11 +34,10 @@ RUN ./gradlew jar
 FROM bellsoft/liberica-openjdk-alpine:11 as final
 RUN adduser -S user
 
-COPY --from=server-build /app/build/libs /
-COPY --from=ui-build /app/build/public public/
 WORKDIR /app
+COPY --from=server-build /app/build/libs ./
+COPY --from=ui-build /app/build/public public/
 
-RUN mkdir logs tmp; chown -R user logs tmp
 # Run under non-privileged user with minimal write permissions
 USER user
 
