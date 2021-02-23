@@ -15,7 +15,7 @@ class AutoCreatingServiceRegistry(private val original: ServiceRegistry): Servic
   @Suppress("UNCHECKED_CAST")
   private fun <T> autoCreateService(type: Class<T>): T? {
     if (type.packageName == "java.lang") return null
-    val constructor = type.constructors.minBy { it.parameterCount } ?: return null
+    val constructor = type.constructors.minByOrNull { it.parameterCount } ?: return null
     try {
       val args = constructor.parameters.map { require(it.type) }.toTypedArray()
       return (constructor.newInstance(*args) as T).also {
