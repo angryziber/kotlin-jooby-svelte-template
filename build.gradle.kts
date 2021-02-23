@@ -103,10 +103,12 @@ tasks.register<Copy>("deps") {
 tasks.jar {
   dependsOn("deps")
   archiveBaseName.set("app")
-  manifest {
-    attributes(
-      "Main-Class" to "LauncherKt",
-      "Class-Path" to File("$buildDir/libs/deps").listFiles()?.joinToString(" ") { "deps/${it.name}" }
-    )
+  doFirst {
+    manifest {
+      attributes(
+        "Main-Class" to "LauncherKt",
+        "Class-Path" to File("$buildDir/libs/deps").listFiles()?.joinToString(" ") { "deps/${it.name}"}
+      )
+    }
   }
 }
