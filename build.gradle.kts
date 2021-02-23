@@ -25,6 +25,7 @@ dependencies {
   implementation("org.jetbrains.kotlin:kotlin-reflect")
   implementation("org.jetbrains.kotlin:kotlin-script-runtime")
   implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.3.3")
+  implementation("org.jetbrains.kotlinx:kotlinx-coroutines-slf4j:1.4.2")
   implementation("io.jooby:jooby:$joobyVersion")
   implementation("io.jooby:jooby-netty:$joobyVersion")
   implementation("io.jooby:jooby-pebble:$joobyVersion")

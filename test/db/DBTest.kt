@@ -18,7 +18,7 @@ abstract class DBTest {
 
   class InTransactionRunner: BeforeEachCallback, AfterEachCallback {
     override fun beforeEach(context: ExtensionContext?) {
-      Transaction(db)
+      Transaction(db).attachToThread()
     }
 
     override fun afterEach(context: ExtensionContext?) {

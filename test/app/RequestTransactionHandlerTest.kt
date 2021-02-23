@@ -13,6 +13,7 @@ class RequestTransactionHandlerTest {
   val ctx = mockk<Context>(relaxed = true) {
     every { requestPath } returns "/path"
     every { queryString() } returns "?q=hello"
+    every { attribute<Transaction>("tx") } answers { Transaction.current()!! }
   }
   val conn = mockk<Connection>(relaxed = true)
   val db = mockk<DriverDataSource>(relaxed = true) {
@@ -22,12 +23,13 @@ class RequestTransactionHandlerTest {
 
   @Test
   fun `commit on success`() {
-    val (before, after) = checkInstall()
-
-    before.captured.invoke(HandlerContext(ctx))
+    val complete = checkInstall()
     assertThat(Transaction.current()!!.connection).isSameAs(conn)
+    verify { ctx.attribute("tx", Transaction.current()) }
 
-    after.captured.invoke(AfterContext(ctx, "Result", failure = null))
+    every { ctx.responseCode } returns StatusCode.OK
+    complete.captured.apply(ctx)
+
     verify {
       conn.commit()
       conn.close()
@@ -37,12 +39,11 @@ class RequestTransactionHandlerTest {
 
   @Test
   fun `rollback on failure`() {
-    val (before, after) = checkInstall()
-
-    before.captured.invoke(HandlerContext(ctx))
+    val complete = checkInstall()
     assertThat(Transaction.current()!!.connection).isSameAs(conn)
 
-    after.captured.invoke(AfterContext(ctx, "Result", failure = Exception("Failure")))
+    every { ctx.responseCode } returns StatusCode.SERVER_ERROR
+    complete.captured.apply(ctx)
     verify {
       conn.rollback()
       conn.close()
@@ -50,17 +51,19 @@ class RequestTransactionHandlerTest {
     assertThat(Transaction.current()).isNull()
   }
 
-  private fun checkInstall(): Pair<CapturingSlot<HandlerContext.() -> Unit>, CapturingSlot<AfterContext.() -> Any>> {
+  private fun checkInstall(): CapturingSlot<Route.Complete> {
     val before = slot<HandlerContext.() -> Unit>()
-    val after = slot<AfterContext.() -> Any>()
+    val complete = slot<Route.Complete>()
     val app = mockk<Kooby>(relaxed = true)
     every { app.require<DataSource>() } returns db
 
     handler.install(app)
 
     verify { app.before(capture(before)) }
-    verify { app.after(capture(after)) }
-    return Pair(before, after)
+    before.captured.invoke(HandlerContext(ctx))
+
+    verify { ctx.onComplete(capture(complete)) }
+    return complete
   }
 
   @Test
