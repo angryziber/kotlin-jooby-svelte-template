@@ -20,6 +20,8 @@ import io.jooby.pebble.PebbleModule
 import org.slf4j.LoggerFactory.getLogger
 import java.io.File
 
+val objectMapper = JacksonModule.create().disable(WRITE_DATES_AS_TIMESTAMPS).setSerializationInclusion(NON_NULL).configure(FAIL_ON_UNKNOWN_PROPERTIES, false).registerModule(KotlinModule())
+
 class App: Kooby({
   serverOptions {
     port = System.getenv("PORT")?.toInt() ?: 8080
@@ -28,7 +30,7 @@ class App: Kooby({
   decorator(HeadHandler())
   registry(AutoCreatingServiceRegistry(services))
   install(DBModule())
-  install(JacksonModule(JacksonModule.create().disable(WRITE_DATES_AS_TIMESTAMPS).setSerializationInclusion(NON_NULL).configure(FAIL_ON_UNKNOWN_PROPERTIES, false).registerModule(KotlinModule())))
+  install(JacksonModule(objectMapper))
   val pebbleLoader = if (environment.isDev) FileLoader().apply { prefix = "ui/static" } else ClasspathLoader()
   install(PebbleModule(PebbleModule.create().setTemplateLoader(pebbleLoader).build(environment)))
   install(RequestLogger())
@@ -96,6 +98,7 @@ private fun Context.initialPage() = if (getUser<User>() == null) "home" else "ap
 private fun Kooby.registerServicesAndControllers() {
   services.put(Environment::class.java, environment)
   services.put(Config::class.java, config)
+  services.put(ObjectMapper::class, objectMapper)
 
   mvc<AuthController>()
   if (environment.isActive("test")) mvc<FakeLoginForTestingController>()
