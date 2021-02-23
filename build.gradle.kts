@@ -42,7 +42,7 @@ dependencies {
   testImplementation("com.codeborne:selenide:5.10.0")
   runtimeOnly("com.h2database:h2:1.4.200")
 
-  jvm2dts("com.codeborne:jvm2dts:1.2.5")
+  jvm2dts("com.codeborne:jvm2dts:1.2.7")
 }
 
 sourceSets {
