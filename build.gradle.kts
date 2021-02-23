@@ -7,7 +7,7 @@ plugins {
 }
 
 repositories {
-  jcenter()
+  mavenCentral()
 }
 
 val jvm2dts by configurations.creating {
