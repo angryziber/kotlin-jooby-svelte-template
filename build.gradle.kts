@@ -10,9 +10,7 @@ repositories {
   mavenCentral()
 }
 
-val jvm2dts by configurations.creating {
-  extendsFrom(configurations.implementation.get())
-}
+val jvm2dts by configurations.creating
 
 dependencies {
   val joobyVersion = "2.9.5"
