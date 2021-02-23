@@ -1,24 +1,21 @@
-import org.gradle.internal.deprecation.DeprecatableConfiguration
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import java.io.ByteArrayOutputStream
 
 plugins {
   kotlin("jvm") version "1.4.30"
   kotlin("kapt") version "1.4.30"
-  application
 }
 
 repositories {
   jcenter()
 }
 
-val joobyVersion = "2.9.5"
-
 val jvm2dts by configurations.creating {
   extendsFrom(configurations.implementation.get())
 }
 
 dependencies {
+  val joobyVersion = "2.9.5"
   kapt("io.jooby:jooby-apt:$joobyVersion")
 
   implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
@@ -100,26 +97,14 @@ tasks.register<Test>("e2eTest") {
   systemProperties["webdriver.chrome.verboseLogging"] = "true"
 }
 
-tasks.register("downloadDeps") {
-  doLast {
-    fun Configuration.isDeprecated() = if (this is DeprecatableConfiguration) { resolutionAlternatives != null } else false
-    configurations.names
-      .map { configurations[it] }
-      .filter { it.isCanBeResolved && !it.isDeprecated() }
-      .forEach { println("Downloaded deps for ${it}:\n   ${it.resolve().joinToString("\n   ")}") }
-  }
+tasks.register<Copy>("deps") {
+  into("${buildDir}/libs/deps")
+  from(configurations.runtimeClasspath)
 }
 
-distributions {
-  main {
-    contents {
-      from("public") {
-        into("public")
-      }
-    }
+tasks.jar {
+  archiveBaseName.set("app")
+  manifest {
+    attributes(mapOf("Main-Class" to "LauncherKt"))
   }
-}
-
-application {
-  mainClassName = "LauncherKt"
 }
