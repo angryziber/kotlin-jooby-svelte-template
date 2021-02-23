@@ -45,7 +45,7 @@ ENV API_VERSION=1
 
 # Fit into Heroku's 512m total limit
 ENV JAVA_OPTS="-Xmx330m -Xss512k"
-CMD java $JAVA_OPTS -cp 'app.jar:deps/*' LauncherKt
+CMD java $JAVA_OPTS -jar app.jar
 
 # Heroku redefines exposed port
 ENV PORT=8080

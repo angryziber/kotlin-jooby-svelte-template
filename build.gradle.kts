@@ -98,13 +98,17 @@ tasks.register<Test>("e2eTest") {
 }
 
 tasks.register<Copy>("deps") {
-  into("${buildDir}/libs/deps")
+  into("$buildDir/libs/deps")
   from(configurations.runtimeClasspath)
 }
 
 tasks.jar {
+  dependsOn("deps")
   archiveBaseName.set("app")
   manifest {
-    attributes(mapOf("Main-Class" to "LauncherKt"))
+    attributes(
+      "Main-Class" to "LauncherKt",
+      "Class-Path" to File("$buildDir/libs/deps").listFiles()?.joinToString(" ") { "deps/${it.name}" }
+    )
   }
 }
