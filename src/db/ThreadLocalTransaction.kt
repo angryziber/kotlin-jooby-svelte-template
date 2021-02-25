@@ -28,14 +28,8 @@ class Transaction(private val db: DataSource) {
     }
   }
 
-  fun attachToThread() = this.also {
-    if (current() != null) throw IllegalStateException("tx is already active")
-    threadContext.set(this)
-  }
-
-  fun detachFromThread() {
-    threadContext.remove()
-  }
+  fun attachToThread() = this.also { threadContext.set(this) }
+  fun detachFromThread() = threadContext.remove()
 }
 
 fun <R> DataSource.withConnection(block: Connection.() -> R): R {
