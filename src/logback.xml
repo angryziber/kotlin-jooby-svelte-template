@@ -3,6 +3,9 @@
     <resetJUL>true</resetJUL>
   </contextListener>
 
+  <!-- Stop output INFO at start -->
+  <statusListener class="ch.qos.logback.core.status.NopStatusListener" />
+
   <appender name="console" class="ch.qos.logback.core.ConsoleAppender">
     <encoder>
       <pattern>%d{yyyy-MM-dd HH:mm:ss} [%X{requestId}] %-5p %c{1}:%L - %m%n</pattern>
