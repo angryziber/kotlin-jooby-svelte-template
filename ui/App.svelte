@@ -1,5 +1,5 @@
 <script>
-  import {onMount, onDestroy} from 'svelte'
+  import {onDestroy, onMount} from 'svelte'
   import jsErrorHandler from './jsErrorHandler'
   import router from './routing/Router'
   import session, {user} from './auth/Session'
@@ -34,7 +34,7 @@
     let error = e.reason.message
     if (error) {
       if (error === 'errors.apiVersionMismatch') {
-        alert(error)
+        alert($_(error))
         return location.reload()
       }
       error = $_(e.reason.message)
