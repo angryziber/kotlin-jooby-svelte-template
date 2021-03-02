@@ -42,6 +42,7 @@ COPY --from=ui-build /app/build/public public/
 USER user
 
 ENV API_VERSION=1
+ENV ENV=https
 
 # Fit into Heroku's 512m total limit
 ENV JAVA_OPTS="-Xmx330m -Xss512k"
