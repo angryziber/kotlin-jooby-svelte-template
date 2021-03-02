@@ -1,6 +1,6 @@
 package auth
 
-import db.BaseIntegrationTest
+import db.DBTest
 import io.mockk.every
 import io.mockk.mockk
 import org.assertj.core.api.Assertions.assertThat
@@ -8,7 +8,7 @@ import org.junit.jupiter.api.Test
 import auth.Role.*
 import java.security.SecureRandom
 
-class UserRepositoryTest: BaseIntegrationTest() {
+class UserRepositoryTest: DBTest() {
   val random = mockk<SecureRandom>(relaxed = true)
   val repository = UserRepository(db, HashingService(), random)
 

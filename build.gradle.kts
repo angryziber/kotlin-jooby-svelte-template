@@ -1,30 +1,26 @@
-import org.gradle.internal.deprecation.DeprecatableConfiguration
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import java.io.ByteArrayOutputStream
 
 plugins {
   kotlin("jvm") version "1.4.30"
   kotlin("kapt") version "1.4.30"
-  application
 }
 
 repositories {
-  jcenter()
+  mavenCentral()
 }
 
-val joobyVersion = "2.9.5"
-
-val jvm2dts by configurations.creating {
-  extendsFrom(configurations.implementation.get())
-}
+val jvm2dts by configurations.creating
 
 dependencies {
+  val joobyVersion = "2.9.5"
   kapt("io.jooby:jooby-apt:$joobyVersion")
 
   implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
   implementation("org.jetbrains.kotlin:kotlin-reflect")
   implementation("org.jetbrains.kotlin:kotlin-script-runtime")
-  implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.3.3")
+  implementation("org.jetbrains.kotlinx:kotlinx-coroutines-jdk8:1.4.2")
+  implementation("org.jetbrains.kotlinx:kotlinx-coroutines-slf4j:1.4.2")
   implementation("io.jooby:jooby:$joobyVersion")
   implementation("io.jooby:jooby-netty:$joobyVersion")
   implementation("io.jooby:jooby-pebble:$joobyVersion")
@@ -44,7 +40,7 @@ dependencies {
   testImplementation("com.codeborne:selenide:5.10.0")
   runtimeOnly("com.h2database:h2:1.4.200")
 
-  jvm2dts("com.codeborne:jvm2dts:1.2.5")
+  jvm2dts("com.codeborne:jvm2dts:1.2.7")
 }
 
 sourceSets {
@@ -99,26 +95,20 @@ tasks.register<Test>("e2eTest") {
   systemProperties["webdriver.chrome.verboseLogging"] = "true"
 }
 
-tasks.register("downloadDeps") {
-  doLast {
-    fun Configuration.isDeprecated() = if (this is DeprecatableConfiguration) { resolutionAlternatives != null } else false
-    configurations.names
-      .map { configurations[it] }
-      .filter { it.isCanBeResolved && !it.isDeprecated() }
-      .forEach { println("Downloaded deps for ${it}:\n   ${it.resolve().joinToString("\n   ")}") }
-  }
+tasks.register<Copy>("deps") {
+  into("$buildDir/libs/deps")
+  from(configurations.runtimeClasspath)
 }
 
-distributions {
-  main {
-    contents {
-      from("public") {
-        into("public")
-      }
+tasks.jar {
+  dependsOn("deps")
+  archiveBaseName.set("app")
+  doFirst {
+    manifest {
+      attributes(
+        "Main-Class" to "LauncherKt",
+        "Class-Path" to File("$buildDir/libs/deps").listFiles()?.joinToString(" ") { "deps/${it.name}"}
+      )
     }
   }
-}
-
-application {
-  mainClassName = "LauncherKt"
 }

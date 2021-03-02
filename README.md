@@ -34,6 +34,38 @@ Testing:
 * Repository tests rollback to avoid recreation of the DB each time
 * E2E tests test login once and then use [fake login](src/auth/FakeLoginForTestingController.kt) to get to needed places quickly
 
+### Why Svelte?
+
+Firstly, websites should use server-side/static rendering. Apps (not caring about SEO) are better off using reactive UI frameworks.
+
+Framework                   |**React**                  |**Vue**                           |**Svelte**
+----------------------------|---------------------------|----------------------------------|------------------------------
+NPM packages                |18 with router             |2 with router                     |1
+Minified runtime size       |6k                         |64k                               |0
+Reactivity                  |runtime one-way (complex editing apps usually require flux/redux)|runtime two-way                   |compile-time two-way (better performance, less boilerplate)
+Template syntax             |non-standard JSX file format, weird attribute names|Template exports must follow some strict structure, grouping of properties, etc|Just standard js variables - closest to real HTML
+Component imports           |Just import & use|Import, declare, then use with a different name|Just import & use
+Component syntax            |3 different ways to write: class, function, hooks|1 (+ 1 without the compiler)|1 way
+
+Dependencies, runtime size and simplicity is also the reason why this repository implements
+its own simple router and i18n support on top of Svelte.
+
+Also, *fetch*, *Promises/async/await* and many other APIs (including array transformations) are already available in all modern browsers, so
+dependencies like *lodash* and *axios* are obsolete.
+
+### Why Snowpack?
+
+Bundler                        |**Webpack**|**Rollup**|**Snowpack**
+-------------------------------|-----------|----------|--------------
+NPM packages (without plugins) |74         |2         |7
+ES6 modules                    |transpiled to es5|native|native & not bundled by default - you run what you write
+Watch & reload                 |full rebuild|full rebuild|rebuilds & reloads only changed files (es6 modules)
+
+
+### Why jest? 
+Having said that, the remaining problem is **jest**, which has 528 dependencies and no native es6 module support (all browsers and Node do support them natively nowadays).
+Need to find a good alternative with native es6 support and few dependencies.
+
 ## Running in Docker
 
 `docker-compose up --build`

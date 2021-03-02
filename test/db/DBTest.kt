@@ -8,7 +8,7 @@ import org.junit.jupiter.api.extension.ExtensionContext
 import org.junit.jupiter.api.extension.RegisterExtension
 import java.util.*
 
-abstract class BaseIntegrationTest {
+abstract class DBTest {
   companion object {
     val db = DriverDataSource(testDBUrl, null, Properties(), null, null).apply { migrate(listOf("test", "test-data")) }
   }
@@ -18,7 +18,7 @@ abstract class BaseIntegrationTest {
 
   class InTransactionRunner: BeforeEachCallback, AfterEachCallback {
     override fun beforeEach(context: ExtensionContext?) {
-      Transaction(db)
+      Transaction(db).attachToThread()
     }
 
     override fun afterEach(context: ExtensionContext?) {
