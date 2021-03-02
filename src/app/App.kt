@@ -102,7 +102,7 @@ private fun Kooby.registerServicesAndControllers() {
 
   coroutine {
     mvc<AuthController>()
-    if (environment.isActive("test")) mvc<FakeLoginForTestingController>()
+    if (environment.isTest) mvc<FakeLoginForTestingController>()
   }
 }
 

@@ -9,6 +9,7 @@ import io.jooby.require
 import java.util.concurrent.atomic.AtomicLong
 
 val Environment.isDev get() = isActive("dev")
+val Environment.isTest get() = isActive("test")
 val Environment.isHttps get() = isActive("https")
 
 val Context.user: User get() = getUser() ?: throw UnauthorizedException()
