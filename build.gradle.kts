@@ -2,8 +2,8 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import java.io.ByteArrayOutputStream
 
 plugins {
-  kotlin("jvm") version "1.4.30"
-  kotlin("kapt") version "1.4.30"
+  kotlin("jvm") version "1.4.32"
+  kotlin("kapt") version "1.4.32"
 }
 
 repositories {
