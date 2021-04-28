@@ -1,3 +1,5 @@
+const proxy = require('http-proxy').createServer({target: 'http://localhost:8080'})
+
 const svelteIgnore = [
   'a11y-autofocus',
   'a11y-no-onchange',
@@ -45,16 +47,17 @@ module.exports = {
       }
     ]
   ],
-  installOptions: {
-    installTypes: true
+  packageOptions: {
+    knownEntrypoints: ['tslib']
   },
   buildOptions: {
     out: 'build/public',
-    sourceMaps: true
+    sourcemap: true
   },
-  proxy: {
-    '/api': 'http://localhost:8080/api'
-  },
+  routes: [
+    {src: '/api/.*', dest: (req, res) => proxy.web(req, res)},
+    {match: 'routes', src: '.*', dest: '/index.html'}
+  ],
   devOptions: {
     port: 8088,
     open: 'none'
