@@ -1,5 +1,4 @@
 import {expect} from 'chai'
-import '../ui/shared/ArrayExtensions'
 import {ensureSupportedLang, translate} from './i18n'
 import langs from './langs'
 
