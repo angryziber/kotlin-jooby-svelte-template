@@ -8,7 +8,7 @@ it('sorts items by clicking on headers', async () => {
   const columns = ['id', 'time']
   const fields = ['a', 'b']
   const {container, component} = render(SortableTable, {items, key, columns, fields, tableClass: 'another-class'})
-  expect(container).toContainHTML('<table class="table another-class">')
+  expect(container.querySelector('table')!.classList.contains('another-class')).toBeTruthy()
   expect(container).toContainHTML($_('admin.events.id'))
   expect(container).toContainHTML($_('admin.events.time'))
   expect(prop(component, 'items')).toBe(items)
