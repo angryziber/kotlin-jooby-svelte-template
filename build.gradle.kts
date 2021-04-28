@@ -40,7 +40,7 @@ dependencies {
   testImplementation("com.codeborne:selenide:5.10.0")
   runtimeOnly("com.h2database:h2:1.4.200")
 
-  jvm2dts("com.codeborne:jvm2dts:1.3.0")
+  jvm2dts("com.codeborne:jvm2dts:1.4.0")
 }
 
 sourceSets {
@@ -67,14 +67,13 @@ tasks.register("generateTSTypes") {
   dependsOn("classes")
   doLast {
     val excludeClassNamesRegex = ".*(Service|Repository|Controller|Logger|Job|Module)\$"
-    val packagesToGenerateTypesFor = "auth"
+    val excludedPackages = "app,util,db"
 
     project.file("ui/api/types.ts").writeText(ByteArrayOutputStream().use { out ->
       project.exec {
         standardOutput = out
         commandLine = """java -classpath ${(jvm2dts + sourceSets.main.get().runtimeClasspath).asPath}
-          jvm2dts.Main -exclude $excludeClassNamesRegex 
-          $packagesToGenerateTypesFor""".split("\\s+".toRegex())
+          jvm2dts.Main -exclude $excludeClassNamesRegex -classesDir ${project.buildDir}/classes/kotlin/main -excludeDir $excludedPackages""".split("\\s+".toRegex())
       }
       out.toString()
     })
