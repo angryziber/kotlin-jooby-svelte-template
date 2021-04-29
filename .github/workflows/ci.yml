@@ -12,5 +12,7 @@ jobs:
         with:
           java-version: '11'
           architecture: x64
-      - name: Build
+      - name: Build UI
+        run: npm ci && npm test
+      - name: Build Server
         run: ./gradlew test
