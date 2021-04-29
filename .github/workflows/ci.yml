@@ -16,8 +16,9 @@ jobs:
       - name: Cache deps
         uses: actions/cache@v2
         with:
-          path: ~/.npm
-#            ~/.gradle
+          path:
+            - ~/.npm
+            - ~/.gradle
           key: ${{ runner.os }}-deps-${{ hashFiles('package-lock.json', 'build.gradle.kts') }}
           restore-keys: |
             ${{ runner.os }}-deps-
@@ -32,7 +33,7 @@ jobs:
 
       - name: Server deps
         run: ./gradlew deps && ls -la ~/.gradle/caches && du -hs ~/.gradle
-      - name: Build Server
-        run: ./gradlew jar
-      - name: Test Server
-        run: ./gradlew test
+#      - name: Build Server
+#        run: ./gradlew jar
+#      - name: Test Server
+#        run: ./gradlew test
