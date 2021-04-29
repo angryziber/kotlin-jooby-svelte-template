@@ -23,6 +23,9 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-deps-
 
+      - name: Check cache
+        run: du -hs ~/.npm ~/.gradle
+
       - name: UI deps
         run: npm ci && du -hs ~/.npm
 #      - name: UI Test
