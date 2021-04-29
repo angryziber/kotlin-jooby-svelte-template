@@ -16,9 +16,7 @@ jobs:
       - name: Cache deps
         uses: actions/cache@v2
         with:
-          path:
-            - ~/.npm
-            - ~/.gradle
+          path: ~/.npm ~/.gradle
           key: ${{ runner.os }}-deps-${{ hashFiles('package-lock.json', 'build.gradle.kts') }}
           restore-keys: |
             ${{ runner.os }}-deps-
