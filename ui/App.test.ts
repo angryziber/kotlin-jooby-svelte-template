@@ -39,7 +39,7 @@ it('shows public page even when a user is in session', async () => {
 
   await change()
   expect(router.navigateTo).not.toBeCalled()
-  expect(container).toContainHTML('Access')
+  expect(container.innerHTML).to.contain('Access')
 })
 
 it('shows not found when role does not match', async () => {
@@ -49,7 +49,7 @@ it('shows not found when role does not match', async () => {
   const {container} = render(App)
 
   await change()
-  expect(container).toContainHTML('Page Not Found')
+  expect(container.innerHTML).to.contain('Page Not Found')
 })
 
 it('navigates to user role page if there is a user in session', async () => {
@@ -73,13 +73,13 @@ describe('handles unhandled promises', () => {
   it('without translation', async () => {
     e.reason = {message: 'no translation', statusCode: 400}
     await act(() => window.dispatchEvent(e))
-    expect(container).toContainHTML('no translation')
+    expect(container.innerHTML).to.contain('no translation')
   })
 
   it('with translation', async () => {
     e.reason = {message: 'errors.technical', statusCode: 500}
     await act(() => window.dispatchEvent(e))
-    expect(container).toContainHTML($_('errors.technical'))
+    expect(container.innerHTML).to.contain($_('errors.technical'))
   })
 
   it('unauthorized logs out', async () => {
@@ -87,7 +87,7 @@ describe('handles unhandled promises', () => {
     jest.spyOn(router, 'navigateWithReload')
     e.reason = {message: 'no permissions', statusCode: 403}
     await act(() => window.dispatchEvent(e))
-    expect(container).toContainHTML('no permissions')
+    expect(container.innerHTML).to.contain('no permissions')
     jest.runAllTimers()
     expect(router.navigateWithReload).calledWith('/logout')
     jest.useRealTimers()

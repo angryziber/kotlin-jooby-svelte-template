@@ -1,29 +1,30 @@
 import {render} from '@testing-library/svelte'
 import Modal from './Modal.svelte'
+import {expect} from 'chai'
 
-test('Modal is shown', (done) => {
+it('Modal is shown', (done) => {
   const {container, component} = render(Modal, {title: 'Title', show: false, flyParams: {duration: 0}})
-  expect(container).not.toContainHTML('Title')
+  expect(container.textContent).not.to.contain('Title')
 
   component.$set({show: true})
   setTimeout(() => {
-    expect(container).toContainHTML('Title')
+    expect(container.textContent).to.contain('Title')
 
-    expect(document.body).toHaveClass('modal-open')
-    expect(document.querySelector('body > .modal-backdrop')).toBeInTheDocument()
+    expect(document.body.classList.contains('modal-open')).to.be.true
+    expect(document.querySelector('body > .modal-backdrop')).to.be.ok
 
     component.$set({show: false})
     setTimeout(() => {
-      expect(document.body).not.toHaveClass('modal-open')
-      expect(document.querySelector('body > .modal-backdrop')).not.toBeInTheDocument()
+      expect(document.body.classList.contains('modal-open')).to.be.false
+      expect(document.querySelector('body > .modal-backdrop')).to.be.null
       done()
     }, 100)
   })
 })
 
-test('body.modal-open is added on show and removed on destroy', () => {
+it('body.modal-open is added on show and removed on destroy', () => {
   const {component} = render(Modal, {title: 'Title', show: true, flyParams: {duration: 0}})
-  expect(document.body).toHaveClass('modal-open')
+  expect(document.body.classList.contains('modal-open')).to.be.true
   component.$destroy()
-  expect(document.body).not.toHaveClass('modal-open')
+  expect(document.body.classList.contains('modal-open')).to.be.false
 })

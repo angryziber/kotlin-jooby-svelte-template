@@ -11,5 +11,5 @@ beforeAll(() => {
 it('renders', () => {
   jest.spyOn(gateway, 'get').mockResolvedValue({hasNewMessage: false})
   const {container} = render(UserWelcomePage)
-  expect(container).toContainHTML($_('user.welcome.title'))
+  expect(container.innerHTML).to.contain($_('user.welcome.title'))
 })

@@ -1,10 +1,13 @@
 import {hideToast, showToast, toastStore} from './toastStore'
 import {get} from 'svelte/store'
+import {expect} from 'chai'
+import {SinonFakeTimers, useFakeTimers} from 'sinon'
 
-beforeAll(() => jest.useFakeTimers())
-afterAll(() => jest.useRealTimers())
+let clock: SinonFakeTimers
+beforeEach(() => clock = useFakeTimers())
+afterEach(() => clock.restore())
 
-test('show/hide toast', () => {
+it('show/hide toast', () => {
   const toast1 = showToast('Created stuff')
   expect(toast1.type).to.equal('success')
   expect(toast1.timeoutSec).to.equal(10)
@@ -17,6 +20,6 @@ test('show/hide toast', () => {
   hideToast(toast1)
   expect(get(toastStore)).to.deep.equal([toast2])
 
-  jest.runAllTimers()
+  clock.runAll()
   expect(get(toastStore)).to.deep.equal([])
 })

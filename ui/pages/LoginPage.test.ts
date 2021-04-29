@@ -4,5 +4,5 @@ import {$_} from '../test-utils'
 
 it('renders', async () => {
   const {container} = render(LoginPage)
-  expect(container).toContainHTML($_('login.title'))
+  expect(container.innerHTML).to.contain($_('login.title'))
 })

@@ -21,14 +21,14 @@ it('contains same number of translations for each lang', () => {
   expect(Object.entries(langs).find(([lang, entries]) => Object.keys(entries as any).length != numEnTranslations)).toBeFalsy()
 })
 
-test('datetime formatting', () => {
+it('datetime formatting', () => {
   expect(i18n.formatDateTime(undefined)).to.equal('')
   expect(i18n.formatDateTime(new Date())).toMatch(new Date().getFullYear().toString())
   expect(i18n.formatDateTime('2020-01-01T10:23:45.010101')).toMatch('10:23')
   expect(i18n.formatDateTime(123)).toMatch('1970')
 })
 
-test('translate keys with special prefix', () => {
+it('translate keys with special prefix', () => {
   const key = 'i18n:title'
   expect(tryTranslate(key)).to.equal($_('App Template'))
 })

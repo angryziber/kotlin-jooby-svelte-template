@@ -1,5 +1,6 @@
 <script>
-  import {tick, onDestroy} from 'svelte'
+  import {onDestroy, tick} from 'svelte'
+
   export let title = undefined
   export let text = undefined
   export let containerClass = ''
@@ -27,7 +28,7 @@
     arrowLeft = popoverRect.width / 2 - arrowRect.width / 2
   }
 
-  onDestroy(() => popoverRef && document.body.removeChild(popoverRef))
+  onDestroy(() => popoverRef && document.body?.removeChild(popoverRef))
 </script>
 
 <style>
