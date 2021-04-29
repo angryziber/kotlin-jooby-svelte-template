@@ -15,22 +15,19 @@ jobs:
 
       - name: Cache deps
         uses: actions/cache@v2
-        env:
-          cache-name: cache-node-modules
         with:
           path:
             ~/.npm
             ~/.gradle
-          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('package-lock.json', 'build.gradle.kts') }}
+          key: ${{ runner.os }}-deps-${{ hashFiles('package-lock.json', 'build.gradle.kts') }}
           restore-keys: |
-            ${{ runner.os }}-build-${{ env.cache-name }}-
-            ${{ runner.os }}-build-
-            ${{ runner.os }}-
+            ${{ runner.os }}-deps-${{ env.cache-name }}-
+            ${{ runner.os }}-deps-
 
       - name: UI deps
-        run: npm ci
+        run: npm ci && ls -la node_modules && ls -la ~/.npm
       - name: UI Test
         run: npm test
 
       - name: Build Server
-        run: ./gradlew test
+        run: ./gradlew test && ls -la ~/.gradle/caches
