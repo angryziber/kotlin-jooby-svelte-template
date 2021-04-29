@@ -31,7 +31,7 @@ jobs:
 
       - name: Server deps
         run: ./gradlew deps && ls -la ~/.gradle/caches && du -hs ~/.gradle
-#      - name: Build Server
-#        run: ./gradlew jar
-#      - name: Test Server
-#        run: ./gradlew test
+      - name: Build Server
+        run: ./gradlew jar
+      - name: Test Server
+        run: ./gradlew test
