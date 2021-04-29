@@ -1,4 +1,5 @@
-<script>
+<script lang="ts">
+  import {_} from '@ui/i18n'
   import {onDestroy, onMount} from 'svelte'
   import jsErrorHandler from './jsErrorHandler'
   import router from './routing/Router'
@@ -25,19 +26,19 @@
     return pageParams = router.matches(path, page)
   }
 
-  function handleError(e) {
+  function handleError(e: PromiseRejectionEvent) {
     console.error(e)
-    if (e.reason.stack) {
+    if (e.reason?.stack) {
       jsErrorHandler(e.reason.message, undefined, undefined, undefined, e.reason)
       return
     }
-    let error = e.reason.message
+    let error = e.reason?.message
     if (error) {
       if (error === 'errors.apiVersionMismatch') {
         alert($_(error))
         return location.reload()
       }
-      error = $_(e.reason.message)
+      error = $_(e.reason?.message)
     }
     else error = $_('errors.technical') + ': ' + e.reason
     showToast(error, {type: 'danger'})

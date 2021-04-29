@@ -3,20 +3,29 @@ import App from './App.svelte'
 import router from './routing/Router'
 import session, {User} from './auth/Session'
 import {$_, change} from './test-utils'
+import {expect} from 'chai'
+import {SinonStub, stub, useFakeTimers} from 'sinon'
 
 const user = {id: '123-123', role: 'company'} as User
 
+let currentPage: SinonStub, navigateTo: SinonStub
+
 beforeEach(() => {
   document.body.innerHTML = '<div id="footer">Footer</div>'
-  jest.spyOn(router, 'currentPage').mockReturnValue('company-test')
-  jest.spyOn(router, 'navigateTo')
+  currentPage = stub(router, 'currentPage').returns('company-test')
+  navigateTo = stub(router, 'navigateTo')
   session.user = null
+})
+
+afterEach(() => {
+  currentPage.restore()
+  navigateTo.restore()
 })
 
 it('uses user from initial state if exists', async () => {
   render(App, {initialUser: user})
   await change()
-  expect(router.navigateTo).not.toBeCalled()
+  expect(router.navigateTo).not.called
   expect(session.user).to.deep.equal(user)
 })
 
@@ -28,23 +37,23 @@ it('navigates to login page if no user in session', () => {
 it('shows role page when user in session', () => {
   session.user = user
   render(App)
-  expect(router.navigateTo).not.toBeCalled()
+  expect(router.navigateTo).not.called
 })
 
 it('shows public page even when a user is in session', async () => {
   session.user = user
-  jest.spyOn(router, 'currentPage').mockReturnValue('login')
+  currentPage.returns('login')
 
   const {container} = render(App)
 
   await change()
-  expect(router.navigateTo).not.toBeCalled()
+  expect(router.navigateTo).not.called
   expect(container.innerHTML).to.contain('Access')
 })
 
 it('shows not found when role does not match', async () => {
   session.user = user
-  jest.spyOn(router, 'currentPage').mockReturnValue('admin/companies')
+  currentPage.returns('admin/companies')
 
   const {container} = render(App)
 
@@ -54,7 +63,7 @@ it('shows not found when role does not match', async () => {
 
 it('navigates to user role page if there is a user in session', async () => {
   session.user = {...user, role: 'user'} as User
-  jest.spyOn(router, 'currentPage').mockReturnValue('')
+  currentPage.returns('')
 
   render(App)
 
@@ -63,33 +72,34 @@ it('navigates to user role page if there is a user in session', async () => {
 })
 
 describe('handles unhandled promises', () => {
-  let container
-  const e = new Event('unhandledrejection') as any
+  const promise = Promise.reject('')
+  let container: HTMLElement
 
   beforeEach(() => {
-    ({container} = render(App))
+    container = render(App).container
   })
 
   it('without translation', async () => {
-    e.reason = {message: 'no translation', statusCode: 400}
+    const e = new PromiseRejectionEvent('unhandledrejection', {reason: {message: 'no translation'}, promise})
     await act(() => window.dispatchEvent(e))
-    expect(container.innerHTML).to.contain('no translation')
+    expect(container.textContent).to.contain('no translation')
   })
 
   it('with translation', async () => {
-    e.reason = {message: 'errors.technical', statusCode: 500}
+    const e = new PromiseRejectionEvent('unhandledrejection', {reason: {message: 'errors.technical', statusCode: 500}, promise})
     await act(() => window.dispatchEvent(e))
-    expect(container.innerHTML).to.contain($_('errors.technical'))
+    expect(container.textContent).to.contain($_('errors.technical'))
   })
 
   it('unauthorized logs out', async () => {
-    jest.useFakeTimers()
-    jest.spyOn(router, 'navigateWithReload')
-    e.reason = {message: 'no permissions', statusCode: 403}
+    const clock = useFakeTimers()
+    const navigateWithReload = stub(router, 'navigateWithReload')
+    const e = new PromiseRejectionEvent('unhandledrejection', {reason: {message: 'no permissions', statusCode: 403}, promise})
     await act(() => window.dispatchEvent(e))
-    expect(container.innerHTML).to.contain('no permissions')
-    jest.runAllTimers()
+    expect(container.textContent).to.contain('no permissions')
+    clock.runAll()
     expect(router.navigateWithReload).calledWith('/logout')
-    jest.useRealTimers()
+    clock.restore()
+    navigateWithReload.restore()
   })
 })

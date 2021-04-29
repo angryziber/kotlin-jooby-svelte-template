@@ -1,15 +1,13 @@
 import {render} from '@testing-library/svelte'
-import session, {User} from '../../auth/Session'
 import gateway from '../../api/Gateway'
 import UserWelcomePage from './UserWelcomePage.svelte'
-import {$_} from '../../test-utils'
-
-beforeAll(() => {
-  session.testUser = {role: 'user'} as User
-})
+import {$_} from '@ui/test-utils'
+import {expect} from 'chai'
+import {stub} from 'sinon'
 
 it('renders', () => {
-  jest.spyOn(gateway, 'get').mockResolvedValue({hasNewMessage: false})
+  const get = stub(gateway, 'get').resolves({hasNewMessage: false})
   const {container} = render(UserWelcomePage)
   expect(container.innerHTML).to.contain($_('user.welcome.title'))
+  get.restore()
 })
