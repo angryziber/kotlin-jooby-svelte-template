@@ -1,6 +1,6 @@
 import gateway, {headers} from './Gateway'
 import {expect} from 'chai'
-import {assert, fake, SinonStub, stub} from 'sinon'
+import {fake, SinonStub, stub} from 'sinon'
 
 const successfulResponse = {status: 200, headers: {get: () => undefined}, json: () => 'data'}
 
@@ -9,7 +9,7 @@ it('extracts json', async () => {
   const promise = gateway.request('/path', {body: {data: 'data'}}, fetch)
   expect(document.documentElement.classList.contains('loading')).to.equal(true)
   expect(await promise).to.equal('data')
-  assert.calledWith(fetch, '/path', {headers, body: '{"data":"data"}'})
+  expect(fetch).calledWith('/path', {headers, body: '{"data":"data"}'})
   expect(document.documentElement.classList.contains('loading')).to.equal(false)
 })
 
@@ -48,22 +48,22 @@ describe('requests', () => {
 
   it('get', () => {
     gateway.get('/path')
-    assert.calledWith(request, '/path')
+    expect(request).calledWith('/path')
   })
 
   it('post', () => {
     gateway.post('/path', {data: 'data'})
-    assert.calledWith(request, '/path', {method: 'POST', body: {data: 'data'}})
+    expect(request).calledWith('/path', {method: 'POST', body: {data: 'data'}})
   })
 
   it('delete', () => {
     gateway.delete('/path')
-    assert.calledWith(request, '/path', {method: 'DELETE'})
+    expect(request).calledWith('/path', {method: 'DELETE'})
   })
 
   it('patch', () => {
     gateway.patch('/path', {data: 'data'})
-    assert.calledWith(request, '/path', {method: 'PATCH', body: {data: 'data'}})
+    expect(request).calledWith('/path', {method: 'PATCH', body: {data: 'data'}})
   })
 })
 

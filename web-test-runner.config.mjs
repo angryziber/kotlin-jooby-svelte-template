@@ -10,7 +10,7 @@ export default {
   testRunnerHtml: testFramework =>
     `<html>
       <body>
-        <script src="/_dist_/ui/shared/ArrayExtensions.js"></script>
+        <script type="module" src="/_dist_/ui/setup-tests-new.js"></script>
         <script type="module" src="${testFramework}"></script>
       </body>
     </html>`
