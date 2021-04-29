@@ -17,12 +17,12 @@ it('uses user from initial state if exists', async () => {
   render(App, {initialUser: user})
   await change()
   expect(router.navigateTo).not.toBeCalled()
-  expect(session.user).toEqual(user)
+  expect(session.user).to.deep.equal(user)
 })
 
 it('navigates to login page if no user in session', () => {
   render(App)
-  expect(router.navigateTo).toBeCalledWith('login', {replaceHistory: true})
+  expect(router.navigateTo).calledWith('login', {replaceHistory: true})
 })
 
 it('shows role page when user in session', () => {
@@ -59,7 +59,7 @@ it('navigates to user role page if there is a user in session', async () => {
   render(App)
 
   await change()
-  expect(router.navigateTo).toBeCalledWith('user')
+  expect(router.navigateTo).calledWith('user')
 })
 
 describe('handles unhandled promises', () => {
@@ -89,7 +89,7 @@ describe('handles unhandled promises', () => {
     await act(() => window.dispatchEvent(e))
     expect(container).toContainHTML('no permissions')
     jest.runAllTimers()
-    expect(router.navigateWithReload).toBeCalledWith('/logout')
+    expect(router.navigateWithReload).calledWith('/logout')
     jest.useRealTimers()
   })
 })

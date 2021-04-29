@@ -7,7 +7,7 @@
     "build-modify-index": "sed -i 's@</head>@  <link rel=\"stylesheet\" href=\"/css/_dist_/ui/main.css?{{assetsTime}}\"></head>@' build/public/index.html",
     "watch": "snowpack dev",
     "gen-icon-sprite": "npx svgo --config ui/assets/icons-svgo.json -f ui/assets/icons && npx svg-sprite --config ui/assets/icons-svg-sprite.json ui/assets/icons/*.svg",
-    "test": "web-test-runner {i18n,ui/api,ui/auth,ui/layout}/**/*.test.ts"
+    "test": "web-test-runner {i18n,ui/api,ui/auth,ui/layout,ui/login,ui/routing}/**/*.test.ts"
   },
   "devDependencies": {
     "@snowpack/plugin-run-script": "^2.3.0",

@@ -8,17 +8,17 @@ it('sorts items by clicking on headers', async () => {
   const columns = ['id', 'time']
   const fields = ['a', 'b']
   const {container, component} = render(SortableTable, {items, key, columns, fields, tableClass: 'another-class'})
-  expect(container.querySelector('table')!.classList.contains('another-class')).toBeTruthy()
+  expect(container.querySelector('table')!.classList.contains('another-class')).to.be.ok
   expect(container).toContainHTML($_('admin.events.id'))
   expect(container).toContainHTML($_('admin.events.time'))
-  expect(prop(component, 'items')).toBe(items)
+  expect(prop(component, 'items')).to.equal(items)
 
   const headers = container.querySelectorAll('th')
   await fireEvent.click(headers[0])
   expect(headers[0]).toContainHTML('▴')
-  expect(prop(component, 'items')).toEqual(items)
+  expect(prop(component, 'items')).to.deep.equal(items)
 
   await fireEvent.click(headers[0])
   expect(headers[0]).toContainHTML('▾')
-  expect(prop(component, 'items')).toEqual(items.reverse())
+  expect(prop(component, 'items')).to.deep.equal(items.reverse())
 })

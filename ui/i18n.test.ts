@@ -11,8 +11,8 @@ it('language is saved to cookie and url is replaced', () => {
   }
   const history = {pushState: jest.fn()}
   i18n.rememberLang('de', history as any, location as any)
-  expect(document.cookie.includes('LANG=de')).toBe(true)
-  expect(history.pushState).toBeCalledWith(null, '', '/de/about/?hello#blah')
+  expect(document.cookie.includes('LANG=de')).to.equal(true)
+  expect(history.pushState).calledWith(null, '', '/de/about/?hello#blah')
 })
 
 it('contains same number of translations for each lang', () => {
@@ -22,7 +22,7 @@ it('contains same number of translations for each lang', () => {
 })
 
 test('datetime formatting', () => {
-  expect(i18n.formatDateTime(undefined)).toBe('')
+  expect(i18n.formatDateTime(undefined)).to.equal('')
   expect(i18n.formatDateTime(new Date())).toMatch(new Date().getFullYear().toString())
   expect(i18n.formatDateTime('2020-01-01T10:23:45.010101')).toMatch('10:23')
   expect(i18n.formatDateTime(123)).toMatch('1970')
@@ -30,5 +30,5 @@ test('datetime formatting', () => {
 
 test('translate keys with special prefix', () => {
   const key = 'i18n:title'
-  expect(tryTranslate(key)).toBe($_('App Template'))
+  expect(tryTranslate(key)).to.equal($_('App Template'))
 })

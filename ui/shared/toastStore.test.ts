@@ -6,17 +6,17 @@ afterAll(() => jest.useRealTimers())
 
 test('show/hide toast', () => {
   const toast1 = showToast('Created stuff')
-  expect(toast1.type).toBe('success')
-  expect(toast1.timeoutSec).toBe(10)
+  expect(toast1.type).to.equal('success')
+  expect(toast1.timeoutSec).to.equal(10)
   const toast2 = showToast('Failed', {type: 'error', timeoutSec: 25})
-  expect(toast2.type).toBe('error')
-  expect(toast2.timeoutSec).toBe(25)
+  expect(toast2.type).to.equal('error')
+  expect(toast2.timeoutSec).to.equal(25)
 
-  expect(get(toastStore)).toEqual([toast1, toast2])
+  expect(get(toastStore)).to.deep.equal([toast1, toast2])
 
   hideToast(toast1)
-  expect(get(toastStore)).toEqual([toast2])
+  expect(get(toastStore)).to.deep.equal([toast2])
 
   jest.runAllTimers()
-  expect(get(toastStore)).toEqual([])
+  expect(get(toastStore)).to.deep.equal([])
 })

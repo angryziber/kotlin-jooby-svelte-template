@@ -4,32 +4,38 @@ import gateway from '../api/Gateway'
 import router from '../routing/Router'
 import session from '../auth/Session'
 import {change} from '../test-utils'
+import {SinonStub, stub} from 'sinon'
+import {expect} from 'chai'
+import {Role} from '@ui/api/types'
 
+let post: SinonStub, navigateTo: SinonStub
 beforeEach(() => {
-  jest.spyOn(router, 'navigateTo')
+  post = stub(gateway, 'post')
+  navigateTo = stub(router, 'navigateTo')
 })
 
 afterEach(() => {
-  session.user = null
+  post.restore()
+  navigateTo.restore()
 })
 
-test('successful login redirects to the role page', async () => {
+it('successful login redirects to the role page', async () => {
   const data = {login: 'user', password: 'pass'}
   const {container} = render(LoginForm, {data})
 
-  jest.spyOn(gateway, 'post').mockResolvedValue({role: 'admin'})
+  post.resolves({role: Role.ADMIN})
   await fireEvent.submit(container.querySelector('form')!)
   await change()
-  expect(gateway.post).toBeCalledWith('/api/auth/login', data)
-  expect(session.user).toEqual(expect.objectContaining({role: 'admin'}))
-  expect(router.navigateTo).toBeCalledWith('admin')
+  expect(post).calledWith('/api/auth/login', data)
+  expect(session.user).to.have.property('role', Role.ADMIN)
+  expect(navigateTo).calledWith('admin')
 })
 
-test('login fails', async () => {
+it('login fails', async () => {
   const {container} = render(LoginForm)
 
-  jest.spyOn(gateway, 'post').mockReturnValue(Promise.reject({message: 'failed'}))
+  post.rejects(new Error('failed'))
   await fireEvent.submit(container.querySelector('form')!)
 
-  expect(container.querySelector('.alert-danger')).toContainHTML('failed')
+  expect(container.querySelector('.alert-danger')!.textContent).to.contain('failed')
 })

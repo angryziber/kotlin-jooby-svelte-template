@@ -32,5 +32,5 @@ export const user = session.userStore
 
 export async function finishLogin(user: User, page?: string) {
   session.user = user
-  router.navigateTo(page || user.role)
+  router.navigateTo(page || user.role?.toLowerCase())
 }

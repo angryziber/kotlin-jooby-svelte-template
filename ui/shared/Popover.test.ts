@@ -11,7 +11,7 @@ it('is shown and hidden on hover', async () => {
   const popover = document.querySelector('body > .popover') as HTMLElement
   expect(popover).toContainHTML('Title')
   expect(popover).toContainHTML('Text')
-  expect(popover.style.top).toBe('30px')
+  expect(popover.style.top).to.equal('30px')
 
   await fireEvent.mouseLeave(slot)
   expect(document.querySelector('body > .popover')).toBeFalsy()
