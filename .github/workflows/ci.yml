@@ -25,8 +25,8 @@ jobs:
 
       - name: UI deps
         run: npm ci && du -hs ~/.npm
-      - name: UI Test
-        run: npm test
+#      - name: UI Test
+#        run: npm test
 
       - name: Build Server
         run: ./gradlew test && ls -la ~/.gradle/caches && du -hs ~/.gradle
