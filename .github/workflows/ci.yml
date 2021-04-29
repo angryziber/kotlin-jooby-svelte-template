@@ -17,9 +17,9 @@ jobs:
         uses: actions/cache@v2
         with:
           path: ~/.npm ~/.gradle
-          key: ${{ runner.os }}-deps-${{ hashFiles('package-lock.json', 'build.gradle.kts') }}
+          key: ${{ runner.os }}-deps2-${{ hashFiles('package-lock.json', 'build.gradle.kts') }}
           restore-keys: |
-            ${{ runner.os }}-deps-
+            ${{ runner.os }}-deps2-
 
       - name: Check cache
         run: du -hs ~/.npm ~/.gradle || echo "No cache"
