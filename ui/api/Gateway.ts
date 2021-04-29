@@ -9,8 +9,7 @@ class Gateway {
       ...init, headers,
       body: init?.body && JSON.stringify(init.body)
     })
-    .then(this.extractJsonHandlingErrors)
-    .catch(this.handleFetchFailure)
+    .then(this.extractJsonHandlingErrors, this.handleFetchFailure)
     .finally(() => {
       document.documentElement.classList.remove('loading')
       disabledButtons?.forEach(btn => btn.disabled = false)
