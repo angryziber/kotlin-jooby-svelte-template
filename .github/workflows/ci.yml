@@ -16,15 +16,14 @@ jobs:
       - name: Cache deps
         uses: actions/cache@v2
         with:
-          path:
-            ~/.npm
-            ~/.gradle
+          path: ~/.npm
+#            ~/.gradle
           key: ${{ runner.os }}-deps-${{ hashFiles('package-lock.json', 'build.gradle.kts') }}
           restore-keys: |
             ${{ runner.os }}-deps-
 
       - name: Check cache
-        run: du -hs ~/.npm ~/.gradle
+        run: du -hs ~/.npm ~/.gradle || echo "No cache"
 
       - name: UI deps
         run: npm ci && du -hs ~/.npm
