@@ -1,10 +1,8 @@
 import './shared/ArrayExtensions'
+import {fake} from 'sinon'
+import sinonChai from 'sinon-chai'
+import chai from 'chai'
 
-window.fetch = jest.fn().mockReturnValue(new Promise(() => {}))
+chai.use(sinonChai)
 
-window['scrollTo'] = jest.fn()
-window['config'] = {}
-
-process.on('unhandledRejection', e => {
-  throw e
-})
+window.fetch = fake.returns(new Promise(() => {}))
