@@ -9,7 +9,7 @@ For people asking me at conferences what would I recommend from technical perspe
     * Server unit tests use Junit5/Mockk
     * Repository integration tests run in in-memory H2 DB to avoid any dependencies
 * UI is built with Svelte + Snowpack with TypeScript support
-    * UI tests use Jest and TypeScript
+    * UI tests use Web Test Runner and TypeScript
 * E2E tests use Selenide to drive the actual browser backed by H2 DB
 
 ## Noteworthy features
@@ -60,11 +60,6 @@ Bundler                        |**Webpack**|**Rollup**|**Snowpack**
 NPM packages (without plugins) |74         |2         |7
 ES6 modules                    |transpiled to es5|native|native & not bundled by default - you run what you write
 Watch & reload                 |full rebuild|full rebuild|rebuilds & reloads only changed files (es6 modules)
-
-
-### Why jest? 
-Having said that, the remaining problem is **jest**, which has 528 dependencies and no native es6 module support (all browsers and Node do support them natively nowadays).
-Need to find a good alternative with native es6 support and few dependencies.
 
 ## Running in Docker
 
