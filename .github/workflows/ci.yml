@@ -21,16 +21,11 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-gradle-
 
-      - name: Check cache
-        run: du -hs ~/.gradle || echo "No cache"
-
       - name: UI deps
         run: npm ci
 #      - name: UI Test
 #        run: npm test
 
-      - name: Server deps
-        run: ./gradlew deps && ls -la ~/.gradle/caches && du -hs ~/.gradle
       - name: Build Server
         run: ./gradlew jar
       - name: Test Server
