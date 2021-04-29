@@ -1,4 +1,5 @@
 <script>
+  import {_} from '@ui/i18n'
   import Icon from '../shared/Icon.svelte'
   import AppLogo from './AppLogo.svelte'
   import PageMenu from './PageMenu.svelte'

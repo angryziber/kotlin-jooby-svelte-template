@@ -1,4 +1,6 @@
 <script>
+  import {_} from '@ui/i18n'
+
   export let tableClass = ''
   export let items, key, columns
   export let fields = columns

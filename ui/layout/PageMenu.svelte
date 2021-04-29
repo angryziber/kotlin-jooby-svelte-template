@@ -1,21 +1,19 @@
-<script>
+<script lang="ts">
+  import {_} from '@ui/i18n'
   import {user} from '../auth/Session'
 
   class MenuItem {
-    constructor(subPage, title) {
-      this.subPage = subPage
-      this.title = title
-    }
+    constructor(public subPage: string, public title: string) {}
     get page() {
-      return `${$user.role}${this.subPage ? '/' + this.subPage : ''}`
+      return `${$user!.role}${this.subPage ? '/' + this.subPage : ''}`
     }
   }
 
   const menu =
-    $user.role === 'admin' ? [
+    $user!.role === 'admin' ? [
       new MenuItem('', 'admin.dashboard.title')
     ] :
-    $user.role === 'user' ? [
+    $user!.role === 'user' ? [
       new MenuItem('', 'user.welcome.menu')
     ] : []
 

@@ -10,7 +10,7 @@
     "target": "ES2019",
     "module": "ESNext",
     "moduleResolution": "node",
-    "types": ["svelte", "jest", "testing-library__jest-dom", "node", "./ui/shared/ArrayExtensions"],
+    "types": ["svelte", "mocha", "./ui/shared/ArrayExtensions"],
     "baseUrl": ".",
     "paths": {
       "@ui/*": ["./ui/*"]

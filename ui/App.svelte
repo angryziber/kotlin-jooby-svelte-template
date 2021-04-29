@@ -3,7 +3,7 @@
   import {onDestroy, onMount} from 'svelte'
   import jsErrorHandler from './jsErrorHandler'
   import router from './routing/Router'
-  import session, {user} from './auth/Session'
+  import session, {User, user} from './auth/Session'
   import {showToast} from './shared/toastStore'
   import LoginPage from './pages/LoginPage.svelte'
   import NotFound from './pages/NotFound.svelte'
@@ -13,16 +13,16 @@
   import LoginLayout from './layout/LoginLayout.svelte'
   import Toast from './shared/Toasts.svelte'
 
-  export let initialUser = undefined
+  export let initialUser: User|undefined = undefined
 
-  let page, pageParams, isPublicPage
+  let page: string, pageParams = {}, isPublicPage = false
 
   function onPageChanged() {
     page = router.currentPage(location.pathname)
     isPublicPage = page === 'login'
   }
 
-  function matches(page, path) {
+  function matches(page: string, path: string) {
     return pageParams = router.matches(path, page)
   }
 
@@ -62,7 +62,7 @@
 
     if (!page && $user) router.navigateTo($user.role)
     else if (!page || !$user && !isPublicPage) router.navigateTo('login', {replaceHistory: true})
-    else if (!isPublicPage && !page.startsWith($user.role)) page = ''
+    else if (!isPublicPage && !page.startsWith($user?.role ?? '')) page = ''
   }
 
   init()

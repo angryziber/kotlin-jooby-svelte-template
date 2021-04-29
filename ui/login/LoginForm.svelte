@@ -1,4 +1,5 @@
 <script>
+  import {_} from '@ui/i18n'
   import {onMount} from 'svelte'
   import {slide} from 'svelte/transition'
   import Icon from '../shared/Icon.svelte'

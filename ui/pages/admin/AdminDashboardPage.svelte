@@ -1,4 +1,5 @@
 <script>
+  import {_} from '@ui/i18n'
 </script>
 
 <div class="container-fluid">

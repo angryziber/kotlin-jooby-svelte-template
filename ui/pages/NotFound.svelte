@@ -1,5 +1,5 @@
 <script>
-  // run preprocessor
+  import {_} from '@ui/i18n'
 </script>
 
 <div class="text-center pt-5">
