@@ -21,13 +21,12 @@ jobs:
             ~/.gradle
           key: ${{ runner.os }}-deps-${{ hashFiles('package-lock.json', 'build.gradle.kts') }}
           restore-keys: |
-            ${{ runner.os }}-deps-${{ env.cache-name }}-
             ${{ runner.os }}-deps-
 
       - name: UI deps
-        run: npm ci && ls -la node_modules && ls -la ~/.npm
+        run: npm ci && du -hs ~/.npm
       - name: UI Test
         run: npm test
 
       - name: Build Server
-        run: ./gradlew test && ls -la ~/.gradle/caches
+        run: ./gradlew test && ls -la ~/.gradle/caches && du -hs ~/.gradle
