@@ -13,16 +13,16 @@ jobs:
           java-version: '11'
           architecture: x64
 
-      - name: Cache deps
+      - name: Cache gradle deps
         uses: actions/cache@v2
         with:
-          path: ~/.npm ~/.gradle
-          key: ${{ runner.os }}-deps2-${{ hashFiles('package-lock.json', 'build.gradle.kts') }}
+          path: ~/.gradle
+          key: ${{ runner.os }}-gradle-${{ hashFiles('package-lock.json', 'build.gradle.kts') }}
           restore-keys: |
-            ${{ runner.os }}-deps2-
+            ${{ runner.os }}-gradle-
 
       - name: Check cache
-        run: du -hs ~/.npm ~/.gradle || echo "No cache"
+        run: du -hs ~/.gradle || echo "No cache"
 
       - name: UI deps
         run: npm ci
