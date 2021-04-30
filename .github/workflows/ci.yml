@@ -52,3 +52,5 @@ jobs:
           registry: docker.pkg.github.com
           repository: angryziber/kotlin-jooby-svelte-template/app
           tag_with_ref: true
+          cache-from: type=registry,ref=angryziber/kotlin-jooby-svelte-template/app:latest
+          cache-to: type=inline
