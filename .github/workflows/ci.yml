@@ -47,5 +47,8 @@ jobs:
       - name: Build and push
         uses: docker/build-push-action@v2
         with:
-          push: false
-          # tags: user/app:latest
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+          registry: docker.pkg.github.com
+          repository: angryziber/kotlin-jooby-svelte-template/app
+          tag_with_ref: true
