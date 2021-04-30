@@ -23,8 +23,8 @@ jobs:
 
       - name: UI deps
         run: npm ci
-#      - name: UI Test
-#        run: npm test
+      - name: UI Test
+        run: npm test
 
       - name: Build Server
         run: ./gradlew jar
