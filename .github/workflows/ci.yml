@@ -13,6 +13,19 @@ jobs:
           java-version: '11'
           architecture: x64
 
+      - name: Cache npm deps
+        uses: actions/cache@v2
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-npm-${{ hashFiles('package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-npm-
+
+      - name: UI deps
+        run: npm ci
+      - name: UI Test
+        run: npm test
+
       - name: Cache gradle deps
         uses: actions/cache@v2
         with:
@@ -20,11 +33,6 @@ jobs:
           key: ${{ runner.os }}-gradle-${{ hashFiles('build.gradle.kts') }}
           restore-keys: |
             ${{ runner.os }}-gradle-
-
-      - name: UI deps
-        run: npm ci
-      - name: UI Test
-        run: npm test
 
       - name: Build Server
         run: ./gradlew jar
