@@ -17,7 +17,7 @@
         </li>
         <li class="nav-item">
           <a class="nav-link" href="/logout">
-            <span>{$_('logout.linkTitle')}</span>
+            <span>{$_('login.logout')}</span>
             <Icon iconClass="ml-2" name="log-out"/>
           </a>
         </li>

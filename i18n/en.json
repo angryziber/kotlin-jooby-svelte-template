@@ -10,10 +10,8 @@
     "safetyReminder": "Don't forget to logout if you don't trust this computer",
     "otp": {
       "message": "Your one-time password is {otp}"
-    }
-  },
-  "logout": {
-    "linkTitle": "Log out"
+    },
+    "logout": "Log out"
   },
   "pages": {
     "home": {
