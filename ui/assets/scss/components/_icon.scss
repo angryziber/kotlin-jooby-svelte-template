@@ -1,0 +1,32 @@
+.icon {
+  width: $icon-size;
+  height: $icon-size;
+
+  .table & {
+    vertical-align: sub;
+  }
+
+  &.icon-sm {
+    height: $icon-size-sm;
+    width: $icon-size-sm;
+  }
+
+  &.icon-lg {
+    height: $icon-size-lg;
+    width: $icon-size-lg;
+  }
+
+  &.icon-md {
+    height: $icon-size-md;
+    width: $icon-size-md;
+  }
+
+  &.icon-xl {
+    height: $icon-size-xl;
+    width: $icon-size-xl;
+  }
+}
+
+.icon-vertical-shift {
+  margin-top: $icon-vertical-shift;
+}

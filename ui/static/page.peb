@@ -8,7 +8,7 @@
     </a>
 
     <div class="d-flex align-items-center">
-      <a href="/{{lang}}/app/" class="btn btn-secondary btn-with-icon">
+      <a href="/{{lang}}/app/" class="btn btn-secondary">
         <span>{{login.submit}}</span>
         {{ icon('log-in', 'ml-2') }}
       </a>
