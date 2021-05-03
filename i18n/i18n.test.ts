@@ -18,12 +18,12 @@ it("test entry creation utility", () => {
   expect(langs['en']['enkeytesting']['testing']['text']).to.equal('works!')
 })
 
-it('backend translate', () => {
+it('translate', () => {
   expect(translate('en', 'login.submit')).to.equal('Login')
   expect(translate('en', 'login.otp.message', {values: {otp: '000111'}})).to.equal('Your one-time password is 000111')
 })
 
-it('backend translate with unsupported lang', () => {
+it('translate with unsupported lang', () => {
   expect(translate('??', 'login.submit')).to.equal('Login')
 })
 
