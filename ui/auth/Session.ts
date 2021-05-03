@@ -1,12 +1,6 @@
 import {get, writable} from 'svelte/store'
-import router from '../routing/Router'
-
-export class User {
-  id!: string
-  login!: string
-  role!: string
-  name?: string
-}
+import router from '@ui/routing/Router'
+import {User} from '@ui/api/types'
 
 class Session {
   userStore = writable<User|null>(null)
@@ -16,7 +10,6 @@ class Session {
   }
 
   set user(user: User|null) {
-    if (user) Object.setPrototypeOf(user, User.prototype)
     this.userStore.set(user)
   }
 

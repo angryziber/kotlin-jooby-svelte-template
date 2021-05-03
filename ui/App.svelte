@@ -3,7 +3,7 @@
   import {onDestroy, onMount} from 'svelte'
   import jsErrorHandler from './jsErrorHandler'
   import router from './routing/Router'
-  import session, {User, user} from './auth/Session'
+  import session, {user} from './auth/Session'
   import {showToast} from './shared/toastStore'
   import LoginPage from './pages/LoginPage.svelte'
   import NotFound from './pages/NotFound.svelte'
@@ -12,6 +12,7 @@
   import UserWelcomePage from './pages/user/UserWelcomePage.svelte'
   import LoginLayout from './layout/LoginLayout.svelte'
   import Toast from './shared/Toasts.svelte'
+  import type {User} from '@ui/api/types'
 
   export let initialUser: User|undefined = undefined
 

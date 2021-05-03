@@ -1,12 +1,13 @@
 import {act, render} from '@testing-library/svelte'
 import App from './App.svelte'
 import router from './routing/Router'
-import session, {User} from './auth/Session'
+import session from './auth/Session'
 import {$_, change} from './test-utils'
 import {expect} from 'chai'
 import {SinonStub, stub, useFakeTimers} from 'sinon'
+import {Role, User} from '@ui/api/types'
 
-const user = {id: '123-123', role: 'company'} as User
+const user = {id: '123-123', role: Role.ADMIN} as User
 
 let currentPage: SinonStub, navigateTo: SinonStub
 
@@ -62,13 +63,13 @@ it('shows not found when role does not match', async () => {
 })
 
 it('navigates to user role page if there is a user in session', async () => {
-  session.user = {...user, role: 'user'} as User
+  session.user = {...user, role: Role.USER} as User
   currentPage.returns('')
 
   render(App)
 
   await change()
-  expect(router.navigateTo).calledWith('user')
+  expect(router.navigateTo).calledWith(Role.USER)
 })
 
 describe('handles unhandled promises', () => {
