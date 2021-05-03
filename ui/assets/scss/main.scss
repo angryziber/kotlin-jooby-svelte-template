@@ -1,12 +1,5 @@
 @import "./_variables";
 @import "./_bootstrap";
-@import "./_components";
-
-html {
-  font-size: 14px;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-}
 
 html.loading * {
   // set by gateway for global loading state
