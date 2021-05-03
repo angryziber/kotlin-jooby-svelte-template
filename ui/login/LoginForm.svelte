@@ -33,12 +33,12 @@
   {/if}
 
   <div class="mb-3">
-    <label>{$_('login.login')}</label>
+    <label class="form-label">{$_('login.login')}</label>
     <input type="text" name="login" bind:value={data.login} class="form-control form-control-lg" required autofocus>
   </div>
 
   <div class="mb-3" transition:slide|local>
-    <label>{$_('login.password')}</label>
+    <label class="form-label">{$_('login.password')}</label>
     <input bind:value={data.password} type="password" name="password" class="form-control form-control-lg" required>
   </div>
 

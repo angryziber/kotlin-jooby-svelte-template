@@ -3,8 +3,8 @@
   import AppLogo from '../layout/AppLogo.svelte'
 </script>
 
-<div class="login-container">
-  <div class="login-header">
+<div class="container-fluid">
+  <div class="d-flex justify-content-between my-4">
     <AppLogo/>
     <LanguageSelection/>
   </div>

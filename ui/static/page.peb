@@ -14,7 +14,7 @@
       </a>
 
       <div class="language-selection">
-        <select class="custom-control custom-select"
+        <select class="form-select"
                 onchange="location.pathname = location.pathname.replace(/^\/[a-z]{2}\//, '/' + this.value + '/')">
           {% for l in langs %}
             <option {%if lang == l %}selected{% endif %} value="{{l}}">{{l.toUpperCase()}}</option>

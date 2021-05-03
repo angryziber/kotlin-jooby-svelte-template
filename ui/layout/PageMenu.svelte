@@ -22,7 +22,7 @@
 
 <svelte:window on:popstate={() => url = location.pathname}/>
 
-<ul class="nav navbar-nav flex-row flex-md-column mt-5">
+<ul class="nav navbar-nav">
   {#each menu as item}
     {#if item}
       <li class="nav-item" class:active={url.endsWith(item.page)}>
