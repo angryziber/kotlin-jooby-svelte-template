@@ -1,6 +1,10 @@
 @import "./_variables";
 @import "./_bootstrap";
 
+html {
+  font-size: 14px;
+}
+
 html.loading * {
   // set by gateway for global loading state
   cursor: wait !important;
