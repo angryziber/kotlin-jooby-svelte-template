@@ -54,6 +54,6 @@ jobs:
         uses: docker/build-push-action@v2
         with:
           push: true
-          tags: docker.pkg.github.com/angryziber/kotlin-jooby-svelte-template/app:1.0
+          tags: docker.pkg.github.com/angryziber/kotlin-jooby-svelte-template/app
           cache-from: type=registry,ref=docker.pkg.github.com/angryziber/kotlin-jooby-svelte-template/app:latest
           cache-to: type=inline
