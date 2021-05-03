@@ -44,11 +44,11 @@ dependencies {
 }
 
 sourceSets {
-  getByName("main").apply {
+  named("main") {
     java.srcDirs("src")
     resources.srcDirs("src", "i18n", "ui/static").exclude("**/*.kt")
   }
-  getByName("test").apply {
+  named("test") {
     java.srcDirs("test")
     resources.srcDirs("test").exclude("**/*.kt")
   }
