@@ -38,6 +38,9 @@ WORKDIR /app
 COPY --from=server-build /app/build/libs ./
 COPY --from=ui-build /app/build/public public/
 
+# Pebble requires a writable tmp
+RUN mkdir tmp; chown -R user tmp
+
 # Run under non-privileged user with minimal write permissions
 USER user
 
