@@ -1,5 +1,6 @@
 <component name="ProjectRunConfigurationManager">
   <configuration default="false" name="Server Tests" type="JUnit" factoryName="JUnit">
+    <module name="work.kotlin-jooby-svelte-template.test" />
     <useClassPathOnly />
     <option name="MAIN_CLASS_NAME" value="" />
     <option name="METHOD_NAME" value="" />

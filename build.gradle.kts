@@ -38,7 +38,6 @@ dependencies {
   testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.6.0")
   testImplementation("org.assertj:assertj-core:3.15.0")
   testImplementation("com.codeborne:selenide:5.10.0")
-  runtimeOnly("com.h2database:h2:1.4.200")
 
   jvm2dts("com.codeborne:jvm2dts:1.4.0")
 }

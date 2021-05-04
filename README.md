@@ -7,7 +7,7 @@ For people asking me at conferences what would I recommend from technical perspe
     * Postgres is used for DB (runnable using docker-compose)
     * Liquibase migrates the DB
     * Server unit tests use Junit5/Mockk
-    * Repository integration tests run in in-memory H2 DB to avoid any dependencies
+    * Repository integration tests run in the same DB instance (different schema)
 * UI is built with Svelte + Snowpack with TypeScript support
     * UI tests use Web Test Runner and TypeScript
 * E2E tests use Selenide to drive the actual browser backed by H2 DB
@@ -68,7 +68,7 @@ Watch & reload                 |full rebuild|full rebuild|rebuilds & reloads onl
 or to just start the DB:
 `docker-compose up -d db`
 
-This will bind to `127.0.0.1:55432` by default
+This will bind to `127.0.0.1:6432` by default
 
 # Development
 
