@@ -36,8 +36,12 @@ jobs:
 
       - name: Build Server
         run: ./gradlew jar
+      - name: Start test DB
+        run: docker-compose up -d db
       - name: Test Server
-        run: docker-compose up -d db && ./gradlew test && docker-compose down
+        run: ./gradlew test
+      - name: Stop test DB
+        run: docker-compose down
 
   docker:
     runs-on: ubuntu-20.04
