@@ -54,3 +54,5 @@ CMD java $JAVA_OPTS -jar app.jar
 # Heroku redefines exposed port
 ENV PORT=8080
 EXPOSE $PORT
+
+HEALTHCHECK CMD wget --no-verbose --tries=1 --spider http://localhost:$PORT/api/health || exit 1

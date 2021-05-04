@@ -84,6 +84,8 @@ class App: Kooby({
       .put("configJson", uiConfigJson)
   }
 
+  get("/api/health") { "OK" }
+
   post("/api/js-error") {
     getLogger("js-error").error(ctx.body().value())
   }
