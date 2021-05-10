@@ -55,3 +55,5 @@ class AuthModule: Extension {
 @Target(AnnotationTarget.CLASS, AnnotationTarget.FUNCTION)
 @Retention(AnnotationRetention.RUNTIME)
 annotation class Access(vararg val value: Role)
+
+val Route.accessPublic get() = attribute(Access::class.simpleName!!, listOf(PUBLIC))

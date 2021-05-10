@@ -1,9 +1,6 @@
 package app
 
-import auth.AuthController
-import auth.AuthModule
-import auth.FakeLoginForTestingController
-import auth.User
+import auth.*
 import com.fasterxml.jackson.annotation.JsonInclude.Include.NON_NULL
 import com.fasterxml.jackson.databind.DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES
 import com.fasterxml.jackson.databind.ObjectMapper
@@ -84,15 +81,15 @@ class App: Kooby({
       .put("configJson", uiConfigJson)
   }
 
-  get("/api/health") { "OK" }
+  get("/api/health") { "OK" }.accessPublic
 
   post("/api/js-error") {
     getLogger("js-error").error(ctx.body().value())
-  }
+  }.accessPublic
 
   post("/api/csp-report") {
     getLogger("csp-report").warn(ctx.body().value())
-  }
+  }.accessPublic
 })
 
 private fun Context.initialPage() = if (getUser<User>() == null) "home" else "app"
