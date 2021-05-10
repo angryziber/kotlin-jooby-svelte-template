@@ -1,14 +1,19 @@
 package db
 
+import util.toType
+import java.sql.Date
 import java.sql.PreparedStatement
 import java.sql.ResultSet
 import java.sql.Timestamp
 import java.time.Instant
+import java.time.LocalDate
+import java.time.LocalDateTime
 import java.time.Period
 import java.time.ZoneOffset.UTC
 import java.util.*
 import javax.sql.DataSource
 import kotlin.reflect.KType
+import kotlin.reflect.full.isSubclassOf
 import kotlin.reflect.full.primaryConstructor
 import kotlin.reflect.jvm.jvmErasure
 
@@ -102,8 +107,11 @@ private fun toDBType(v: Any?): Any? = when(v) {
   else -> v
 }
 
-fun fromDBType(v: Any?, type: KType): Any? = when(type.jvmErasure) {
-  Instant::class -> (v as Timestamp).toInstant()
+fun fromDBType(v: Any?, type: KType): Any? = when {
+  type.jvmErasure == Instant::class -> (v as Timestamp).toInstant()
+  type.jvmErasure == LocalDate::class -> (v as? Date)?.toLocalDate()
+  type.jvmErasure == LocalDateTime::class -> (v as Timestamp).toLocalDateTime()
+  type.jvmErasure.isSubclassOf(Enum::class) -> (v as String).toType(type)
   else -> v
 }
 
