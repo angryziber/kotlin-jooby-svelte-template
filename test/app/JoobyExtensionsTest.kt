@@ -33,7 +33,7 @@ class JoobyExtensionsTest {
   @Test
   fun `generated requestId`() {
     every { ctx.header("X-Request-Id").valueOrNull() } returns null
-    every { ctx.attributes["requestId"] } returns null
+    every { ctx.attributes } returns emptyMap()
     val requestId = ctx.requestId
     assertThat(requestId).matches(".+-1")
     verify { ctx.attribute("requestId", requestId) }
@@ -42,7 +42,7 @@ class JoobyExtensionsTest {
   @Test
   fun `remembered requestId`() {
     every { ctx.header("X-Request-Id").valueOrNull() } returns null
-    every { ctx.attributes["requestId"] } returns "remembered-id"
+    every { ctx.attributes } returns mapOf("requestId" to "remembered-id")
     assertThat(ctx.requestId).isEqualTo("remembered-id")
   }
 }
