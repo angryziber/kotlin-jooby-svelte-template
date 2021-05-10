@@ -33,14 +33,12 @@ class App: Kooby({
   install(RequestLogger())
   install(ExceptionHandler())
   install(RequestTransactionHandler())
-  install(AuthModule())
 
   val apiVersion = System.getenv("API_VERSION") ?: "%API_VERSION%"
   val uiConfigJson = require<ObjectMapper>().writeValueAsString(mapOf("apiVersion" to apiVersion))
 
-  before {
-    ctx.setResponseHeader("x-api-version", apiVersion)
-  }
+  before { ctx.setResponseHeader("x-api-version", apiVersion) }
+  install(AuthModule())
 
   registerServicesAndControllers()
 
