@@ -1,6 +1,7 @@
 package auth
 
 import app.isHttps
+import app.user
 import db.toId
 import io.jooby.*
 import io.jooby.exception.BadRequestException
@@ -18,6 +19,7 @@ class AuthModule: Extension {
     app.sessionStore = SessionStore.signed(System.getenv("SESSION_KEY") ?: "Default insecure app session key", sessionCookie)
     userRepository = app.require()
     app.before(::checkUserAndRole)
+    app.get("/api/user") { ctx -> ctx.user }.attribute(Access::class.simpleName!!, Role.values().toList() - PUBLIC)
   }
 
   fun checkUserAndRole(ctx: Context) {

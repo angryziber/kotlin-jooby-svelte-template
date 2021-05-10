@@ -1,6 +1,7 @@
 import {act, render} from '@testing-library/svelte'
 import App from './App.svelte'
 import router from './routing/Router'
+import gateway from '@ui/api/Gateway'
 import session from './auth/Session'
 import {$_, change} from './test-utils'
 import {expect} from 'chai'
@@ -23,16 +24,13 @@ afterEach(() => {
   navigateTo.restore()
 })
 
-it('uses user from initial state if exists', async () => {
-  render(App, {initialUser: user})
-  await change()
-  expect(router.navigateTo).not.called
-  expect(session.user).to.deep.equal(user)
-})
-
-it('navigates to login page if no user in session', () => {
+it('fetches user from api', async () => {
+  currentPage.returns('')
+  stub(gateway, 'get').resolves(user)
   render(App)
-  expect(router.navigateTo).calledWith('login', {replaceHistory: true})
+  await act(gateway.get)
+  expect(navigateTo).calledWith('admin', {replaceHistory: true})
+  expect(session.user).to.equal(user)
 })
 
 it('shows role page when user in session', () => {
@@ -60,16 +58,6 @@ it('shows not found when role does not match', async () => {
 
   await change()
   expect(container.innerHTML).to.contain('Page Not Found')
-})
-
-it('navigates to user role page if there is a user in session', async () => {
-  session.user = {...user, role: Role.USER} as User
-  currentPage.returns('')
-
-  render(App)
-
-  await change()
-  expect(router.navigateTo).calledWith(Role.USER)
 })
 
 describe('handles unhandled promises', () => {
