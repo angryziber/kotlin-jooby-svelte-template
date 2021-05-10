@@ -11,13 +11,6 @@
     <sql>create extension if not exists "uuid-ossp"</sql>
   </changeSet>
 
-  <changeSet id="h2-pgsql-compatibility" author="Codeborne" dbms="H2" runOnChange="true">
-    <sql>
-      create domain if not exists timestamptz as timestamp;
-      create alias if not exists uuid_generate_v4 for "java.util.UUID.randomUUID";
-    </sql>
-  </changeSet>
-
   <changeSet id="users" author="Codeborne">
     <createTable tableName="users">
       <column name="id" type="${idType}"><constraints primaryKey="true" primaryKeyName="users_pk"/></column>
