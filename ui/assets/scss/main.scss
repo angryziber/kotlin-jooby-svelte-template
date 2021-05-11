@@ -2,8 +2,8 @@
 @import "./_bootstrap";
 @import "./_components";
 
-html {
-  font-size: 14px;
+html, body {
+  min-height: 100vh;
 }
 
 html.loading * {
