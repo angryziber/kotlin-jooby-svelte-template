@@ -1,23 +1,16 @@
 <script>
-  import {toastStore, hideToast} from './toastStore'
+  import {fly} from 'svelte/transition'
+  import {hideToast, toastStore} from './toastStore'
   import Modal from './Modal.svelte'
-
-  function out(node) {
-    node.classList.remove('slide-in-blurred-top')
-    node.classList.add('slide-out-blurred-top')
-    return {duration: 500}
-  }
 </script>
 
-<div class="toasts-container">
+<div class="toast-container position-fixed bottom-0 end-0 p-3">
   {#each $toastStore as toast (toast.id)}
     {#if !toast.modal}
-      <div aria-atomic="true" aria-live="assertive" role="alert" class="toast slide-in-blurred-top toast-{toast.type}" out:out>
+      <div aria-atomic="true" aria-live="assertive" role="alert" class="toast show bg-{toast.type}" transition:fly={{y: 100}}>
         <div class="toast-header">
-          <strong class="mr-auto">{toast.title || toast.message}</strong>
-          <button aria-label="Close" class="ml-2 mb-1 close" on:click={() => hideToast(toast)}>
-            <span aria-hidden="true">×</span>
-          </button>
+          <strong class="me-auto">{toast.title || toast.message}</strong>
+          <button type="button" class="btn-close" aria-label="Close" on:click={() => hideToast(toast)}></button>
         </div>
         {#if toast.title}
           <div class="toast-body text-preserve-lines">
