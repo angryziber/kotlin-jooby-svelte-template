@@ -1,4 +1,4 @@
-const proxy = require('http-proxy').createServer({target: 'http://localhost:8080'})
+const proxy = require('http2-proxy')
 
 const svelteIgnore = [
   'a11y-autofocus',
@@ -56,7 +56,7 @@ module.exports = {
     sourcemap: true
   },
   routes: [
-    {src: '/api/.*', dest: (req, res) => proxy.web(req, res)},
+    {src: '/api/.*', dest: (req, res) => (req, res) => proxy.web(req, res, {hostname: 'localhost', port: 8080}).catch(() => res.end())},
     {match: 'routes', src: '.*', dest: '/index.html'}
   ],
   devOptions: {
