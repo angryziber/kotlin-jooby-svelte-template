@@ -56,7 +56,7 @@ module.exports = {
     sourcemap: true
   },
   routes: [
-    {src: '/api/.*', dest: (req, res) => (req, res) => proxy.web(req, res, {hostname: 'localhost', port: 8080}).catch(() => res.end())},
+    {src: '/api/.*', dest: (req, res) => proxy.web(req, res, {hostname: 'localhost', port: 8080}).catch(() => res.end())},
     {match: 'routes', src: '.*', dest: '/index.html'}
   ],
   devOptions: {
