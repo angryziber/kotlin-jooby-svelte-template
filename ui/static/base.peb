@@ -1,6 +1,6 @@
 {% import "../macros/icon.peb" %}
 <!DOCTYPE html>
-<html lang="{{lang}}" class="theme-default">
+<html lang="{{lang}}">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">

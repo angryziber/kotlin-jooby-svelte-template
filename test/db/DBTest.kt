@@ -1,16 +1,16 @@
 package db
 
-import com.zaxxer.hikari.util.DriverDataSource
-import db.DBModule.Companion.testDBUrl
+import com.zaxxer.hikari.HikariDataSource
 import org.junit.jupiter.api.extension.AfterEachCallback
 import org.junit.jupiter.api.extension.BeforeEachCallback
 import org.junit.jupiter.api.extension.ExtensionContext
 import org.junit.jupiter.api.extension.RegisterExtension
-import java.util.*
 
 abstract class DBTest {
   companion object {
-    val db = DriverDataSource(testDBUrl, null, Properties(), null, null).apply { migrate(listOf("test", "test-data")) }
+    val db = HikariDataSource(DBModule.hikariConfig.apply { jdbcUrl.replace(DBModule.dbName, DBModule.dbName + "_test") }).apply {
+      migrate(listOf("test", "test-data"))
+    }
   }
 
   @RegisterExtension @JvmField @Suppress("unused")

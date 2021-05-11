@@ -7,26 +7,23 @@
 </script>
 
 <div class="viewport">
-  <div class="sticky-wrapper d-print-none">
-    <nav id="main-nav" class="sidebar sidebar-left">
-      <a class="navbar-toggle" data-target="#topnav-menu-content" data-toggle="collapse">
-        <div class="lines"><span></span><span></span><span></span></div>
-      </a>
+  <nav class="navbar navbar-expand-lg navbar-light bg-light d-print-none">
+    <div class="container-fluid">
       <AppLogo/>
       <PageMenu/>
-      <ul class="nav navbar-nav navbar-user">
-        <li class="nav-item d-none d-md-block">
+      <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+        <li class="nav-item">
           <LanguageSelection/>
         </li>
         <li class="nav-item">
           <a class="nav-link" href="/logout">
-            <span>{$_('logout.linkTitle')}</span>
+            <span>{$_('login.logout')}</span>
             <Icon iconClass="ml-2" name="log-out"/>
           </a>
         </li>
       </ul>
-    </nav>
-  </div>
+    </div>
+  </nav>
 
   <div class="viewport-main-content">
     <slot/>

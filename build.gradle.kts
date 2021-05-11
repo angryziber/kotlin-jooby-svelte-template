@@ -2,8 +2,8 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import java.io.ByteArrayOutputStream
 
 plugins {
-  kotlin("jvm") version "1.4.32"
-  kotlin("kapt") version "1.4.32"
+  kotlin("jvm") version "1.5.0"
+  kotlin("kapt") version "1.5.0"
 }
 
 repositories {
@@ -33,22 +33,21 @@ dependencies {
   implementation("org.postgresql:postgresql:42.2.18")
   implementation("javax.mail:mail:1.4.7")
 
-  testImplementation("io.mockk:mockk:1.9.3")
+  testImplementation("io.mockk:mockk:1.11.0")
   testImplementation("org.junit.jupiter:junit-jupiter:5.6.0")
   testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.6.0")
   testImplementation("org.assertj:assertj-core:3.15.0")
   testImplementation("com.codeborne:selenide:5.10.0")
-  runtimeOnly("com.h2database:h2:1.4.200")
 
   jvm2dts("com.codeborne:jvm2dts:1.4.0")
 }
 
 sourceSets {
-  getByName("main").apply {
+  named("main") {
     java.srcDirs("src")
     resources.srcDirs("src", "i18n", "ui/static").exclude("**/*.kt")
   }
-  getByName("test").apply {
+  named("test") {
     java.srcDirs("test")
     resources.srcDirs("test").exclude("**/*.kt")
   }

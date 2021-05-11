@@ -3,7 +3,9 @@
   import {onDestroy, onMount} from 'svelte'
   import jsErrorHandler from './jsErrorHandler'
   import router from './routing/Router'
-  import session, {User, user} from './auth/Session'
+  import session, {user} from './auth/Session'
+  import gateway from '@ui/api/Gateway'
+  import type {User} from '@ui/api/types'
   import {showToast} from './shared/toastStore'
   import LoginPage from './pages/LoginPage.svelte'
   import NotFound from './pages/NotFound.svelte'
@@ -12,8 +14,6 @@
   import UserWelcomePage from './pages/user/UserWelcomePage.svelte'
   import LoginLayout from './layout/LoginLayout.svelte'
   import Toast from './shared/Toasts.svelte'
-
-  export let initialUser: User|undefined = undefined
 
   let page: string, pageParams = {}, isPublicPage = false
 
@@ -51,18 +51,18 @@
 
   async function init() {
     try {
-      if (initialUser) session.user = initialUser
+      session.user = await gateway.get('/api/user') as User
     } catch (e) {
-      console.error(e)
       session.user = null
+      console.error(e)
     }
 
     onPageChanged()
     window.addEventListener('popstate', onPageChanged)
 
-    if (!page && $user) router.navigateTo($user.role)
+    if (!page && $user) router.navigateTo($user.role.toLowerCase(), {replaceHistory: true})
     else if (!page || !$user && !isPublicPage) router.navigateTo('login', {replaceHistory: true})
-    else if (!isPublicPage && !page.startsWith($user?.role ?? '')) page = ''
+    else if (!isPublicPage && !page.startsWith($user?.role?.toLowerCase() ?? '')) page = ''
   }
 
   init()

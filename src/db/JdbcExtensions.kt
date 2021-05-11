@@ -1,14 +1,20 @@
 package db
 
+import org.intellij.lang.annotations.Language
+import util.toType
+import java.sql.Date
 import java.sql.PreparedStatement
 import java.sql.ResultSet
 import java.sql.Timestamp
 import java.time.Instant
+import java.time.LocalDate
+import java.time.LocalDateTime
 import java.time.Period
 import java.time.ZoneOffset.UTC
 import java.util.*
 import javax.sql.DataSource
 import kotlin.reflect.KType
+import kotlin.reflect.full.isSubclassOf
 import kotlin.reflect.full.primaryConstructor
 import kotlin.reflect.jvm.jvmErasure
 
@@ -18,6 +24,18 @@ fun DataSource.insert(table: String, values: Map<String, *>): Int = withConnecti
     values (${values.entries.joinToString(",") { (it.value as? SelectMax)?.sql(it.key, table) ?: "?" }})
   """).use { stmt ->
     stmt.set(valuesByIndex)
+    stmt.executeUpdate()
+  }
+}
+
+fun DataSource.upsert(table: String, values: Map<String, *>, idField: String = "id"): Int = withConnection {
+  val valuesByIndex = values.values
+  val setString = values.keys.joinToString { "$it=?" }
+  prepareStatement("""insert into $table (${values.keys.joinToString(",") { it }})
+    values (${values.entries.joinToString(",") { (it.value as? SqlComputed)?.expr ?: "?" }})
+    on conflict ($idField) do update set $setString
+  """).use { stmt ->
+    stmt.set(valuesByIndex + valuesByIndex)
     stmt.executeUpdate()
   }
 }
@@ -102,8 +120,11 @@ private fun toDBType(v: Any?): Any? = when(v) {
   else -> v
 }
 
-fun fromDBType(v: Any?, type: KType): Any? = when(type.jvmErasure) {
-  Instant::class -> (v as Timestamp).toInstant()
+fun fromDBType(v: Any?, type: KType): Any? = when {
+  type.jvmErasure == Instant::class -> (v as Timestamp).toInstant()
+  type.jvmErasure == LocalDate::class -> (v as? Date)?.toLocalDate()
+  type.jvmErasure == LocalDateTime::class -> (v as Timestamp).toLocalDateTime()
+  type.jvmErasure.isSubclassOf(Enum::class) -> (v as String).toType(type)
   else -> v
 }
 
@@ -133,5 +154,31 @@ data class SelectMax(val by: Pair<String, Any>) {
   val value get() = by.second
 }
 
-data class SqlOperator(val op: String, val value: Any?)
-infix fun Pair<String, String>.op(value: Any?) = first to SqlOperator(second, value)
+interface SqlExpression {
+  fun expr(key: String): String
+  fun toIterable(): Iterable<Any?>
+}
+
+open class SqlExpressionImpl(@Language("SQL") val expr: String, val values: Iterable<Any?>): SqlExpression {
+  override fun expr(key: String) = expr
+  override fun toIterable() = values
+}
+
+open class SqlComputed(@Language("SQL") val expr: String): SqlExpression {
+  override fun expr(key: String) = "$key = $expr"
+  override fun toIterable() = emptyList<Any?>()
+}
+
+open class SqlOperator(val op: String, val value: Any?): SqlExpression {
+  override fun expr(key: String) = "$key $op ?"
+  override fun toIterable() = listOf(value)
+}
+
+open class Between(val since: Any, val until: Any): SqlExpression {
+  override fun expr(key: String) = "$key between ? and ?"
+  override fun toIterable() = listOf(since, until)
+}
+
+class NullOrOperator(op: String, value: Any?): SqlOperator(op, value) {
+  override fun expr(key: String) = "($key is null or $key $op ?)"
+}

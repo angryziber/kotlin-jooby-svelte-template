@@ -8,13 +8,13 @@
     </a>
 
     <div class="d-flex align-items-center">
-      <a href="/{{lang}}/app/" class="btn btn-secondary btn-with-icon">
+      <a href="/{{lang}}/app/" class="btn btn-secondary">
         <span>{{login.submit}}</span>
         {{ icon('log-in', 'ml-2') }}
       </a>
 
       <div class="language-selection">
-        <select class="custom-control custom-select"
+        <select class="form-select"
                 onchange="location.pathname = location.pathname.replace(/^\/[a-z]{2}\//, '/' + this.value + '/')">
           {% for l in langs %}
             <option {%if lang == l %}selected{% endif %} value="{{l}}">{{l.toUpperCase()}}</option>

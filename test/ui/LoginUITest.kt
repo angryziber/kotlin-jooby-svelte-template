@@ -36,7 +36,7 @@ class LoginUITest: UITest() {
 
   @AfterEach
   fun logout() {
-    val logoutLink = el(byText(translate("logout.linkTitle")))
+    val logoutLink = el(byText(translate("login.logout")))
     if (logoutLink.exists()) {
       logoutLink.click()
       assertThat(url()).endsWith("/en/home/")

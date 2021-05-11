@@ -10,8 +10,14 @@ services:
       - db
   db:
     restart: always
-    image: postgres:12-alpine
+    image: postgres:13-alpine
+    volumes:
+      - ./test/db/postgres-init:/docker-entrypoint-initdb.d
+      - data:/var/lib/postgresql/data
     environment:
-      POSTGRES_DB: app
       POSTGRES_USER: app
       POSTGRES_PASSWORD: app
+      POSTGRES_MULTIPLE_DATABASES: app_test
+
+volumes:
+  data:

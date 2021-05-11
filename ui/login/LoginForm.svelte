@@ -32,21 +32,19 @@
     <div class="alert alert-danger">{$_(errorMessage)}</div>
   {/if}
 
-  <div class="form-group">
-    <label for="userPhone">
-      {$_('login.login')}
-    </label>
-    <input type="text" name="login" bind:value={data.login} class="form-control form-control-lg" required autofocus={true}/>
+  <div class="mb-3">
+    <label class="form-label">{$_('login.login')}</label>
+    <input type="text" name="login" bind:value={data.login} class="form-control form-control-lg" required autofocus>
   </div>
 
-  <div class="form-group" transition:slide|local>
-    <label>{$_('login.password')}</label>
+  <div class="mb-3" transition:slide|local>
+    <label class="form-label">{$_('login.password')}</label>
     <input bind:value={data.password} type="password" name="password" class="form-control form-control-lg" required>
   </div>
 
   <p class="text-muted">{$_('login.safetyReminder')}</p>
 
-  <button class="btn btn-lg btn-primary btn-with-icon w-100">
+  <button class="btn btn-lg btn-primary w-100">
     <span>{$_('login.submit')}</span>
     <Icon name="arrow-right"/>
   </button>

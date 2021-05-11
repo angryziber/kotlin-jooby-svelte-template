@@ -26,6 +26,11 @@ pipeline {
         sh "docker build --target server-build -t ${BUILD}_server ."
       }
     }
+    stage('Start test DB') {
+      steps {
+        sh 'docker-compose -p ${BUILD} -f docker-compose.yml up -d db && sleep 3 && docker-compose logs'
+      }
+    }
     stage('Test Server') {
       steps {
         sh "${RUN_TESTS} ${BUILD}_server ./gradlew --no-daemon --info test"
@@ -60,6 +65,7 @@ pipeline {
   }
   post {
     always {
+      sh "docker-compose -p ${BUILD} down"
       sh "touch build/test-results/**/*.xml"
       junit 'build/test-results/**/*.xml'
     }

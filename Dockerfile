@@ -38,6 +38,9 @@ WORKDIR /app
 COPY --from=server-build /app/build/libs ./
 COPY --from=ui-build /app/build/public public/
 
+# Pebble requires a writable tmp
+RUN mkdir tmp; chown -R user tmp
+
 # Run under non-privileged user with minimal write permissions
 USER user
 
@@ -51,3 +54,5 @@ CMD java $JAVA_OPTS -jar app.jar
 # Heroku redefines exposed port
 ENV PORT=8080
 EXPOSE $PORT
+
+HEALTHCHECK CMD wget --no-verbose --tries=1 --spider http://localhost:$PORT/api/health || exit 1

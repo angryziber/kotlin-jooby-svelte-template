@@ -36,8 +36,12 @@ jobs:
 
       - name: Build Server
         run: ./gradlew jar
+      - name: Start test DB
+        run: docker-compose up -d db
       - name: Test Server
         run: ./gradlew test
+      - name: Stop test DB
+        run: docker-compose down
 
   docker:
     runs-on: ubuntu-20.04
@@ -53,7 +57,7 @@ jobs:
       - name: Build and push
         uses: docker/build-push-action@v2
         with:
-          push: true
-          tags: docker.pkg.github.com/angryziber/kotlin-jooby-svelte-template/app:1.0
-          cache-from: type=registry,ref=docker.pkg.github.com/angryziber/kotlin-jooby-svelte-template/app:latest
-          cache-to: type=inline
+          push: false
+          tags: docker.pkg.github.com/angryziber/kotlin-jooby-svelte-template/app
+#          cache-from: type=registry,ref=docker.pkg.github.com/angryziber/kotlin-jooby-svelte-template/app:latest
+#          cache-to: type=inline

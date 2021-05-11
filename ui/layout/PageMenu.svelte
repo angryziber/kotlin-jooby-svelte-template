@@ -1,19 +1,20 @@
 <script lang="ts">
   import {_} from '@ui/i18n'
   import {user} from '../auth/Session'
+  import {Role} from '@ui/api/types'
 
   class MenuItem {
     constructor(public subPage: string, public title: string) {}
     get page() {
-      return `${$user!.role}${this.subPage ? '/' + this.subPage : ''}`
+      return `${$user!.role.toLowerCase()}${this.subPage ? '/' + this.subPage : ''}`
     }
   }
 
   const menu =
-    $user!.role === 'admin' ? [
+    $user!.role === Role.ADMIN ? [
       new MenuItem('', 'admin.dashboard.title')
     ] :
-    $user!.role === 'user' ? [
+    $user!.role === Role.USER ? [
       new MenuItem('', 'user.welcome.menu')
     ] : []
 
@@ -22,7 +23,7 @@
 
 <svelte:window on:popstate={() => url = location.pathname}/>
 
-<ul class="nav navbar-nav flex-row flex-md-column mt-5">
+<ul class="nav navbar-nav">
   {#each menu as item}
     {#if item}
       <li class="nav-item" class:active={url.endsWith(item.page)}>

@@ -48,7 +48,8 @@ module.exports = {
     ]
   ],
   packageOptions: {
-    knownEntrypoints: ['tslib']
+    knownEntrypoints: ['tslib'].concat(process.env.NODE_ENV === 'test' ?
+      ['sinon', 'chai', 'sinon-chai', '@testing-library/svelte'] : [])
   },
   buildOptions: {
     out: 'build/public',
@@ -59,7 +60,7 @@ module.exports = {
     {match: 'routes', src: '.*', dest: '/index.html'}
   ],
   devOptions: {
-    port: 8088,
+    port: process.env.NODE_ENV === 'test' ? 8678 : 8088,
     open: 'none'
   }
 }
