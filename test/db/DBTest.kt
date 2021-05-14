@@ -8,7 +8,7 @@ import org.junit.jupiter.api.extension.RegisterExtension
 
 abstract class DBTest {
   companion object {
-    val db = HikariDataSource(DBModule.hikariConfig.apply { jdbcUrl.replace(DBModule.dbName, DBModule.dbName + "_test") }).apply {
+    val db = HikariDataSource(DBModule.hikariConfig.apply { jdbcUrl = jdbcUrl.replace("/" + DBModule.dbName, "/" + DBModule.dbName + "_test") }).apply {
       migrate(listOf("test", "test-data"))
     }
   }
