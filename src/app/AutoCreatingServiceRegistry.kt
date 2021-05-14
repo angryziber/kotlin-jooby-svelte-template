@@ -5,6 +5,7 @@ import io.jooby.ServiceKey
 import io.jooby.ServiceRegistry
 import io.jooby.exception.RegistryException
 import org.slf4j.LoggerFactory
+import java.lang.reflect.InvocationTargetException
 
 class AutoCreatingServiceRegistry(private val original: ServiceRegistry): ServiceRegistry by original {
   private val log = LoggerFactory.getLogger(javaClass)
@@ -21,6 +22,9 @@ class AutoCreatingServiceRegistry(private val original: ServiceRegistry): Servic
       return (constructor.newInstance(*args) as T).also {
         log.info("Auto-created ${type.simpleName}${args.map {it.javaClass.simpleName}}")
       }
+    }
+    catch (e: InvocationTargetException) {
+      throw e.targetException
     }
     catch (e: RegistryException) {
       throw RegistryException("Failed to auto-create ${type.simpleName} with dependencies on ${constructor.parameters.map{it.type.simpleName}}: ${e.message}")
