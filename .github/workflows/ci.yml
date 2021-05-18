@@ -1,63 +1,40 @@
-name: CI
+name: Build
 
-on: [push, pull_request]
+on: [push]
+
+env:
+  GITHUB_SHA: ${{ github.sha }}
+  GITHUB_REF: ${{ github.ref }}
+  CACHE: docker.pkg.github.com/${{ github.repository }}
 
 jobs:
-  build:
-    runs-on: ubuntu-20.04
-
-    steps:
-      - uses: actions/checkout@v1
-      - uses: actions/setup-java@v1
-        with:
-          java-version: '11'
-          architecture: x64
-
-      - name: Cache npm deps
-        uses: actions/cache@v2
-        with:
-          path: ~/.npm
-          key: ${{ runner.os }}-npm-${{ hashFiles('package-lock.json') }}
-          restore-keys: |
-            ${{ runner.os }}-npm-
-
-      - name: UI deps
-        run: npm ci
-      - name: UI Test
-        run: npm test
-
-      - name: Cache gradle deps
-        uses: actions/cache@v2
-        with:
-          path: ~/.gradle
-          key: ${{ runner.os }}-gradle-${{ hashFiles('build.gradle.kts') }}
-          restore-keys: |
-            ${{ runner.os }}-gradle-
-
-      - name: Build Server
-        run: ./gradlew jar
-      - name: Start test DB
-        run: docker-compose up -d db
-      - name: Test Server
-        run: ./gradlew test
-      - name: Stop test DB
-        run: docker-compose down
-
   docker:
     runs-on: ubuntu-20.04
     steps:
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v1
-      - name: Login to Docker Github Packages
-        uses: docker/login-action@v1
+      - name: Checkout
+        uses: actions/checkout@v2
         with:
-          registry: docker.pkg.github.com
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
-      - name: Build and push
-        uses: docker/build-push-action@v2
-        with:
-          push: false
-          tags: docker.pkg.github.com/angryziber/kotlin-jooby-svelte-template/app
-#          cache-from: type=registry,ref=docker.pkg.github.com/angryziber/kotlin-jooby-svelte-template/app:latest
-#          cache-to: type=inline
+          token: ${{ secrets.ACCESS_TOKEN }}
+          submodules: recursive
+      - name: Set env.BRANCH
+        run: echo "BRANCH=$(echo $GITHUB_REF | cut -d'/' -f 3)" >> $GITHUB_ENV
+      - name: Pull docker layer cache
+        run: |
+          echo ${{ secrets.GITHUB_TOKEN }} | docker login docker.pkg.github.com -u $GITHUB_ACTOR --password-stdin
+          docker pull $CACHE/ui || true
+          docker pull $CACHE/server || true
+      - run: docker build --cache-from=$CACHE/ui --target ui-build -t ui-build .
+      - run: docker tag ui-build $CACHE/ui && docker push $CACHE/ui
+      - name: Test UI
+        run: docker run ui-build npm test
+      - run: docker build --cache-from=$CACHE/ui --cache-from=$CACHE/server --target server-build -t server-build .
+      - run: docker tag server-build $CACHE/server && docker push $CACHE/server
+      - name: Test Server
+        run: |
+          docker-compose -p app -f docker-compose.yml up -d db && sleep 3 && docker-compose logs
+          docker run --network app_default -e DB_HOST=db server-build ./gradlew --no-daemon --info test
+          docker-compose -p app down
+      - name: Build final
+        run: |
+          docker build --cache-from=$CACHE/ui --cache-from=$CACHE/server --target final -t $CACHE/final .
+          docker push $CACHE/final

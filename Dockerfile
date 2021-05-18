@@ -1,5 +1,5 @@
 # Build client side
-FROM node:14-alpine as ui-build
+FROM satantime/puppeteer-node:15-slim as ui-build
 
 WORKDIR /app
 
