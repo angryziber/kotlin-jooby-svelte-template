@@ -27,7 +27,6 @@ describe('router', () => {
     const push = stub(history, 'pushState')
     router.navigateTo('admin')
     expect(push).calledOnce
-    push.restore()
   })
 
   it('keeps /app/ prefix when navigating', () => {
@@ -37,7 +36,6 @@ describe('router', () => {
     router.navigateTo('admin/myapp/tags')
 
     expect(push).calledWith(null, '', '/en/app/admin/myapp/tags')
-    push.restore()
   })
 
   it('generates full url', () => {
@@ -76,10 +74,6 @@ describe('global click', () => {
   beforeEach(() => {
     preventDefault = fake.returns('')
     navigateTo = stub(router, 'navigateTo')
-  })
-
-  afterEach(() => {
-    navigateTo.restore()
   })
 
   it('ignores non-app hrefs', () => {

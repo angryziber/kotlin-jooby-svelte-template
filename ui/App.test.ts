@@ -13,15 +13,9 @@ const user = {id: '123-123', role: Role.ADMIN} as User
 let currentPage: SinonStub, navigateTo: SinonStub
 
 beforeEach(() => {
-  document.body.innerHTML = '<div id="footer">Footer</div>'
   currentPage = stub(router, 'currentPage').returns('company-test')
   navigateTo = stub(router, 'navigateTo')
   session.user = null
-})
-
-afterEach(() => {
-  currentPage.restore()
-  navigateTo.restore()
 })
 
 it('fetches user from api', async () => {
@@ -89,6 +83,5 @@ describe('handles unhandled promises', () => {
     clock.runAll()
     expect(router.navigateWithReload).calledWith('/logout')
     clock.restore()
-    navigateWithReload.restore()
   })
 })

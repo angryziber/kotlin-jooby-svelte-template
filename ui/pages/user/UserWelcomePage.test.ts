@@ -9,5 +9,4 @@ it('renders', () => {
   const get = stub(gateway, 'get').resolves({hasNewMessage: false})
   const {container} = render(UserWelcomePage)
   expect(container.innerHTML).to.contain($_('user.welcome.title'))
-  get.restore()
 })

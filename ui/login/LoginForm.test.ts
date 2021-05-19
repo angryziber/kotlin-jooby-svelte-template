@@ -14,11 +14,6 @@ beforeEach(() => {
   navigateTo = stub(router, 'navigateTo')
 })
 
-afterEach(() => {
-  post.restore()
-  navigateTo.restore()
-})
-
 it('successful login redirects to the role page', async () => {
   const data = {login: 'user', password: 'pass'}
   const {container} = render(LoginForm, {data})

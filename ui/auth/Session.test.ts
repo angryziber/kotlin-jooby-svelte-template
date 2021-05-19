@@ -9,7 +9,6 @@ const user = {id: 'id', role: Role.USER, login: 'login'} as User
 describe('finishLogin', () => {
   let navigateTo: SinonStub
   beforeEach(() => navigateTo = stub(router, 'navigateTo'))
-  afterEach(() => navigateTo.restore())
 
   it('redirects to user.role', async () => {
     await finishLogin(user)

@@ -44,7 +44,6 @@ it('handles http error', () => {
 describe('requests', () => {
   let request: SinonStub
   beforeEach(() => request = stub(gateway, 'request'))
-  afterEach(() => request.restore())
 
   it('get', () => {
     gateway.get('/path')
