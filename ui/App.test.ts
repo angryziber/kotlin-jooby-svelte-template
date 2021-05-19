@@ -16,11 +16,11 @@ beforeEach(() => {
   currentPage = stub(router, 'currentPage').returns('company-test')
   navigateTo = stub(router, 'navigateTo')
   session.user = null
+  stub(gateway, 'get').resolves(user)
 })
 
 it('fetches user from api', async () => {
   currentPage.returns('')
-  stub(gateway, 'get').resolves(user)
   render(App)
   await act(gateway.get)
   expect(navigateTo).calledWith('admin', {replaceHistory: true})
