@@ -18,7 +18,7 @@ class RequestTransactionHandler: Extension {
       val tx = Transaction(db).also { ctx.attribute("tx", it) }
       if (!ctx.isInIoThread) tx.attachToThread()
       ctx.onComplete {
-        it.attribute<Transaction>("tx").close(commit = (200..399).contains(it.responseCode.value()))
+        it.attribute<Transaction>("tx")?.close(commit = (200..399).contains(it.responseCode.value()))
       }
     }
   }
