@@ -5,6 +5,7 @@ import {SinonFakeTimers, useFakeTimers} from 'sinon'
 
 let clock: SinonFakeTimers
 beforeEach(() => clock = useFakeTimers())
+beforeEach(() => clock.restore())
 
 it('show/hide toast', () => {
   const toast1 = showToast('Created stuff')
