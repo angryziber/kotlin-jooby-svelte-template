@@ -13,7 +13,7 @@ repositories {
 val jvm2dts by configurations.creating
 
 dependencies {
-  val joobyVersion = "2.9.5"
+  val joobyVersion = "2.9.6"
   kapt("io.jooby:jooby-apt:$joobyVersion")
 
   implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
