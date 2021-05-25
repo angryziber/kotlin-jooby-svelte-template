@@ -29,14 +29,13 @@ class RequestLoggerTest {
   }
 
   val requestLog = mockk<Logger>(relaxed = true)
-
   val handler = RequestLogger(requestLog)
 
   @Test
-  fun `successful request log without proxy`() {
-    every { ctx.requestId } returns "r-id"
+  fun `successful request log with proxy`() {
+    every { ctx.header("X-Request-Id").valueOrNull() } returns "r-id"
     handler.logOnComplete(ctx)
-    assertThat(MDC.get("requestId")).endsWith("r-id")
+    assertThat(MDC.get("requestId")).endsWith("/r-id")
     runCompleteHandler()
 
     val user = TestData.user

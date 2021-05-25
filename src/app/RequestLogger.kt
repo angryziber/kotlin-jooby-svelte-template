@@ -5,8 +5,12 @@ import io.jooby.*
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.slf4j.MDC
+import java.util.concurrent.atomic.AtomicLong
 
 class RequestLogger(private val requestLog: Logger = LoggerFactory.getLogger("request")): Extension {
+  private val prefix = (0xFFFF * Math.random()).toInt().toString(16)
+  private val counter = AtomicLong()
+
   override fun install(app: Jooby): Unit = (app as Kooby).run {
     before { ctx ->
       if (ctx.route.handler !is AssetHandler) logOnComplete(ctx) else MDC.clear()
@@ -31,4 +35,6 @@ class RequestLogger(private val requestLog: Logger = LoggerFactory.getLogger("re
       MDC.remove("requestId")
     }
   }
+
+  private val Context.requestId: String get() = prefix + "/" + (header("X-Request-Id").valueOrNull() ?: counter.incrementAndGet().toString())
 }
