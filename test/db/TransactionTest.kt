@@ -6,7 +6,7 @@ import io.mockk.verify
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
-class ThreadLocalTransactionTest {
+class TransactionTest {
   val db = mockk<DriverDataSource>(relaxed = true)
 
   @Test
