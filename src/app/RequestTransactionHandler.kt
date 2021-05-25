@@ -15,11 +15,14 @@ class RequestTransactionHandler: Extension {
 
     before {
       checkHost(ctx, environment.isHttps, canonicalHost)
-      val tx = Transaction(db)
-      if (!ctx.isInIoThread) tx.attachToRequest()
+      val tx = Transaction(db).attachToRequest()
       ctx.onComplete {
         tx.close(commit = (200..399).contains(it.responseCode.value()))
       }
+    }
+
+    after {
+      Transaction.current()?.detachFromRequest() ?: Unit
     }
   }
 
