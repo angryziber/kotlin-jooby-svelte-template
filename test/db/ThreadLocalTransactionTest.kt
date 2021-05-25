@@ -19,7 +19,7 @@ class ThreadLocalTransactionTest {
 
   @Test
   fun `transaction creates and reuses connection on demand`() {
-    val tx = Transaction(db).attachToThread()
+    val tx = Transaction(db).attachToRequest()
     val conn = db.withConnection { this }
     assertThat(db.withConnection { this }).isSameAs(conn)
     verify { conn.autoCommit = false }
@@ -35,7 +35,7 @@ class ThreadLocalTransactionTest {
 
   @Test
   fun `transaction with rollbackOnly rolls back`() {
-    val tx = Transaction(db).attachToThread()
+    val tx = Transaction(db).attachToRequest()
     val conn = db.withConnection { this }
     verify { conn.autoCommit = false }
     tx.close(false)

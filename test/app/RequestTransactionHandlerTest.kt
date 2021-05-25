@@ -25,7 +25,6 @@ class RequestTransactionHandlerTest {
   fun `commit on success`() {
     val complete = checkInstall()
     assertThat(Transaction.current()!!.connection).isSameAs(conn)
-    verify { ctx.attribute("tx", Transaction.current()) }
 
     every { ctx.responseCode } returns StatusCode.OK
     complete.captured.apply(ctx)

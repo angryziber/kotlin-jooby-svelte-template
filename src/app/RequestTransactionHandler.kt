@@ -15,10 +15,10 @@ class RequestTransactionHandler: Extension {
 
     before {
       checkHost(ctx, environment.isHttps, canonicalHost)
-      val tx = Transaction(db).also { ctx.attribute("tx", it) }
-      if (!ctx.isInIoThread) tx.attachToThread()
+      val tx = Transaction(db)
+      if (!ctx.isInIoThread) tx.attachToRequest()
       ctx.onComplete {
-        it.attribute<Transaction>("tx")?.close(commit = (200..399).contains(it.responseCode.value()))
+        tx.close(commit = (200..399).contains(it.responseCode.value()))
       }
     }
   }
@@ -29,12 +29,10 @@ class RequestTransactionHandler: Extension {
     else null
 }
 
-class TransactionCoroutineContext(ctx: Context): ThreadContextElement<Transaction?>, AbstractCoroutineContextElement(Key) {
-  private val tx = ctx.attribute<Transaction?>("tx")
+class TransactionCoroutineContext: ThreadContextElement<Transaction?>, AbstractCoroutineContextElement(Key) {
+  private val tx = Transaction.current()
   companion object Key: CoroutineContext.Key<TransactionCoroutineContext>
 
-  override fun updateThreadContext(context: CoroutineContext) = Transaction.current().also { setCurrent(tx) }
-  override fun restoreThreadContext(context: CoroutineContext, oldState: Transaction?) = setCurrent(oldState)
-
-  private fun setCurrent(tx: Transaction?) = Transaction.threadContext.set(tx)
+  override fun updateThreadContext(context: CoroutineContext) = tx?.attachToRequest()
+  override fun restoreThreadContext(context: CoroutineContext, oldState: Transaction?) { oldState?.attachToRequest() }
 }

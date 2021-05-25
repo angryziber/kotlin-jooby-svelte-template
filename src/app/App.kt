@@ -14,6 +14,7 @@ import io.jooby.*
 import io.jooby.StatusCode.MOVED_PERMANENTLY
 import io.jooby.json.JacksonModule
 import io.jooby.pebble.PebbleModule
+import kotlinx.coroutines.slf4j.MDCContext
 import org.slf4j.LoggerFactory.getLogger
 import java.io.File
 
@@ -98,6 +99,8 @@ private fun Kooby.registerServicesAndControllers() {
   services.put(ObjectMapper::class, objectMapper)
 
   coroutine {
+    launchContext { MDCContext() + TransactionCoroutineContext() }
+
     mvc<AuthController>()
     if (environment.isTest) mvc<FakeLoginForTestingController>()
   }

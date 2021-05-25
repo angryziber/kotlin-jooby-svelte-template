@@ -1,13 +1,13 @@
 package db
 
+import io.jooby.RequestScope
 import java.sql.Connection
 import java.sql.SQLException
 import javax.sql.DataSource
 
 class Transaction(private val db: DataSource) {
   companion object {
-    internal val threadContext = ThreadLocal<Transaction>()
-    fun current(): Transaction? = threadContext.get()
+    fun current(): Transaction? = RequestScope.get("tx")
   }
 
   private var conn: Connection? = null
@@ -24,12 +24,12 @@ class Transaction(private val db: DataSource) {
       }
     } finally {
       conn = null
-      detachFromThread()
+      detachFromRequest()
     }
   }
 
-  fun attachToThread() = this.also { threadContext.set(this) }
-  fun detachFromThread() = threadContext.remove()
+  fun attachToRequest() = this.also { RequestScope.bind("tx", it) }
+  fun detachFromRequest() = RequestScope.unbind<Transaction?>("tx")
 }
 
 fun <R> DataSource.withConnection(block: Connection.() -> R): R {
