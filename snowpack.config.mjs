@@ -1,4 +1,4 @@
-const proxy = require('http2-proxy')
+import proxy from 'http2-proxy'
 
 const svelteIgnore = [
   'a11y-autofocus',
@@ -37,7 +37,7 @@ if (!isTest) plugins.push(
   }]
 )
 
-module.exports = {
+export default {
   mount: {
     public: '/',
     ui: '/_dist_/ui',

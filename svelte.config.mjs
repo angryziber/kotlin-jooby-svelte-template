@@ -1,6 +1,6 @@
-const sveltePreprocess = require('svelte-preprocess')
+import sveltePreprocess from 'svelte-preprocess'
 
-module.exports = {
+export default {
   dev: process.env.NODE_ENV === 'development',
   preprocess: sveltePreprocess()
 }
