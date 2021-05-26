@@ -37,6 +37,7 @@ if (!isTest) plugins.push(
   }]
 )
 
+/** @type {import("snowpack").SnowpackUserConfig } */
 export default {
   mount: {
     public: '/',
