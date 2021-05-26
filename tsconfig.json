@@ -7,7 +7,7 @@
     "node_modules/*"
   ],
   "compilerOptions": {
-    "target": "ES2019",
+    "target": "ESNext",
     "module": "ESNext",
     "moduleResolution": "node",
     "types": ["svelte", "mocha", "./ui/shared/ArrayExtensions"],
@@ -17,12 +17,14 @@
     },
     "allowSyntheticDefaultImports": true,
     "esModuleInterop": true,
+    "sourceMap": true,
+    "skipLibCheck": true,
     "resolveJsonModule": true,
     "alwaysStrict": true,
     "strictNullChecks": true,
     "strictBindCallApply": true,
     "strictFunctionTypes": true,
     "strictPropertyInitialization": true,
-    "importHelpers": true
+    "importHelpers": true,
   }
 }
