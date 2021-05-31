@@ -23,7 +23,7 @@ val objectMapper = JacksonModule.create().disable(WRITE_DATES_AS_TIMESTAMPS).set
 class App: Kooby({
   serverOptions {
     port = System.getenv("PORT")?.toInt() ?: 8080
-    if (environment.isHttps) isTrustProxy = true
+    isTrustProxy = true
   }
   decorator(HeadHandler())
   registry(AutoCreatingServiceRegistry(services))

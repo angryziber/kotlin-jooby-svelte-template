@@ -37,6 +37,11 @@ if (!isTest) plugins.push(
   }]
 )
 
+const proxyOptions = {
+  hostname: 'localhost', port: 8080,
+  onReq: (req, {headers}) => {headers['x-forwarded-host'] = req.headers['host']}
+}
+
 /** @type {import("snowpack").SnowpackUserConfig } */
 export default {
   mount: {
@@ -63,7 +68,7 @@ export default {
     sourcemap: true
   },
   routes: [
-    {src: '/api/.*', dest: (req, res) => proxy.web(req, res, {hostname: 'localhost', port: 8080}).catch(() => res.end())},
+    {src: '/api/.*', dest: (req, res) => proxy.web(req, res, proxyOptions).catch(() => res.end())},
     {match: 'routes', src: '.*', dest: '/index.html'}
   ],
   devOptions: {
