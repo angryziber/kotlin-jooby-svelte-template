@@ -33,7 +33,7 @@ const plugins = [
 
 if (!isTest) plugins.push(
   ['@snowpack/plugin-run-script', {
-    cmd: 'sass -I node_modules -I stylebook/scss ui/assets/scss:public/css --no-source-map --style=compressed', watch: 'sass -I node_modules -I stylebook/scss ui/assets/scss:public/css --embed-source-map --watch'
+    cmd: 'sass -I node_modules ui/assets/scss:public/css --no-source-map --style=compressed', watch: 'sass -I node_modules -I stylebook/scss ui/assets/scss:public/css --embed-source-map --watch'
   }]
 )
 
