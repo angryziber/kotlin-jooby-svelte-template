@@ -15,19 +15,6 @@ const plugins = [
   [
     '@snowpack/plugin-run-script',
     {cmd: 'svelte-check --output human --compiler-warnings ' + svelteIgnore.map(i => i + ':ignore').join(','), watch: '$1 --watch', output: 'stream'}
-  ],
-  [
-    'snowpack-plugin-rollup-bundle',
-    {
-      emitHtmlFiles: false,
-      preserveSourceFiles: false,
-      entrypoints: 'build/public/_dist_/ui/main.js',
-      extendConfig: config => {
-        config.outputOptions.entryFileNames = '[name].js'
-        config.outputOptions.assetFileNames = 'css/[name].[ext]'
-        return config
-      }
-    }
   ]
 ]
 
@@ -66,6 +53,12 @@ export default {
   buildOptions: {
     out: 'build/public',
     sourcemap: true
+  },
+  optimize: {
+    bundle: true,
+    sourcemap: false,
+    minify: true,
+    target: 'es2020'
   },
   routes: [
     {src: '/api/.*', dest: (req, res) => proxy.web(req, res, proxyOptions).catch(() => res.end())},
