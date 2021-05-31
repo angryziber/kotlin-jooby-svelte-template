@@ -53,35 +53,3 @@ it('shows not found when role does not match', async () => {
   await change()
   expect(container.innerHTML).to.contain('Page Not Found')
 })
-
-describe('handles unhandled promises', () => {
-  const promise = Promise.reject('')
-  let container: HTMLElement
-
-  beforeEach(() => {
-    container = render(App).container
-  })
-
-  it('without translation', async () => {
-    const e = new PromiseRejectionEvent('unhandledrejection', {reason: {message: 'no translation'}, promise})
-    await act(() => window.dispatchEvent(e))
-    expect(container.textContent).to.contain('no translation')
-  })
-
-  it('with translation', async () => {
-    const e = new PromiseRejectionEvent('unhandledrejection', {reason: {message: 'errors.technical', statusCode: 500}, promise})
-    await act(() => window.dispatchEvent(e))
-    expect(container.textContent).to.contain($_('errors.technical'))
-  })
-
-  it('unauthorized logs out', async () => {
-    const clock = useFakeTimers()
-    const navigateWithReload = stub(router, 'navigateWithReload')
-    const e = new PromiseRejectionEvent('unhandledrejection', {reason: {message: 'no permissions', statusCode: 403}, promise})
-    await act(() => window.dispatchEvent(e))
-    expect(container.textContent).to.contain('no permissions')
-    clock.runAll()
-    expect(router.navigateWithReload).calledWith('/logout')
-    clock.restore()
-  })
-})

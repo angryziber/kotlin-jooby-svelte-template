@@ -1,12 +1,8 @@
 <script lang="ts">
-  import {_} from '@ui/i18n'
-  import {onDestroy, onMount} from 'svelte'
-  import jsErrorHandler from './jsErrorHandler'
   import router from './routing/Router'
   import session, {user} from './auth/Session'
   import gateway from '@ui/api/Gateway'
   import type {User} from '@ui/api/types'
-  import {showToast} from './shared/toastStore'
   import LoginPage from './pages/LoginPage.svelte'
   import NotFound from './pages/NotFound.svelte'
   import AdminDashboardPage from './pages/admin/AdminDashboardPage.svelte'
@@ -25,29 +21,6 @@
   function matches(page: string, path: string) {
     return pageParams = router.matches(path, page)
   }
-
-  function handleError(e: PromiseRejectionEvent) {
-    console.error(e)
-    if (e.reason?.stack) {
-      jsErrorHandler(e.reason.message, undefined, undefined, undefined, e.reason)
-      return
-    }
-    let error = e.reason?.message
-    if (error) {
-      if (error === 'errors.apiVersionMismatch') {
-        alert($_(error))
-        return location.reload()
-      }
-      error = $_(e.reason?.message)
-    }
-    else error = $_('errors.technical') + ': ' + e.reason
-    showToast(error, {type: 'danger'})
-    if (e.reason.statusCode === 403)
-      setTimeout(() => router.navigateWithReload('/logout'), 1000)
-  }
-
-  onMount(() => window.addEventListener('unhandledrejection', handleError))
-  onDestroy(() => window.removeEventListener('unhandledrejection', handleError))
 
   async function init() {
     try {

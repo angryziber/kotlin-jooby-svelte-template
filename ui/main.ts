@@ -1,11 +1,11 @@
 import './assets/scss/main.scss'
 import router from './routing/Router'
 import App from './App.svelte'
-import jsErrorHandler from './jsErrorHandler'
+import {initErrorHandlers} from './errorHandlers'
 import './shared/ArrayExtensions'
 
+initErrorHandlers()
 router.interceptHrefs()
-window.onerror = jsErrorHandler
 
 const app = new App({target: document.getElementById('app')!})
 
