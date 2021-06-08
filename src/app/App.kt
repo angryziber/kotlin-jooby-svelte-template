@@ -99,7 +99,7 @@ private fun Kooby.registerServicesAndControllers() {
   services.put(ObjectMapper::class, objectMapper)
 
   coroutine {
-    launchContext { MDCContext() + TransactionCoroutineContext() }
+    launchContext { it + MDCContext() + TransactionCoroutineContext() }
 
     mvc<AuthController>()
     if (environment.isTest) mvc<FakeLoginForTestingController>()
