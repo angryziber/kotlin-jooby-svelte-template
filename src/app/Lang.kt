@@ -11,7 +11,7 @@ object Lang {
   const val COOKIE = "LANG"
 
   val available = readAvailableLangs("/langs.ts")
-  val translations = available.map { lang -> lang to load(lang) }.toMap()
+  val translations = available.associateWith { lang -> load(lang) }
 
   fun detect(ctx: Context) = lang(ctx).also { remember(ctx, it) }
 

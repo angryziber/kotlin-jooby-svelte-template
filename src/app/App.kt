@@ -67,7 +67,7 @@ class App: Kooby({
   get("/{lang:[a-z]{2}}/{page}/*") {
     val lang = ctx.path("lang").value()
     val page = ctx.path("page").value()
-    val translations = Lang.translations[lang] ?:
+    val translations = Lang.translations[lang]?.let { Lang.translations.values.first() + it } ?:
       return@get ctx.sendRedirect(MOVED_PERMANENTLY, ctx.requestPath.replace("/$lang/", "/${Lang.lang(ctx)}/"))
     Lang.remember(ctx, lang)
     ctx.setResponseHeader("Content-Security-Policy", csp)
