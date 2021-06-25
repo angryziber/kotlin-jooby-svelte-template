@@ -48,7 +48,7 @@ export default {
   ],
   plugins,
   packageOptions: {
-    knownEntrypoints: ['tslib'].concat(isTest ? ['sinon', 'chai', 'sinon-chai', '@testing-library/svelte'] : [])
+    knownEntrypoints: isTest ? ['sinon', 'chai', 'sinon-chai', '@testing-library/svelte'] : []
   },
   buildOptions: {
     out: 'build/public',

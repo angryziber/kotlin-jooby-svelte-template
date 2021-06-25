@@ -24,7 +24,6 @@
     "strictNullChecks": true,
     "strictBindCallApply": true,
     "strictFunctionTypes": true,
-    "strictPropertyInitialization": true,
-    "importHelpers": true,
+    "strictPropertyInitialization": true
   }
 }
