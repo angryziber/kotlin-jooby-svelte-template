@@ -11,8 +11,7 @@
   },
   "dependencies": {
     "bootstrap-scss": "^5.0.1",
-    "svelte": "^3.38.2",
-    "tslib": "^2.2.0"
+    "svelte": "^3.38.2"
   },
   "devDependencies": {
     "@snowpack/plugin-run-script": "^2.3.0",
