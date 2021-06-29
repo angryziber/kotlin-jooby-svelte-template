@@ -2,9 +2,8 @@
   "name": "app-ui",
   "version": "0.0.1",
   "scripts": {
-    "build": "snowpack build && npm run build-autoprefixer && cp -ru public build && npm run build-modify-index",
-    "build-autoprefixer": "postcss -u autoprefixer --no-map --replace public/css/*.css",
-    "build-modify-index": "sed -i 's@</head>@  <link rel=\"stylesheet\" href=\"/css/_dist_/ui/main.css?{{assetsTime}}\"></head>@' build/public/index.html",
+    "build": "snowpack build && npm run build-autoprefixer && cp -ru public build",
+    "build-autoprefixer": "postcss -u autoprefixer --no-map --replace build/public/css/*.css",
     "watch": "snowpack dev",
     "gen-icon-sprite": "npx svgo --config ui/assets/icons-svgo.json -f ui/assets/icons && npx svg-sprite --config ui/assets/icons-svg-sprite.json ui/assets/icons/*.svg",
     "test": "web-test-runner {i18n,ui}/**/*.test.ts"

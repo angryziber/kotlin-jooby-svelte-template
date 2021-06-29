@@ -18,7 +18,7 @@ const plugins = [
 ]
 
 if (!isTest) {
-  const sassCmd = 'sass -I node_modules ui/assets/scss:public/css'
+  const sassCmd = 'sass -I node_modules ui/assets/scss:build/public/css'
   plugins.push(['@snowpack/plugin-run-script', {
     cmd: `${sassCmd} --no-source-map --style=compressed`, watch: `${sassCmd} --embed-source-map --watch`
   }])
@@ -33,6 +33,7 @@ const proxyOptions = {
 export default {
   mount: {
     public: '/',
+    'build/public/css': {url: '/css', static: true, resolve: false},
     ui: '/_dist_/ui',
     i18n: '/_dist_/i18n'
   },
