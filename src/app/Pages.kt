@@ -12,6 +12,12 @@ fun Kooby.handleStaticPages(assetsDir: File, apiVersion: String) {
   val assetsTime = assetsDir.lastModified()
   val uiConfigJson = require<ObjectMapper>().writeValueAsString(mapOf("apiVersion" to apiVersion))
 
+  val canonicalHost = System.getenv("CANONICAL_HOST")
+  before {
+    if (canonicalHost != null && (ctx.host != canonicalHost || ctx.isHttps != environment.isHttps))
+      ctx.sendRedirect("http${if (environment.isHttps) "s" else ""}://$canonicalHost${ctx.requestPath}${ctx.queryString()}")
+  }
+
   val csp = "default-src 'self' 'unsafe-inline' ${config.getString("csp.allowedExternalSrc")}; " +
     "img-src 'self' data: ${config.getString("csp.allowedImgSrc")}; " +
     "report-uri /api/csp-report"
