@@ -1,6 +1,9 @@
 {
   "name": "app-ui",
   "version": "0.0.1",
+  "engines": {
+    "node": "~16"
+  },
   "scripts": {
     "build": "snowpack build && npm run build-autoprefixer && cp -ru public build",
     "build-autoprefixer": "postcss -u autoprefixer --no-map --replace build/public/css/*.css",
