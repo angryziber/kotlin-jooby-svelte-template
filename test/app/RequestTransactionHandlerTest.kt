@@ -64,10 +64,4 @@ class RequestTransactionHandlerTest {
     verify { ctx.onComplete(capture(complete)) }
     return complete
   }
-
-  @Test
-  fun `canonical host is enforced`() {
-    assertThat(handler.checkHost(ctx, true, "www.anonima.net")).isInstanceOf(Context::class.java)
-    verify { ctx.sendRedirect("https://www.anonima.net/path?q=hello") }
-  }
 }

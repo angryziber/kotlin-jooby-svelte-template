@@ -11,12 +11,7 @@ import java.io.File
 fun Kooby.handleStaticPages(assetsDir: File, apiVersion: String) {
   val assetsTime = assetsDir.lastModified()
   val uiConfigJson = require<ObjectMapper>().writeValueAsString(mapOf("apiVersion" to apiVersion))
-
   val canonicalHost = System.getenv("CANONICAL_HOST")
-  before {
-    if (canonicalHost != null && (ctx.host != canonicalHost || ctx.isHttps != environment.isHttps))
-      ctx.sendRedirect("http${if (environment.isHttps) "s" else ""}://$canonicalHost${ctx.requestPath}${ctx.queryString()}")
-  }
 
   val csp = "default-src 'self' 'unsafe-inline' ${config.getString("csp.allowedExternalSrc")}; " +
     "img-src 'self' data: ${config.getString("csp.allowedImgSrc")}; " +
@@ -38,6 +33,9 @@ fun Kooby.handleStaticPages(assetsDir: File, apiVersion: String) {
   }
 
   get("/{lang:[a-z]{2}}/{page}/*") {
+    if (canonicalHost != null && (ctx.host != canonicalHost || ctx.isHttps != environment.isHttps))
+      ctx.sendRedirect("http${if (environment.isHttps) "s" else ""}://$canonicalHost${ctx.requestPath}${ctx.queryString()}")
+
     val lang = ctx.path("lang").value()
     val page = ctx.path("page").value()
     val translations = Lang.translations[lang]?.let { Lang.translations.values.first() + it } ?:
