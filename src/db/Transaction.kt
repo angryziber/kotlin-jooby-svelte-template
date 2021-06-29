@@ -46,8 +46,7 @@ fun <R> DataSource.withConnection(block: Connection.() -> R): R {
   }
 }
 
-class TransactionCoroutineContext: ThreadContextElement<Transaction?>, AbstractCoroutineContextElement(Key) {
-  private val tx = Transaction.current()
+class TransactionCoroutineContext(private val tx: Transaction? = Transaction.current()): ThreadContextElement<Transaction?>, AbstractCoroutineContextElement(Key) {
   companion object Key: CoroutineContext.Key<TransactionCoroutineContext>
 
   override fun updateThreadContext(context: CoroutineContext) = tx?.attachToRequest()
