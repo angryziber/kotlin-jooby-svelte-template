@@ -35,13 +35,13 @@ class App: Kooby({
   install(ExceptionHandler())
   install(RequestTransactionHandler())
 
+  registerDependencies()
   val apiVersion = System.getenv("API_VERSION") ?: "%API_VERSION%"
   val uiConfigJson = require<ObjectMapper>().writeValueAsString(mapOf("apiVersion" to apiVersion))
 
   before { ctx.setResponseHeader("x-api-version", apiVersion) }
   install(AuthModule())
-
-  registerServicesAndControllers()
+  registerRoutes()
 
   val assetsDir = File("build/public").takeIf { it.exists() } ?: File("public")
   val assetsTime = assetsDir.lastModified()
@@ -92,19 +92,6 @@ class App: Kooby({
 })
 
 private fun Context.initialPage() = if (getUser<User>() == null) "home" else "app"
-
-private fun Kooby.registerServicesAndControllers() {
-  services.put(Environment::class.java, environment)
-  services.put(Config::class.java, config)
-  services.put(ObjectMapper::class, objectMapper)
-
-  coroutine {
-    launchContext { it + MDCContext() + TransactionCoroutineContext() }
-
-    mvc<AuthController>()
-    if (environment.isTest) mvc<FakeLoginForTestingController>()
-  }
-}
 
 fun Context.warnLegacyBrowsers(translate: Translations): String? {
   val userAgent = header("User-Agent").value("")
