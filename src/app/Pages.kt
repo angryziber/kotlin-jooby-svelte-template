@@ -13,7 +13,7 @@ fun Kooby.handleStaticPages(assetsDir: File, apiVersion: String) {
   val uiConfigJson = require<ObjectMapper>().writeValueAsString(mapOf("apiVersion" to apiVersion))
 
   val csp = "default-src 'self' 'unsafe-inline' ${config.getString("csp.allowedExternalSrc")}; " +
-    "img-src 'self' data:; " +
+    "img-src 'self' data: ${config.getString("csp.allowedImgSrc")}; " +
     "report-uri /api/csp-report"
 
   val pebbleLoader = if (environment.isDev) FileLoader().apply { prefix = "ui/static" } else ClasspathLoader()
