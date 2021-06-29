@@ -31,8 +31,8 @@ class DBModule: Extension {
 }
 
 fun DataSource.migrate(configs: List<String>) {
-  connection.use { connection ->
-    val database = DatabaseFactory.getInstance().findCorrectDatabaseImplementation(JdbcConnection(connection))
+  connection.use { conn ->
+    val database = DatabaseFactory.getInstance().findCorrectDatabaseImplementation(JdbcConnection(conn))
     val liquibase = Liquibase("db/db.xml", ClassLoaderResourceAccessor(), database)
     liquibase.update(configs.joinToString(","))
   }
