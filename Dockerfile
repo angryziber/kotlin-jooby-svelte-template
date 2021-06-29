@@ -47,6 +47,9 @@ USER user
 ENV API_VERSION=1
 ENV ENV=https
 
+ARG VERSION=dev
+ENV VERSION=$VERSION
+
 # Fit into Heroku's 512m total limit
 ENV JAVA_OPTS="-Xmx330m -Xss512k"
 CMD java $JAVA_OPTS -jar app.jar

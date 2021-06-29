@@ -9,6 +9,7 @@ fun Kooby.registerRoutes() {
   coroutine {
     launchContext { it + MDCContext() + TransactionCoroutineContext() }
 
+    mvc<HealthRoutes>()
     mvc<AuthController>()
     if (environment.isTest) mvc<FakeLoginForTestingController>()
   }

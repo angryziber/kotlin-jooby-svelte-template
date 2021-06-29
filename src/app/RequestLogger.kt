@@ -8,7 +8,9 @@ import org.slf4j.MDC
 import java.util.concurrent.atomic.AtomicLong
 
 class RequestLogger(private val requestLog: Logger = LoggerFactory.getLogger("request")): Extension {
-  private val prefix = (0xFFFF * Math.random()).toInt().toString(16)
+  companion object {
+    val prefix = (0xFFFF * Math.random()).toInt().toString(16)
+  }
   private val counter = AtomicLong()
 
   override fun install(app: Jooby): Unit = (app as Kooby).run {

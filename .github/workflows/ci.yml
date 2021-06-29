@@ -24,7 +24,7 @@ jobs:
       - run: docker tag ui-build $CACHE/ui && docker push $CACHE/ui
       - name: Test UI
         run: docker run ui-build npm test
-      - run: docker build --cache-from=$CACHE/ui --cache-from=$CACHE/server --target server-build -t server-build .
+      - run: docker build --cache-from=$CACHE/ui --cache-from=$CACHE/server --build-arg VERSION=$GITHUB_REF:$GITHUB_SHA --target server-build -t server-build .
       - run: docker tag server-build $CACHE/server && docker push $CACHE/server
       - name: Test Server
         run: |
