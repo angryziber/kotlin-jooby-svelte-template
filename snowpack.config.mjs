@@ -12,17 +12,17 @@ const isTest = process.env.NODE_ENV === 'test'
 const plugins = [
   '@snowpack/plugin-typescript',
   '@snowpack/plugin-svelte',
-  [
-    '@snowpack/plugin-run-script',
+  ['@snowpack/plugin-run-script',
     {cmd: 'svelte-check --output human --compiler-warnings ' + svelteIgnore.map(i => i + ':ignore').join(','), watch: '$1 --watch', output: 'stream'}
   ]
 ]
 
-if (!isTest) plugins.push(
-  ['@snowpack/plugin-run-script', {
-    cmd: 'sass -I node_modules ui/assets/scss:public/css --no-source-map --style=compressed', watch: 'sass -I node_modules -I stylebook/scss ui/assets/scss:public/css --embed-source-map --watch'
-  }]
-)
+if (!isTest) {
+  const sassCmd = 'sass -I node_modules ui/assets/scss:public/css'
+  plugins.push(['@snowpack/plugin-run-script', {
+    cmd: `${sassCmd} --no-source-map --style=compressed`, watch: `${sassCmd} --embed-source-map --watch`
+  }])
+}
 
 const proxyOptions = {
   hostname: 'localhost', port: 8080,
