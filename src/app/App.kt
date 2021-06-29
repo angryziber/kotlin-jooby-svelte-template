@@ -1,20 +1,12 @@
 package app
 
-import auth.*
-import com.fasterxml.jackson.annotation.JsonInclude.Include.NON_NULL
-import com.fasterxml.jackson.databind.DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES
-import com.fasterxml.jackson.databind.SerializationFeature.WRITE_DATES_AS_TIMESTAMPS
-import com.fasterxml.jackson.module.kotlin.KotlinModule
-import com.mitchellbosecke.pebble.loader.ClasspathLoader
-import com.mitchellbosecke.pebble.loader.FileLoader
+import auth.AuthModule
+import auth.accessPublic
 import db.DBModule
-import io.jooby.*
-import io.jooby.json.JacksonModule
-import io.jooby.pebble.PebbleModule
+import io.jooby.HeadHandler
+import io.jooby.Kooby
 import org.slf4j.LoggerFactory.getLogger
 import java.io.File
-
-val objectMapper = JacksonModule.create().disable(WRITE_DATES_AS_TIMESTAMPS).setSerializationInclusion(NON_NULL).configure(FAIL_ON_UNKNOWN_PROPERTIES, false).registerModule(KotlinModule())
 
 class App: Kooby({
   serverOptions {
@@ -24,7 +16,6 @@ class App: Kooby({
   decorator(HeadHandler())
   registry(AutoCreatingServiceRegistry(services))
   install(DBModule())
-  install(JacksonModule(objectMapper))
   install(RequestLogger())
   install(ExceptionHandler())
   install(RequestTransactionHandler())
