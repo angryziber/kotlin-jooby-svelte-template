@@ -2,6 +2,7 @@ package app
 
 import auth.AuthController
 import auth.FakeLoginForTestingController
+import db.TransactionCoroutineContext
 import io.jooby.Kooby
 import kotlinx.coroutines.slf4j.MDCContext
 

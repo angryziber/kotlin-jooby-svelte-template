@@ -1,9 +1,12 @@
 package db
 
 import io.jooby.RequestScope
+import kotlinx.coroutines.ThreadContextElement
 import java.sql.Connection
 import java.sql.SQLException
 import javax.sql.DataSource
+import kotlin.coroutines.AbstractCoroutineContextElement
+import kotlin.coroutines.CoroutineContext
 
 class Transaction(private val db: DataSource) {
   companion object {
@@ -41,4 +44,12 @@ fun <R> DataSource.withConnection(block: Connection.() -> R): R {
   catch (e: SQLException) {
     throw if (e.message?.contains("unique constraint") == true) AlreadyExistsException(e) else e
   }
+}
+
+class TransactionCoroutineContext: ThreadContextElement<Transaction?>, AbstractCoroutineContextElement(Key) {
+  private val tx = Transaction.current()
+  companion object Key: CoroutineContext.Key<TransactionCoroutineContext>
+
+  override fun updateThreadContext(context: CoroutineContext) = tx?.attachToRequest()
+  override fun restoreThreadContext(context: CoroutineContext, oldState: Transaction?) { oldState?.attachToRequest() }
 }
