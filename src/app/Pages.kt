@@ -2,7 +2,10 @@ package app
 
 import auth.User
 import com.fasterxml.jackson.databind.ObjectMapper
+import com.mitchellbosecke.pebble.loader.ClasspathLoader
+import com.mitchellbosecke.pebble.loader.FileLoader
 import io.jooby.*
+import io.jooby.pebble.PebbleModule
 import java.io.File
 
 fun Kooby.handleStaticPages(assetsDir: File, apiVersion: String) {
@@ -12,6 +15,9 @@ fun Kooby.handleStaticPages(assetsDir: File, apiVersion: String) {
   val csp = "default-src 'self' 'unsafe-inline' ${config.getString("csp.allowedExternalSrc")}; " +
     "img-src 'self' data:; " +
     "report-uri /api/csp-report"
+
+  val pebbleLoader = if (environment.isDev) FileLoader().apply { prefix = "ui/static" } else ClasspathLoader()
+  install(PebbleModule(PebbleModule.create().setTemplateLoader(pebbleLoader).build(environment)))
 
   get("/") {
     ctx.sendRedirect("/${Lang.detect(ctx)}/${ctx.initialPage()}/")

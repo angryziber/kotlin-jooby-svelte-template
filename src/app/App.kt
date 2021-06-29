@@ -25,8 +25,6 @@ class App: Kooby({
   registry(AutoCreatingServiceRegistry(services))
   install(DBModule())
   install(JacksonModule(objectMapper))
-  val pebbleLoader = if (environment.isDev) FileLoader().apply { prefix = "ui/static" } else ClasspathLoader()
-  install(PebbleModule(PebbleModule.create().setTemplateLoader(pebbleLoader).build(environment)))
   install(RequestLogger())
   install(ExceptionHandler())
   install(RequestTransactionHandler())
