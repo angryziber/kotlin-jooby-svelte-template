@@ -3,7 +3,7 @@ FROM satantime/puppeteer-node:15-slim as ui-build
 
 WORKDIR /app
 
-COPY *.json *js .browserslistrc ./
+COPY *.json *js ./
 RUN npm ci
 COPY ui ui
 COPY i18n i18n
