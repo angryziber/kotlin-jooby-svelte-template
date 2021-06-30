@@ -34,7 +34,7 @@ fun DataSource.migrate(configs: List<String>) {
   connection.use { conn ->
     val database = DatabaseFactory.getInstance().findCorrectDatabaseImplementation(JdbcConnection(conn))
     val liquibase = Liquibase("db/db.xml", ClassLoaderResourceAccessor(), database)
-    liquibase.dropAll()
+    // liquibase.dropAll() - use this to start from scratch quickly
     liquibase.update(configs.joinToString(","))
   }
 }
