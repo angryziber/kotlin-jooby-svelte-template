@@ -15,7 +15,7 @@ class DBModule: Extension {
   companion object {
     const val dbName = "app"
     val hikariConfig = HikariConfig().apply {
-      jdbcUrl = System.getenv("DATABASE_URL")?.let { herokuDbUrlToJdbc(it) } ?: "jdbc:postgresql://${System.getenv("DB_HOST") ?: "localhost:6432"}/$dbName?user=$dbName&password=$dbName"
+      jdbcUrl = System.getenv("DATABASE_URL")?.let { herokuDbUrlToJdbc(it) } ?: "jdbc:postgresql://${System.getenv("DB_HOST") ?: "localhost:65432"}/$dbName?user=$dbName&password=$dbName"
     }
 
     fun herokuDbUrlToJdbc(url: String): String {
@@ -34,6 +34,7 @@ fun DataSource.migrate(configs: List<String>) {
   connection.use { conn ->
     val database = DatabaseFactory.getInstance().findCorrectDatabaseImplementation(JdbcConnection(conn))
     val liquibase = Liquibase("db/db.xml", ClassLoaderResourceAccessor(), database)
+    liquibase.dropAll()
     liquibase.update(configs.joinToString(","))
   }
 }

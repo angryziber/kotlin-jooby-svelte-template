@@ -68,7 +68,7 @@ Watch & reload                 |full rebuild|full rebuild|rebuilds & reloads onl
 or to just start the DB:
 `docker-compose up -d db`
 
-This will bind to `127.0.0.1:6432` by default
+This will bind to `127.0.0.1:65432` by default
 
 # Development
 
