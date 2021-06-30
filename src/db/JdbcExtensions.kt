@@ -112,24 +112,6 @@ fun String.toId(): UUID = UUID.fromString(this)
 
 inline fun <reified T: Enum<T>> ResultSet.getEnum(column: String) = enumValueOf<T>(getString(column))
 
-inline fun <reified T: Any> ResultSet.fromValues(vararg values: Pair<KProperty1<T, *>, Any?>) = fromValues(T::class, *values)
-fun <T: Any> ResultSet.fromValues(type: KClass<T>, vararg values: Pair<KProperty1<T, *>, Any?>) = type.primaryConstructor!!.let { constructor ->
-  val extraArgs = values.associate { it.first.name to it.second }
-  val args = constructor.parameters.associateWith { extraArgs[it.name] ?: fromDBType(getObject(it.name), it.type) }
-  constructor.callBy(args)
-}
-
-private fun fromDBType(v: Any?, target: KType): Any? = when(target.jvmErasure) {
-  Instant::class -> (v as Timestamp).toInstant()
-  LocalDate::class -> (v as? Date)?.toLocalDate()
-  LocalDateTime::class -> (v as Timestamp).toLocalDateTime()
-  URL::class -> v?.let { URL(v as String) }
-  List::class -> ((v as java.sql.Array).array as Array<*>).map { fromDBType(it, target.arguments[0].type!!) }.toList()
-  Set::class -> ((v as java.sql.Array).array as Array<*>).map { fromDBType(it, target.arguments[0].type!!) }.toSet()
-  else -> if (target.jvmErasure.isSubclassOf(Enum::class)) (v as String).toType(target)
-  else v
-}
-
 interface SqlExpression {
   fun expr(key: String): String
   fun toIterable(): Iterable<Any?>
