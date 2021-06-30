@@ -111,22 +111,16 @@ private fun <R> ResultSet.map(mapper: ResultSet.() -> R): List<R> = mutableListO
   while (next()) it += mapper()
 }
 
-fun ResultSet.getInstant(column: String) = getTimestamp(column).toInstant()
-fun ResultSet.getInstantNullable(column: String) = getTimestamp(column)?.toInstant()
-
-fun ResultSet.getLocalDate(column: String) = getDate(column).toLocalDate()
-fun ResultSet.getLocalDateNullable(column: String) = getDate(column)?.toLocalDate()
-fun ResultSet.getPeriod(column: String) = Period.parse(getString(column))
-fun ResultSet.getPeriodNullable(column: String) = getString(column)?.let { Period.parse(it) }
-
 fun ResultSet.getId(column: String = "id") = getString(column).toId()
-fun ResultSet.getIdNullable(column: String) = getString(column)?.toId()
-fun ResultSet.getIntNullable(column: String) = getObject(column)?.let { (it as Number).toInt() }
+fun ResultSet.getIdOrNull(column: String) = getString(column)?.toId()
+fun ResultSet.getInstant(column: String) = getTimestamp(column).toInstant()
+fun ResultSet.getLocalDate(column: String) = getDate(column).toLocalDate()
+fun ResultSet.getPeriod(column: String) = Period.parse(getString(column))
+fun ResultSet.getIntOrNull(column: String) = getObject(column)?.let { (it as Number).toInt() }
 
 fun String.toId(): UUID = UUID.fromString(this)
 
 inline fun <reified T: Enum<T>> ResultSet.getEnum(column: String) = enumValueOf<T>(getString(column))
-inline fun <reified T: Enum<T>> ResultSet.getEnumNullable(column: String): T? = getString(column)?.let { enumValueOf<T>(it) }
 
 inline fun <reified T: Any> ResultSet.fromValues(vararg values: Pair<KProperty1<T, *>, Any?>) = T::class.primaryConstructor!!.let { constructor ->
   val extraArgs = values.associate { it.first.name to it.second }
