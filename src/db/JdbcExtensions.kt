@@ -20,28 +20,6 @@ import kotlin.reflect.full.isSubclassOf
 import kotlin.reflect.full.primaryConstructor
 import kotlin.reflect.jvm.jvmErasure
 
-fun DataSource.insert(table: String, values: Map<String, *>): Int = withConnection {
-  val valuesByIndex = values.values.map { if (it is SelectMax) it.value else it }
-  prepareStatement("""insert into $table (${values.keys.joinToString(",") { it }})
-    values (${values.entries.joinToString(",") { (it.value as? SelectMax)?.sql(it.key, table) ?: "?" }})
-  """).use { stmt ->
-    stmt.set(valuesByIndex)
-    stmt.executeUpdate()
-  }
-}
-
-fun DataSource.upsert(table: String, values: Map<String, *>, uniqueFields: String = "id"): Int = withConnection {
-  val valuesByIndex = values.values
-  val setString = values.keys.joinToString { "$it=?" }
-  prepareStatement("""insert into $table (${values.keys.joinToString(",") { it }})
-    values (${values.entries.joinToString(",") { (it.value as? SqlComputed)?.expr ?: "?" }})
-    on conflict ($uniqueFields) do update set $setString
-  """).use { stmt ->
-    stmt.set(valuesByIndex + valuesByIndex)
-    stmt.executeUpdate()
-  }
-}
-
 fun <R> DataSource.query(table: String, id: UUID, mapper: ResultSet.() -> R): R =
   query(table, mapOf("id" to id), mapper = mapper).firstOrNull() ?: throw NoSuchElementException("$table:$id not found")
 
@@ -50,36 +28,59 @@ fun <R> DataSource.query(table: String, where: Map<String, Any?>, suffix: String
 
 fun <R> DataSource.select(select: String, where: Map<String, Any?>, suffix: String = "", mapper: ResultSet.() -> R): List<R> = withConnection {
   prepareStatement("$select${whereString(where)} $suffix").use { stmt ->
-    stmt.set(whereValues(where))
+    stmt.setAll(whereValues(where))
     stmt.executeQuery().map(mapper)
   }
 }
 
-private fun whereValues(where: Map<String, Any?>) = where.values.filterNotNull().flatMap { it.toIterable() }
+fun DataSource.insert(table: String, values: Map<String, *>): Int = withConnection {
+  val valuesByIndex = values.values.asSequence().map { if (it is SelectMax) it.value else it }
+  prepareStatement("""insert into $table (${values.keys.joinToString(",") { it }})
+    values (${values.entries.joinToString(",") { (it.value as? SelectMax)?.sql(it.key, table) ?: "?" }})
+  """).use { stmt ->
+    stmt.setAll(valuesByIndex)
+    stmt.executeUpdate()
+  }
+}
 
-private fun <R> ResultSet.map(mapper: ResultSet.() -> R): List<R> {
-  val result = mutableListOf<R>()
-  while (next()) result += mapper()
-  return result
+fun DataSource.upsert(table: String, values: Map<String, *>, uniqueFields: String = "id"): Int = withConnection {
+  val valuesByIndex = values.values.asSequence()
+  val setString = values.keys.joinToString { "$it=?" }
+  prepareStatement("""insert into $table (${values.keys.joinToString(",") { it }})
+    values (${values.entries.joinToString(",") { (it.value as? SqlComputed)?.expr ?: "?" }})
+    on conflict ($uniqueFields) do update set $setString
+  """).use { stmt ->
+    stmt.setAll(valuesByIndex + valuesByIndex)
+    stmt.executeUpdate()
+  }
 }
 
 fun DataSource.update(table: String, where: Map<String, Any?>, values: Map<String, *>): Int = withConnection {
   val setString = values.keys.joinToString { "$it=?" }
   prepareStatement("update $table set $setString${whereString(where)}").use { stmt ->
-    stmt.set(values.values + whereValues(where))
+    stmt.setAll(values.values.asSequence() + whereValues(where))
     stmt.executeUpdate()
   }
 }
 
 fun DataSource.delete(table: String, where: Map<String, Any?>): Int = withConnection {
   prepareStatement("delete from $table${whereString(where)}").use { stmt ->
-    stmt.set(whereValues(where))
+    stmt.setAll(whereValues(where))
     stmt.executeUpdate()
   }
 }
 
 private fun whereString(where: Map<String, Any?>) = if (where.isNotEmpty()) " where " +
   where.entries.joinToString(" and ") { (k, v) -> whereExpr(k, v) } else ""
+
+private fun whereValues(where: Map<String, Any?>) = where.values.asSequence().filterNotNull().flatMap { it.toIterable() }
+
+private fun Any?.toIterable(): Iterable<Any?> = when (this) {
+  is SqlExpression -> toIterable()
+  is Array<*> -> toList()
+  is Iterable<*> -> this
+  else -> listOf(this)
+}
 
 private fun inExpr(k: String, v: Iterable<*>) = "$k in (${v.joinToString { "?" }})"
 private fun whereExpr(k: String, v: Any?) = when(v) {
@@ -91,21 +92,11 @@ private fun whereExpr(k: String, v: Any?) = when(v) {
   else -> "$k = ?"
 }
 
-operator fun PreparedStatement.set(i: Int, value: Any?): Unit = when (value) {
-  is SqlOperator -> set(i, value.value)
-  else -> setObject(i, toDBType(value))
-}
-
-fun PreparedStatement.set(values: Iterable<Any?>) = values.forEachIndexed { i, v -> this[i + 1] = v }
-
-private fun Any?.toIterable(): Iterable<Any?> = when (this) {
-  is SqlExpression -> toIterable()
-  is Array<*> -> toList()
-  is Iterable<*> -> this
-  else -> listOf(this)
-}
+operator fun PreparedStatement.set(i: Int, value: Any?) = setObject(i, toDBType(value))
+fun PreparedStatement.setAll(values: Sequence<Any?>) = values.forEachIndexed { i, v -> this[i + 1] = v }
 
 private fun toDBType(v: Any?): Any? = when(v) {
+  is SqlOperator -> v.value
   is Enum<*> -> v.name
   is Instant -> v.atOffset(UTC)
   is Period, is URL -> v.toString()
@@ -122,6 +113,10 @@ fun fromDBType(v: Any?, type: KType): Any? = when {
   type.jvmErasure == List::class -> ((v as java.sql.Array).array as Array<String>).map { fromDBType(it, type.arguments[0].type!!) }.toList()
   type.jvmErasure == Set::class -> ((v as java.sql.Array).array as Array<String>).map { fromDBType(it, type.arguments[0].type!!) }.toSet()
   else -> v
+}
+
+private fun <R> ResultSet.map(mapper: ResultSet.() -> R): List<R> = mutableListOf<R>().also {
+  while (next()) it += mapper()
 }
 
 fun ResultSet.getInstant(column: String) = getTimestamp(column).toInstant()
