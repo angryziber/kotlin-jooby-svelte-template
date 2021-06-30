@@ -41,17 +41,17 @@ fun DataSource.exec(expr: String, values: Sequence<Any?> = emptySequence()): Int
 }
 
 fun DataSource.insert(table: String, values: Map<String, *>): Int =
-  exec("""insert into $table (${values.keys.joinToString(",") { it }})
-    values (${values.entries.joinToString(",") { (it.value as? SqlComputed)?.expr ?: "?" }})
-  """, values.values.asSequence())
+  exec(insertExpr(table, values), values.values.asSequence())
 
 fun DataSource.upsert(table: String, values: Map<String, *>, uniqueFields: String = "id"): Int {
   val valuesByIndex = values.values.asSequence()
-  return exec("""insert into $table (${values.keys.joinToString(",") { it }})
-    values (${values.entries.joinToString(",") { (it.value as? SqlComputed)?.expr ?: "?" }})
-    on conflict ($uniqueFields) do update set ${setExpr(values)}
-  """, valuesByIndex + valuesByIndex)
+  return exec(insertExpr(table, values) +
+    " on conflict ($uniqueFields) do update set ${setExpr(values)}", valuesByIndex + valuesByIndex)
 }
+
+private fun insertExpr(table: String, values: Map<String, *>) = """
+  insert into $table (${values.keys.joinToString()})
+    values (${values.entries.joinToString { (it.value as? SqlComputed)?.expr ?: "?" }})""".trimIndent()
 
 fun DataSource.update(table: String, where: Map<String, Any?>, values: Map<String, *>): Int =
   exec("update $table set ${setExpr(values)}${whereExpr(where)}", values.values.asSequence() + whereValues(where))
