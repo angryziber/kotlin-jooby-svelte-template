@@ -33,40 +33,31 @@ fun <R> DataSource.select(select: String, where: Map<String, Any?>, suffix: Stri
   }
 }
 
-fun DataSource.insert(table: String, values: Map<String, *>): Int = withConnection {
-  val valuesByIndex = values.values.asSequence()
-  prepareStatement("""insert into $table (${values.keys.joinToString(",") { it }})
-    values (${values.entries.joinToString(",") { (it.value as? SqlComputed)?.expr ?: "?" }})
-  """).use { stmt ->
-    stmt.setAll(valuesByIndex)
+fun DataSource.exec(expr: String, values: Sequence<Any?> = emptySequence()): Int = withConnection {
+  prepareStatement(expr).use { stmt ->
+    stmt.setAll(values)
     stmt.executeUpdate()
   }
 }
 
-fun DataSource.upsert(table: String, values: Map<String, *>, uniqueFields: String = "id"): Int = withConnection {
+fun DataSource.insert(table: String, values: Map<String, *>): Int =
+  exec("""insert into $table (${values.keys.joinToString(",") { it }})
+    values (${values.entries.joinToString(",") { (it.value as? SqlComputed)?.expr ?: "?" }})
+  """, values.values.asSequence())
+
+fun DataSource.upsert(table: String, values: Map<String, *>, uniqueFields: String = "id"): Int {
   val valuesByIndex = values.values.asSequence()
-  prepareStatement("""insert into $table (${values.keys.joinToString(",") { it }})
+  return exec("""insert into $table (${values.keys.joinToString(",") { it }})
     values (${values.entries.joinToString(",") { (it.value as? SqlComputed)?.expr ?: "?" }})
     on conflict ($uniqueFields) do update set ${setExpr(values)}
-  """).use { stmt ->
-    stmt.setAll(valuesByIndex + valuesByIndex)
-    stmt.executeUpdate()
-  }
+  """, valuesByIndex + valuesByIndex)
 }
 
-fun DataSource.update(table: String, where: Map<String, Any?>, values: Map<String, *>): Int = withConnection {
-  prepareStatement("update $table set ${setExpr(values)}${whereExpr(where)}").use { stmt ->
-    stmt.setAll(values.values.asSequence() + whereValues(where))
-    stmt.executeUpdate()
-  }
-}
+fun DataSource.update(table: String, where: Map<String, Any?>, values: Map<String, *>): Int =
+  exec("update $table set ${setExpr(values)}${whereExpr(where)}", values.values.asSequence() + whereValues(where))
 
-fun DataSource.delete(table: String, where: Map<String, Any?>): Int = withConnection {
-  prepareStatement("delete from $table${whereExpr(where)}").use { stmt ->
-    stmt.setAll(whereValues(where))
-    stmt.executeUpdate()
-  }
-}
+fun DataSource.delete(table: String, where: Map<String, Any?>): Int =
+  exec("delete from $table${whereExpr(where)}", whereValues(where))
 
 private fun setExpr(values: Map<String, *>) = values.keys.joinToString { "$it = ?" }
 
