@@ -13,6 +13,7 @@ import java.time.Period
 import java.time.ZoneOffset.UTC
 import java.util.*
 import javax.sql.DataSource
+import kotlin.reflect.KProperty1
 import kotlin.reflect.KType
 import kotlin.reflect.full.isSubclassOf
 import kotlin.reflect.full.primaryConstructor
@@ -145,8 +146,10 @@ fun String.toId(): UUID = UUID.fromString(this)
 inline fun <reified T: Enum<T>> ResultSet.getEnum(column: String) = enumValueOf<T>(getString(column))
 inline fun <reified T: Enum<T>> ResultSet.getEnumNullable(column: String): T? = getString(column)?.let { enumValueOf<T>(it) }
 
-inline fun <reified T: Any> ResultSet.fromValues() = T::class.primaryConstructor!!.let { constructor ->
-  constructor.call(*constructor.parameters.map { fromDBType(getObject(it.name), it.type) }.toTypedArray())
+inline fun <reified T: Any> ResultSet.fromValues(vararg values: Pair<KProperty1<T, *>, Any?>) = T::class.primaryConstructor!!.let { constructor ->
+  val extraArgs = values.associate { it.first.name to it.second }
+  val args = constructor.parameters.associateWith { extraArgs[it.name] ?: fromDBType(getObject(it.name), it.type) }
+  constructor.callBy(args)
 }
 
 data class SelectMax(val by: Pair<String, Any>) {
