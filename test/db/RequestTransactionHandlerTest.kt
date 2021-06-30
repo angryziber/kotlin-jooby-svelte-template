@@ -1,6 +1,7 @@
-package app
+package db
 
 import com.zaxxer.hikari.util.DriverDataSource
+import db.RequestTransactionHandler
 import db.Transaction
 import io.jooby.*
 import io.mockk.*

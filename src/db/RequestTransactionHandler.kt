@@ -1,6 +1,5 @@
-package app
+package db
 
-import db.Transaction
 import io.jooby.*
 import javax.sql.DataSource
 

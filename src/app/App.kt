@@ -3,6 +3,7 @@ package app
 import auth.AuthModule
 import auth.accessPublic
 import db.DBModule
+import db.RequestTransactionHandler
 import io.jooby.HeadHandler
 import io.jooby.Kooby
 import org.slf4j.LoggerFactory.getLogger
