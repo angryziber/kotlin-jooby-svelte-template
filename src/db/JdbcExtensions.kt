@@ -69,7 +69,7 @@ private fun whereValues(where: Map<String, Any?>) = where.values.asSequence().fi
 private fun Any?.toIterable(): Iterable<Any?> = when (this) {
   is Array<*> -> toList()
   is Iterable<*> -> this
-  is SqlExpr -> toIterable()
+  is SqlExpr -> values
   else -> listOf(this)
 }
 
@@ -99,9 +99,9 @@ fun String.toId(): UUID = UUID.fromString(this)
 
 inline fun <reified T: Enum<T>> ResultSet.getEnum(column: String) = enumValueOf<T>(getString(column))
 
-open class SqlExpr(@Language("SQL") protected val expr: String, vararg val values: Any? = emptyArray()) {
+open class SqlExpr(@Language("SQL") protected val expr: String, val values: Iterable<*> = emptyList<Any>()) {
+  constructor(expr: String, vararg values: Any?): this(expr, values.toList())
   open fun expr(key: String) = expr
-  open fun toIterable(): Iterable<*> = values.toList()
 }
 
 class SqlComputed(@Language("SQL") expr: String): SqlExpr(expr) {
@@ -120,7 +120,6 @@ class NullOrOp(operator: String, value: Any?): SqlOp(operator, value) {
   override fun expr(key: String) = "($key is null or $key $operator ?)"
 }
 
-class NotIn(private val vals: Collection<*>): SqlExpr("", *vals.toTypedArray()) {
-  override fun expr(key: String) = inExpr(key, vals).replace(" in ", " not in ")
-  override fun toIterable() = vals
+class NotIn(values: Iterable<*>): SqlExpr("", values) {
+  override fun expr(key: String) = inExpr(key, values).replace(" in ", " not in ")
 }
