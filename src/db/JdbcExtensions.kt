@@ -27,7 +27,7 @@ fun <R> DataSource.query(table: String, where: Map<String, Any?>, suffix: String
   select("select * from $table", where, suffix, mapper)
 
 fun <R> DataSource.select(select: String, where: Map<String, Any?>, suffix: String = "", mapper: ResultSet.() -> R): List<R> = withConnection {
-  prepareStatement("$select${whereString(where)} $suffix").use { stmt ->
+  prepareStatement("$select${whereExpr(where)} $suffix").use { stmt ->
     stmt.setAll(whereValues(where))
     stmt.executeQuery().map(mapper)
   }
@@ -45,10 +45,9 @@ fun DataSource.insert(table: String, values: Map<String, *>): Int = withConnecti
 
 fun DataSource.upsert(table: String, values: Map<String, *>, uniqueFields: String = "id"): Int = withConnection {
   val valuesByIndex = values.values.asSequence()
-  val setString = values.keys.joinToString { "$it=?" }
   prepareStatement("""insert into $table (${values.keys.joinToString(",") { it }})
     values (${values.entries.joinToString(",") { (it.value as? SqlComputed)?.expr ?: "?" }})
-    on conflict ($uniqueFields) do update set $setString
+    on conflict ($uniqueFields) do update set ${setExpr(values)}
   """).use { stmt ->
     stmt.setAll(valuesByIndex + valuesByIndex)
     stmt.executeUpdate()
@@ -56,22 +55,34 @@ fun DataSource.upsert(table: String, values: Map<String, *>, uniqueFields: Strin
 }
 
 fun DataSource.update(table: String, where: Map<String, Any?>, values: Map<String, *>): Int = withConnection {
-  val setString = values.keys.joinToString { "$it=?" }
-  prepareStatement("update $table set $setString${whereString(where)}").use { stmt ->
+  prepareStatement("update $table set ${setExpr(values)}${whereExpr(where)}").use { stmt ->
     stmt.setAll(values.values.asSequence() + whereValues(where))
     stmt.executeUpdate()
   }
 }
 
 fun DataSource.delete(table: String, where: Map<String, Any?>): Int = withConnection {
-  prepareStatement("delete from $table${whereString(where)}").use { stmt ->
+  prepareStatement("delete from $table${whereExpr(where)}").use { stmt ->
     stmt.setAll(whereValues(where))
     stmt.executeUpdate()
   }
 }
 
-private fun whereString(where: Map<String, Any?>) = if (where.isNotEmpty()) " where " +
-  where.entries.joinToString(" and ") { (k, v) -> whereExpr(k, v) } else ""
+private fun setExpr(values: Map<String, *>) = values.keys.joinToString { "$it = ?" }
+
+private fun whereExpr(where: Map<String, Any?>) = if (where.isEmpty()) "" else " where " +
+  where.entries.joinToString(" and ") { (k, v) -> whereExpr(k, v) }
+
+private fun whereExpr(k: String, v: Any?) = when(v) {
+  null -> "$k is null"
+  is SqlExpression -> v.expr(k)
+  is Iterable<*> -> inExpr(k, v)
+  is Array<*> -> inExpr(k, v.toList())
+  is SqlOperator -> "$k ${v.op} ?"
+  else -> "$k = ?"
+}
+
+private fun inExpr(k: String, v: Iterable<*>) = "$k in (${v.joinToString { "?" }})"
 
 private fun whereValues(where: Map<String, Any?>) = where.values.asSequence().filterNotNull().flatMap { it.toIterable() }
 
@@ -80,16 +91,6 @@ private fun Any?.toIterable(): Iterable<Any?> = when (this) {
   is Iterable<*> -> this
   is SqlExpression -> toIterable()
   else -> listOf(this)
-}
-
-private fun inExpr(k: String, v: Iterable<*>) = "$k in (${v.joinToString { "?" }})"
-private fun whereExpr(k: String, v: Any?) = when(v) {
-  null -> "$k is null"
-  is SqlExpression -> v.expr(k)
-  is Iterable<*> -> inExpr(k, v)
-  is Array<*> -> inExpr(k, v.toList())
-  is SqlOperator -> "$k ${v.op} ?"
-  else -> "$k = ?"
 }
 
 operator fun PreparedStatement.set(i: Int, value: Any?) = setObject(i, toDBType(value))
