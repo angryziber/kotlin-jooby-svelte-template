@@ -14,6 +14,7 @@ import java.time.Period
 import java.time.ZoneOffset.UTC
 import java.util.*
 import javax.sql.DataSource
+import kotlin.reflect.KClass
 import kotlin.reflect.KProperty1
 import kotlin.reflect.KType
 import kotlin.reflect.full.isSubclassOf
@@ -96,17 +97,6 @@ private fun toDBType(v: Any?): Any? = when(v) {
   else -> v
 }
 
-fun fromDBType(v: Any?, type: KType): Any? = when {
-  type.jvmErasure == Instant::class -> (v as Timestamp).toInstant()
-  type.jvmErasure == LocalDate::class -> (v as? Date)?.toLocalDate()
-  type.jvmErasure == LocalDateTime::class -> (v as Timestamp).toLocalDateTime()
-  type.jvmErasure.isSubclassOf(Enum::class) -> (v as String).toType(type)
-  type.jvmErasure == URL::class -> v?.let { URL(v as String) }
-  type.jvmErasure == List::class -> ((v as java.sql.Array).array as Array<String>).map { fromDBType(it, type.arguments[0].type!!) }.toList()
-  type.jvmErasure == Set::class -> ((v as java.sql.Array).array as Array<String>).map { fromDBType(it, type.arguments[0].type!!) }.toSet()
-  else -> v
-}
-
 private fun <R> ResultSet.map(mapper: ResultSet.() -> R): List<R> = mutableListOf<R>().also {
   while (next()) it += mapper()
 }
@@ -122,10 +112,22 @@ fun String.toId(): UUID = UUID.fromString(this)
 
 inline fun <reified T: Enum<T>> ResultSet.getEnum(column: String) = enumValueOf<T>(getString(column))
 
-inline fun <reified T: Any> ResultSet.fromValues(vararg values: Pair<KProperty1<T, *>, Any?>) = T::class.primaryConstructor!!.let { constructor ->
+inline fun <reified T: Any> ResultSet.fromValues(vararg values: Pair<KProperty1<T, *>, Any?>) = fromValues(T::class, *values)
+fun <T: Any> ResultSet.fromValues(type: KClass<T>, vararg values: Pair<KProperty1<T, *>, Any?>) = type.primaryConstructor!!.let { constructor ->
   val extraArgs = values.associate { it.first.name to it.second }
   val args = constructor.parameters.associateWith { extraArgs[it.name] ?: fromDBType(getObject(it.name), it.type) }
   constructor.callBy(args)
+}
+
+private fun fromDBType(v: Any?, target: KType): Any? = when(target.jvmErasure) {
+  Instant::class -> (v as Timestamp).toInstant()
+  LocalDate::class -> (v as? Date)?.toLocalDate()
+  LocalDateTime::class -> (v as Timestamp).toLocalDateTime()
+  URL::class -> v?.let { URL(v as String) }
+  List::class -> ((v as java.sql.Array).array as Array<*>).map { fromDBType(it, target.arguments[0].type!!) }.toList()
+  Set::class -> ((v as java.sql.Array).array as Array<*>).map { fromDBType(it, target.arguments[0].type!!) }.toSet()
+  else -> if (target.jvmErasure.isSubclassOf(Enum::class)) (v as String).toType(target)
+  else v
 }
 
 interface SqlExpression {
