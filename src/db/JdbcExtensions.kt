@@ -1,25 +1,14 @@
 package db
 
 import org.intellij.lang.annotations.Language
-import util.toType
 import java.net.URL
-import java.sql.Date
 import java.sql.PreparedStatement
 import java.sql.ResultSet
-import java.sql.Timestamp
 import java.time.Instant
-import java.time.LocalDate
-import java.time.LocalDateTime
 import java.time.Period
 import java.time.ZoneOffset.UTC
 import java.util.*
 import javax.sql.DataSource
-import kotlin.reflect.KClass
-import kotlin.reflect.KProperty1
-import kotlin.reflect.KType
-import kotlin.reflect.full.isSubclassOf
-import kotlin.reflect.full.primaryConstructor
-import kotlin.reflect.jvm.jvmErasure
 
 fun <R> DataSource.query(table: String, id: UUID, mapper: ResultSet.() -> R): R =
   query(table, mapOf("id" to id), mapper = mapper).firstOrNull() ?: throw NoSuchElementException("$table:$id not found")
@@ -52,7 +41,7 @@ fun DataSource.upsert(table: String, values: Map<String, *>, uniqueFields: Strin
 
 private fun insertExpr(table: String, values: Map<String, *>) = """
   insert into $table (${values.keys.joinToString()})
-    values (${values.entries.joinToString { (it.value as? SqlComputed)?.expr ?: "?" }})""".trimIndent()
+    values (${values.entries.joinToString { (it.value as? SqlExpr)?.expr(it.key) ?: "?" }})""".trimIndent()
 
 fun DataSource.update(table: String, where: Map<String, Any?>, values: Map<String, *>): Int =
   exec("update $table set ${setExpr(values)}${whereExpr(where)}", values.values.asSequence() + whereValues(where))
@@ -67,10 +56,9 @@ private fun whereExpr(where: Map<String, Any?>) = if (where.isEmpty()) "" else "
 
 private fun whereExpr(k: String, v: Any?) = when(v) {
   null -> "$k is null"
-  is SqlExpression -> v.expr(k)
+  is SqlExpr -> v.expr(k)
   is Iterable<*> -> inExpr(k, v)
   is Array<*> -> inExpr(k, v.toList())
-  is SqlOperator -> "$k ${v.op} ?"
   else -> "$k = ?"
 }
 
@@ -81,7 +69,7 @@ private fun whereValues(where: Map<String, Any?>) = where.values.asSequence().fi
 private fun Any?.toIterable(): Iterable<Any?> = when (this) {
   is Array<*> -> toList()
   is Iterable<*> -> this
-  is SqlExpression -> toIterable()
+  is SqlExpr -> toIterable()
   else -> listOf(this)
 }
 
@@ -89,7 +77,6 @@ operator fun PreparedStatement.set(i: Int, value: Any?) = setObject(i, toDBType(
 fun PreparedStatement.setAll(values: Sequence<Any?>) = values.forEachIndexed { i, v -> this[i + 1] = v }
 
 private fun toDBType(v: Any?): Any? = when(v) {
-  is SqlOperator -> v.value
   is Enum<*> -> v.name
   is Instant -> v.atOffset(UTC)
   is Period, is URL -> v.toString()
@@ -112,36 +99,28 @@ fun String.toId(): UUID = UUID.fromString(this)
 
 inline fun <reified T: Enum<T>> ResultSet.getEnum(column: String) = enumValueOf<T>(getString(column))
 
-interface SqlExpression {
-  fun expr(key: String): String
-  fun toIterable(): Iterable<Any?>
+open class SqlExpr(@Language("SQL") protected val expr: String, vararg val values: Any? = emptyArray()) {
+  open fun expr(key: String) = expr
+  open fun toIterable(): Iterable<*> = values.toList()
 }
 
-open class SqlExpressionImpl(@Language("SQL") val expr: String, vararg val values: Any?): SqlExpression {
-  override fun expr(key: String) = expr
-  override fun toIterable() = values.toList()
-}
-
-open class SqlComputed(@Language("SQL") val expr: String): SqlExpression {
+class SqlComputed(@Language("SQL") expr: String): SqlExpr(expr) {
   override fun expr(key: String) = "$key = $expr"
-  override fun toIterable() = emptyList<Any?>()
 }
 
-open class SqlOperator(val op: String, val value: Any?): SqlExpression {
-  override fun expr(key: String) = "$key $op ?"
-  override fun toIterable() = listOf(value)
+open class SqlOp(val operator: String, val value: Any?): SqlExpr(operator, value) {
+  override fun expr(key: String) = "$key $operator ?"
 }
 
-open class Between(val since: Any, val until: Any): SqlExpression {
+class Between(from: Any, to: Any): SqlExpr("", from, to) {
   override fun expr(key: String) = "$key between ? and ?"
-  override fun toIterable() = listOf(since, until)
 }
 
-class NullOrOperator(op: String, value: Any?): SqlOperator(op, value) {
-  override fun expr(key: String) = "($key is null or $key $op ?)"
+class NullOrOp(operator: String, value: Any?): SqlOp(operator, value) {
+  override fun expr(key: String) = "($key is null or $key $operator ?)"
 }
 
-open class NotIn(private val values: Iterable<*>): SqlExpression {
-  override fun expr(key: String) = inExpr(key, values).replace(" in ", " not in ")
-  override fun toIterable() = values
+class NotIn(private val vals: Collection<*>): SqlExpr("", *vals.toTypedArray()) {
+  override fun expr(key: String) = inExpr(key, vals).replace(" in ", " not in ")
+  override fun toIterable() = vals
 }
