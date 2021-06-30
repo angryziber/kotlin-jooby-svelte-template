@@ -2,6 +2,7 @@ package app
 
 import io.jooby.Jooby
 import io.jooby.exception.RegistryException
+import io.jooby.put
 import io.jooby.require
 import io.mockk.mockk
 import org.assertj.core.api.Assertions.assertThat
@@ -17,14 +18,14 @@ class AutoCreatingServiceRegistryTest {
   @Test
   fun `delegate to original ServiceRegistry`() {
     val db = mockk<DataSource>()
-    app.services.put(DataSource::class.java, db)
+    app.services.put(DataSource::class, db)
     app.registry(registry)
     assertThat(app.require<DataSource>()).isSameAs(db)
   }
 
   @Test
   fun `auto-creates services with constructor dependencies`() {
-    val service = registry.require(DummyDependingService::class.java)
+    val service = registry.require<DummyDependingService>()
     assertThat(service.dummy1).isInstanceOf(DummyService1::class.java)
     assertThat(service.dummy2).isInstanceOf(DummyService2::class.java)
     assertThat(service.dummy3.random).isSameAs(service.dummy2.random)
@@ -33,8 +34,8 @@ class AutoCreatingServiceRegistryTest {
 
   @Test
   fun `do not auto-create instances of primitive classes, most likely its a mistake`() {
-    assertThrows<RegistryException> { registry.require(String::class.java) }
-    assertThrows<RegistryException> { registry.require(Integer::class.java) }
+    assertThrows<RegistryException> { registry.require<String>() }
+    assertThrows<RegistryException> { registry.require<Int>() }
   }
 
   class DummyService1(val blah: Long = 123)
