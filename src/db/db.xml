@@ -5,15 +5,13 @@
     xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.8.xsd"
     objectQuotingStrategy="QUOTE_ONLY_RESERVED_WORDS">
 
-  <property name="idType" value="varchar(36)"/>
-
   <changeSet id="pgsql-uuid-support" author="Codeborne" dbms="PostgreSql">
     <sql>create extension if not exists "uuid-ossp"</sql>
   </changeSet>
 
   <changeSet id="users" author="Codeborne">
     <createTable tableName="users">
-      <column name="id" type="${idType}"><constraints primaryKey="true" primaryKeyName="users_pk"/></column>
+      <column name="id" type="uuid"><constraints primaryKey="true" primaryKeyName="users_pk"/></column>
       <column name="login" type="varchar(100)"><constraints nullable="false"/></column>
       <column name="role" type="varchar(32)"><constraints nullable="false"/></column>
       <column name="lang" type="varchar(2)" defaultValue="en"><constraints nullable="false"/></column>
