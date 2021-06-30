@@ -32,12 +32,6 @@ class AutoCreatingServiceRegistryTest {
     assertThat(service.dummy3.default).isEqualTo("default")
   }
 
-  @Test
-  fun `do not auto-create instances of primitive classes, most likely its a mistake`() {
-    assertThrows<RegistryException> { registry.require<String>() }
-    assertThrows<RegistryException> { registry.require<Int>() }
-  }
-
   class DummyService1(val blah: Long = 123)
   class DummyService2(val random: SecureRandom)
   class DummyService3 @JvmOverloads constructor(val random: SecureRandom, val default: String = "default")

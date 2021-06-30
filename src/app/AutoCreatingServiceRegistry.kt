@@ -15,10 +15,10 @@ class AutoCreatingServiceRegistry(private val original: ServiceRegistry): Servic
     original.getOrNull(key) ?: autoCreateService(key.type).also { put(key, it) }
 
   private fun <T> autoCreateService(type: Class<out T>): T? {
-    val constructor = type.kotlin.primaryConstructor ?: return null
+    val constructor = type.kotlin.primaryConstructor ?: type.kotlin.constructors.minByOrNull { it.parameters.size } ?: return null
     try {
-      val args = constructor.parameters.map { require(it.type.classifier as KClass<*>) }.toTypedArray()
-      return constructor.call(*args).also {
+      val args = constructor.parameters.filter { !it.isOptional }.associateWith { require(it.type.classifier as KClass<*>) }
+      return constructor.callBy(args).also {
         log.info("Auto-created ${type.simpleName}${args.map {it::class.simpleName}}")
       }
     } catch (e: RegistryException) {
