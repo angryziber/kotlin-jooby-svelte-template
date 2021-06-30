@@ -34,7 +34,11 @@ class JdbcExtensionsTest: DBTest() {
     assertThat(db.query(table, mapOf("hello" to SqlOp(">", "Hello"))) { getId() }).contains(id2)
     assertThat(db.query(table, mapOf("hello" to listOf("Hello", "Hello2"))) { getId() }).contains(id, id2)
     assertThat(db.query(table, mapOf("hello" to listOf("Hello", "Hello2")), "order by hello desc") { getId() }).containsExactly(id2, id)
+    assertThat(db.query(table, mapOf("hello" to listOf("Hello", "Hello2")), "limit 1") { getId() }).containsOnly(id)
     assertThat(db.query(table, mapOf("hello" to NotIn("Hello2"))) { getId() }).containsOnly(id)
+
+    assertThat(db.query(table, emptyMap(), "where world is null") { getId() }).containsOnly(id2)
+    assertThat(db.query("$table a join $table b on a.id = b.id", emptyMap()) { getId() }).contains(id, id2)
   }
 
   @Test
