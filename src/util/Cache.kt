@@ -1,4 +1,4 @@
-package app
+package util
 
 import java.lang.System.currentTimeMillis
 import java.util.concurrent.ConcurrentHashMap
