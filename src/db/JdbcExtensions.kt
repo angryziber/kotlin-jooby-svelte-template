@@ -34,9 +34,9 @@ fun <R> DataSource.select(select: String, where: Map<String, Any?>, suffix: Stri
 }
 
 fun DataSource.insert(table: String, values: Map<String, *>): Int = withConnection {
-  val valuesByIndex = values.values.asSequence().map { if (it is SelectMax) it.value else it }
+  val valuesByIndex = values.values.asSequence()
   prepareStatement("""insert into $table (${values.keys.joinToString(",") { it }})
-    values (${values.entries.joinToString(",") { (it.value as? SelectMax)?.sql(it.key, table) ?: "?" }})
+    values (${values.entries.joinToString(",") { (it.value as? SqlComputed)?.expr ?: "?" }})
   """).use { stmt ->
     stmt.setAll(valuesByIndex)
     stmt.executeUpdate()
@@ -76,9 +76,9 @@ private fun whereString(where: Map<String, Any?>) = if (where.isNotEmpty()) " wh
 private fun whereValues(where: Map<String, Any?>) = where.values.asSequence().filterNotNull().flatMap { it.toIterable() }
 
 private fun Any?.toIterable(): Iterable<Any?> = when (this) {
-  is SqlExpression -> toIterable()
   is Array<*> -> toList()
   is Iterable<*> -> this
+  is SqlExpression -> toIterable()
   else -> listOf(this)
 }
 
@@ -140,11 +140,6 @@ inline fun <reified T: Any> ResultSet.fromValues(vararg values: Pair<KProperty1<
   val extraArgs = values.associate { it.first.name to it.second }
   val args = constructor.parameters.associateWith { extraArgs[it.name] ?: fromDBType(getObject(it.name), it.type) }
   constructor.callBy(args)
-}
-
-data class SelectMax(val by: Pair<String, Any>) {
-  fun sql(field: String, table: String) = "(select coalesce(max($field), 0) + 1 from $table where ${by.first} = ?)"
-  val value get() = by.second
 }
 
 interface SqlExpression {
