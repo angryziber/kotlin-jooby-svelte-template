@@ -16,14 +16,14 @@ fun <R> DataSource.query(table: String, id: UUID, mapper: ResultSet.() -> R): R 
 fun <R> DataSource.query(table: String, where: Map<String, Any?>, suffix: String = "", mapper: ResultSet.() -> R): List<R> =
   select("select * from $table", where, suffix, mapper)
 
-fun <R> DataSource.select(select: String, where: Map<String, Any?>, suffix: String = "", mapper: ResultSet.() -> R): List<R> = withConnection {
+fun <R> DataSource.select(@Language("SQL") select: String, where: Map<String, Any?>, suffix: String = "", mapper: ResultSet.() -> R): List<R> = withConnection {
   prepareStatement("$select${whereExpr(where)} $suffix").use { stmt ->
     stmt.setAll(whereValues(where))
     stmt.executeQuery().map(mapper)
   }
 }
 
-fun DataSource.exec(expr: String, values: Sequence<Any?> = emptySequence()): Int = withConnection {
+fun DataSource.exec(@Language("SQL") expr: String, values: Sequence<Any?> = emptySequence()): Int = withConnection {
   prepareStatement(expr).use { stmt ->
     stmt.setAll(values)
     stmt.executeUpdate()
@@ -121,5 +121,6 @@ class NullOrOp(operator: String, value: Any?): SqlOp(operator, value) {
 }
 
 class NotIn(values: Iterable<*>): SqlExpr("", values) {
+  constructor(vararg values: Any?): this(values.toList())
   override fun expr(key: String) = inExpr(key, values).replace(" in ", " not in ")
 }
