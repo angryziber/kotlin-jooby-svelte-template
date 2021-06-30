@@ -19,7 +19,7 @@ class AutoCreatingServiceRegistry(private val original: ServiceRegistry): Servic
     try {
       val args = constructor.parameters.filter { !it.isOptional }.associateWith { require(it.type.classifier as KClass<*>) }
       return constructor.callBy(args).also {
-        log.info("Auto-created ${type.simpleName}${args.map {it::class.simpleName}}")
+        log.info("Auto-created ${type.simpleName}${args.values.map {it::class.simpleName}}")
       }
     } catch (e: RegistryException) {
       throw RegistryException("Failed to auto-create ${type.simpleName} with dependencies on ${constructor.parameters.map {it.type}}: ${e.message}")
