@@ -11,19 +11,19 @@ class UserRepository(
   private val hashingService: HashingService,
   private val random: SecureRandom
 ): BaseRepository(db, "users") {
-  private val extractor: ResultSet.() -> User = {
+  private val mapper: ResultSet.() -> User = {
     User(getId(), getString("login"), getEnum("role"), getString("lang"), getString("name"), getString("email"), getInstant("createdAt"))
   }
 
-  fun get(id: UUID) = db.query(table, id, extractor)
+  fun get(id: UUID) = db.query(table, id, mapper)
 
   fun byCredentials(login: String, password: String): User? =
     db.query(table, mapOf("login" to login.lowercase())) {
-      extractor().takeIf { hashingService.hashPassword(password, it.id) == getString("passwordHash") }
+      mapper().takeIf { hashingService.hashPassword(password, it.id) == getString("passwordHash") }
     }.firstOrNull()
 
   fun byLogin(login: String): User? =
-    db.query(table, mapOf("login" to login.lowercase()), extractor).firstOrNull()
+    db.query(table, mapOf("login" to login.lowercase()), mapper = mapper).firstOrNull()
 
   fun generatePassword() = (1..16).joinToString("") { (33 + random.nextInt(127 - 33)).toChar().toString() }
 

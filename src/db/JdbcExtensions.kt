@@ -42,21 +42,13 @@ fun DataSource.upsert(table: String, values: Map<String, *>, uniqueFields: Strin
   }
 }
 
-fun DataSource.exec(query: String, values: List<Any>? = null): Int = withConnection {
-  prepareStatement(query).use { stmt ->
-    if (values != null) stmt.set(values)
-    stmt.executeUpdate()
-  }
-}
+fun <R> DataSource.query(table: String, id: UUID, mapper: ResultSet.() -> R): R =
+  query(table, mapOf("id" to id), mapper = mapper).firstOrNull() ?: throw NoSuchElementException("$table:$id not found")
 
-fun <R> DataSource.query(table: String, where: Map<String, Any?>, mapper: ResultSet.() -> R): List<R> = query(table, where, "", mapper)
-
-fun <R> DataSource.query(table: String, where: Map<String, Any?>, suffix: String, mapper: ResultSet.() -> R): List<R> =
+fun <R> DataSource.query(table: String, where: Map<String, Any?>, suffix: String = "", mapper: ResultSet.() -> R): List<R> =
   select("select * from $table", where, suffix, mapper)
 
-fun <R> DataSource.select(select: String, where: Map<String, Any?>, mapper: ResultSet.() -> R) = select(select, where, "", mapper)
-
-fun <R> DataSource.select(select: String, where: Map<String, Any?>, suffix: String, mapper: ResultSet.() -> R): List<R> = withConnection {
+fun <R> DataSource.select(select: String, where: Map<String, Any?>, suffix: String = "", mapper: ResultSet.() -> R): List<R> = withConnection {
   prepareStatement("$select${whereString(where)} $suffix").use { stmt ->
     stmt.set(whereValues(where))
     stmt.executeQuery().map(mapper)
@@ -70,9 +62,6 @@ private fun <R> ResultSet.map(mapper: ResultSet.() -> R): List<R> {
   while (next()) result += mapper()
   return result
 }
-
-fun <R> DataSource.query(table: String, id: UUID, mapper: ResultSet.() -> R): R =
-  query(table, mapOf("id" to id), mapper).firstOrNull() ?: throw NoSuchElementException("$table:$id not found")
 
 fun DataSource.update(table: String, where: Map<String, Any?>, values: Map<String, *>): Int = withConnection {
   val setString = values.keys.joinToString { "$it=?" }
@@ -143,8 +132,8 @@ fun ResultSet.getLocalDateNullable(column: String) = getDate(column)?.toLocalDat
 fun ResultSet.getPeriod(column: String) = Period.parse(getString(column))
 fun ResultSet.getPeriodNullable(column: String) = getString(column)?.let { Period.parse(it) }
 
-fun ResultSet.getId(column: String = "id") = UUID.fromString(getString(column))
-fun ResultSet.getIdNullable(column: String) = getString(column)?.let { UUID.fromString(it) }
+fun ResultSet.getId(column: String = "id") = getString(column).toId()
+fun ResultSet.getIdNullable(column: String) = getString(column)?.toId()
 fun ResultSet.getIntNullable(column: String) = getObject(column)?.let { (it as Number).toInt() }
 
 fun String.toId(): UUID = UUID.fromString(this)
