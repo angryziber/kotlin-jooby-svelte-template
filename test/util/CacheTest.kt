@@ -1,15 +1,14 @@
 package util
 
-import org.assertj.core.api.Assertions
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
 class CacheTest {
   var count = 0
-  val provider = { ++count }
+  val provider = { ++count } // e.g. { http.get("/something") }
 
   @Test
-  fun `cache and not expire`() {
+  fun `cache does not expire`() {
     val cache = Cache()
     assertThat(cache("key", provider)).isEqualTo(1)
     assertThat(cache("key", provider)).isEqualTo(1)
