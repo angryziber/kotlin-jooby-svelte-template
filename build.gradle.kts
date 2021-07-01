@@ -86,7 +86,7 @@ val test by tasks.getting(Test::class) {
 
 tasks.register<Test>("e2eTest") {
   useJUnitPlatform()
-  include("ui/**")
+  include("e2e/**")
   if (project.hasProperty("headless"))
     systemProperties["chromeoptions.args"] = "--headless,--no-sandbox,--disable-gpu"
   systemProperties["webdriver.chrome.logfile"] = "build/reports/chromedriver.log"

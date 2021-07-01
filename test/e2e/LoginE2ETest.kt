@@ -22,7 +22,7 @@ class LoginE2ETest: E2ETest() {
   }
 
   @Test
-  fun superAdmin() {
+  fun admin() {
     loginWithPassword("admin")
     elByText("admin.dashboard.title").shouldBe(visible)
     assertThat(url()).endsWith("/en/app/admin")

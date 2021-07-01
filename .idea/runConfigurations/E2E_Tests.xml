@@ -1,6 +1,6 @@
 <component name="ProjectRunConfigurationManager">
   <configuration default="false" name="E2E Tests" type="JUnit" factoryName="JUnit">
-    <module name="app.test" />
+    <module name="work.kotlin-jooby-svelte-template.test" />
     <useClassPathOnly />
     <option name="PACKAGE_NAME" value="^(ui).*" />
     <option name="MAIN_CLASS_NAME" value="" />
@@ -9,7 +9,7 @@
     <option name="PARAMETERS" value="" />
     <option name="WORKING_DIRECTORY" value="%MODULE_WORKING_DIR%" />
     <patterns>
-      <pattern testClass="^(ui).*" />
+      <pattern testClass="^(e2e).*" />
     </patterns>
     <method v="2">
       <option name="Make" enabled="true" />
