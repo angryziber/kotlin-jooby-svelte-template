@@ -1,4 +1,5 @@
-package ui
+package e2e
+
 import app.App
 import app.Lang
 import app.invoke
@@ -7,30 +8,27 @@ import com.codeborne.selenide.Configuration
 import com.codeborne.selenide.Selectors
 import com.codeborne.selenide.Selectors.byText
 import com.codeborne.selenide.Selenide
+import com.codeborne.selenide.Selenide.executeAsyncJavaScript
 import com.codeborne.selenide.Selenide.open
 import com.codeborne.selenide.SelenideElement
-import com.fasterxml.jackson.databind.ObjectMapper
-import io.jooby.ServerOptions
 import org.intellij.lang.annotations.Language
 import org.openqa.selenium.By
 import util.stringify
 
 /**
- * Base class for UI (E2E) tests written using Selenide
+ * Base class for End-to-end tests written using Selenide
  */
-abstract class UITest {
+abstract class E2ETest {
   companion object {
-    init {
-      System.setProperty("application.env", "test,test-data")
-    }
+    init { System.setProperty("application.env", "test,test-data") }
 
     protected val app = App().apply {
-      serverOptions = ServerOptions().apply { port = 18097 }
+      serverOptions.port = 18097
     }
 
     init {
       app.start()
-      Configuration.baseUrl = "http://localhost:18097"
+      Configuration.baseUrl = "http://localhost:" + app.serverOptions.port
     }
   }
 
@@ -41,7 +39,7 @@ abstract class UITest {
   }
 
   @Language("JavaScript")
-  fun modifySession(map: Map<String, Any?>) = Selenide.executeAsyncJavaScript<Any>("""
+  fun modifySession(map: Map<String, Any?>) = executeAsyncJavaScript<Any>("""
     let callback = arguments[0]
     fetch('/fake-login/session', {method: 'POST', body: '${objectMapper.stringify(map)}', headers: {'Content-Type': 'application/json'}}).then(callback)
   """)

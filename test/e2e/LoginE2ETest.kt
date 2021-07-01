@@ -1,4 +1,4 @@
-package ui
+package e2e
 
 import app.invoke
 import com.codeborne.selenide.Condition.visible
@@ -11,7 +11,7 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Test
 
-class LoginUITest: UITest() {
+class LoginE2ETest: E2ETest() {
   @Test
   fun `navigate from home to login`() {
     clearBrowserCookies()
