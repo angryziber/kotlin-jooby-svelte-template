@@ -23,7 +23,7 @@ interface Before {
   fun before(ctx: Context)
 }
 
-private inline fun <reified T: Any> Jooby.mvc() = require<T>().also {
+inline fun <reified T: Any> Jooby.mvc() = require<T>().also {
   if (it is Before) before(it::before)
   mvc(it)
 }
