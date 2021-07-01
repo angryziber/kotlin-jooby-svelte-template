@@ -25,7 +25,7 @@ For people asking me at conferences what would I recommend from technical perspe
 No frameworks needed for this:
 
 * 30-line [dependency injection](src/app/AutoCreatingServiceRegistry.kt)
-* 100-line [JDBC extensions](src/db/JdbcExtensions.kt) instead of ORM and [transaction management](src/db/ThreadLocalTransaction.kt)  
+* 100-line [JDBC extensions](src/db/JdbcExtensions.kt) instead of ORM and [transaction management](src/db/Transaction.kt)  
 * Simple client-side [router](ui/routing/Router.ts) used in [root component](ui/App.svelte)
 
 Testing:
@@ -33,6 +33,10 @@ Testing:
 * 3 layers of testing: UI (client-side components), server-side (unit + repositories) and E2E using Selenide to drive an actual browser.
 * Repository tests rollback to avoid recreation of the DB each time
 * E2E tests test login once and then use [fake login](src/auth/FakeLoginForTestingController.kt) to get to needed places quickly
+
+### Why Kotlin & Jooby?
+
+See [conference slides](https://docs.google.com/presentation/d/1iXFKSsvPhBze-3cvd2j0Ri7dp2yH_w_1ULZPMfbdWAQ) from Kotland 2021 conference.
 
 ### Why Svelte?
 
