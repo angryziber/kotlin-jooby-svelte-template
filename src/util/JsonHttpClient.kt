@@ -1,5 +1,6 @@
 package util
 
+import app.httpClient
 import app.objectMapper
 import com.fasterxml.jackson.databind.ObjectMapper
 import kotlinx.coroutines.future.await
@@ -18,11 +19,11 @@ import kotlin.reflect.KClass
 typealias RequestModifier =  HttpRequest.Builder.() -> HttpRequest.Builder
 
 class JsonHttpClient(
-  private val http: HttpClient,
   private val urlPrefix: String = "",
-  val json: ObjectMapper = objectMapper,
   private val reqModifier: RequestModifier = { this },
-  private val errorHandler: (HttpResponse<*>, String) -> Nothing = { res, body -> throw IOException("Failed with ${res.statusCode()}: $body") }
+  private val errorHandler: (HttpResponse<*>, String) -> Nothing = { res, body -> throw IOException("Failed with ${res.statusCode()}: $body") },
+  val json: ObjectMapper = objectMapper,
+  private val http: HttpClient = httpClient
 ) {
   private val logger = LoggerFactory.getLogger(javaClass)
 

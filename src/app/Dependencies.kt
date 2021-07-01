@@ -12,15 +12,18 @@ import io.jooby.json.JacksonModule
 import io.jooby.put
 import java.net.http.HttpClient
 import java.time.Duration
+import java.time.Duration.ofSeconds
 import java.time.temporal.ChronoUnit.SECONDS
 
 val objectMapper = JacksonModule.create().disable(WRITE_DATES_AS_TIMESTAMPS).setSerializationInclusion(NON_NULL)
   .configure(FAIL_ON_UNKNOWN_PROPERTIES, false).registerModule(KotlinModule())!!
 
+val httpClient = HttpClient.newBuilder().connectTimeout(ofSeconds(5)).build()
+
 fun Kooby.registerDependencies() {
   services.put(Environment::class.java, environment)
   services.put(Config::class.java, config)
-  services.put(HttpClient::class, HttpClient.newBuilder().connectTimeout(Duration.of(5, SECONDS)).build())
+  services.put(HttpClient::class, httpClient)
   services.put(ObjectMapper::class, objectMapper)
   install(JacksonModule(objectMapper))
 }
