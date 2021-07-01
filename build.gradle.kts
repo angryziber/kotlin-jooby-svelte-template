@@ -81,7 +81,7 @@ tasks.register("generateTSTypes") {
 
 val test by tasks.getting(Test::class) {
   useJUnitPlatform()
-  exclude("ui/**")
+  exclude("e2e/**")
 }
 
 tasks.register<Test>("e2eTest") {
