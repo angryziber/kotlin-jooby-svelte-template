@@ -12,16 +12,15 @@ import java.net.http.HttpRequest
 import java.net.http.HttpRequest.BodyPublishers.ofString
 import java.net.http.HttpResponse
 import java.net.http.HttpResponse.BodyHandlers.ofInputStream
-import java.time.Duration
 import java.time.Duration.ofSeconds
 import kotlin.reflect.KClass
 
 typealias RequestModifier =  HttpRequest.Builder.() -> HttpRequest.Builder
 
 class JsonHttpClient(
-  private val urlPrefix: String = "",
-  private val reqModifier: RequestModifier = { this },
-  private val errorHandler: (HttpResponse<*>, String) -> Nothing = { res, body -> throw IOException("Failed with ${res.statusCode()}: $body") },
+  val urlPrefix: String = "",
+  val reqModifier: RequestModifier = { this },
+  val errorHandler: (HttpResponse<*>, String) -> Nothing = { res, body -> throw IOException("Failed with ${res.statusCode()}: $body") },
   val json: ObjectMapper = objectMapper,
   private val http: HttpClient = httpClient
 ) {
