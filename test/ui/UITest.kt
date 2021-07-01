@@ -2,6 +2,7 @@ package ui
 import app.App
 import app.Lang
 import app.invoke
+import app.objectMapper
 import com.codeborne.selenide.Configuration
 import com.codeborne.selenide.Selectors
 import com.codeborne.selenide.Selectors.byText
@@ -12,6 +13,7 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import io.jooby.ServerOptions
 import org.intellij.lang.annotations.Language
 import org.openqa.selenium.By
+import util.stringify
 
 /**
  * Base class for UI (E2E) tests written using Selenide
@@ -41,7 +43,7 @@ abstract class UITest {
   @Language("JavaScript")
   fun modifySession(map: Map<String, Any?>) = Selenide.executeAsyncJavaScript<Any>("""
     let callback = arguments[0]
-    fetch('/fake-login/session', {method: 'POST', body: '${ObjectMapper().writeValueAsString(map)}', headers: {'Content-Type': 'application/json'}}).then(callback)
+    fetch('/fake-login/session', {method: 'POST', body: '${objectMapper.stringify(map)}', headers: {'Content-Type': 'application/json'}}).then(callback)
   """)
 
   fun el(selector: String) = Selenide.`$`(selector)

@@ -6,11 +6,12 @@ import com.mitchellbosecke.pebble.loader.ClasspathLoader
 import com.mitchellbosecke.pebble.loader.FileLoader
 import io.jooby.*
 import io.jooby.pebble.PebbleModule
+import util.stringify
 import java.io.File
 
 fun Kooby.handleStaticPages(assetsDir: File, apiVersion: String) {
   val assetsTime = assetsDir.lastModified()
-  val uiConfigJson = require<ObjectMapper>().writeValueAsString(mapOf("apiVersion" to apiVersion))
+  val uiConfigJson = require<ObjectMapper>().stringify(mapOf("apiVersion" to apiVersion))
   val canonicalHost = System.getenv("CANONICAL_HOST")
 
   val csp = "default-src 'self' 'unsafe-inline' ${config.getString("csp.allowedExternalSrc")}; " +

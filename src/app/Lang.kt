@@ -3,6 +3,7 @@ package app
 import com.fasterxml.jackson.databind.ObjectMapper
 import io.jooby.Context
 import io.jooby.Cookie
+import util.parse
 import java.io.InputStreamReader
 
 typealias Translations = Map<String, Any>
@@ -28,12 +29,12 @@ object Lang {
 
   private fun acceptLanguage(accept: String?) = accept?.replace("[-,;].*$".toRegex(), "")
 
-  private fun readAvailableLangs(jsFile: String) = InputStreamReader(javaClass.getResourceAsStream(jsFile)).readLines()
+  private fun readAvailableLangs(jsFile: String) = InputStreamReader(javaClass.getResourceAsStream(jsFile)!!).readLines()
     .filter { it.startsWith("import") }.map { it.split(" ")[1] }
 
   @Suppress("UNCHECKED_CAST")
   private fun load(lang: String) =
-    ObjectMapper().readValue(javaClass.getResource("/$lang.json"), MutableMap::class.java) as Translations
+    objectMapper.parse(javaClass.getResourceAsStream("/$lang.json")!!, MutableMap::class) as Translations
 }
 
 private fun Translations.resolve(key: String) =

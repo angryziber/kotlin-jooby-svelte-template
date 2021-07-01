@@ -10,6 +10,7 @@ import io.jooby.MediaType.json
 import io.jooby.StatusCode.*
 import io.jooby.exception.StatusCodeException
 import org.slf4j.LoggerFactory
+import util.stringify
 
 class ExceptionHandler: Extension {
   private val errorLogger = LoggerFactory.getLogger("error")
@@ -30,9 +31,9 @@ class ExceptionHandler: Extension {
     }
   }
 
-  fun Context.sendJson(map: Map<String, Any?>) {
+  private fun Context.sendJson(map: Map<String, Any?>) {
     responseType = json
-    send(require<ObjectMapper>().writeValueAsString(map))
+    send(require<ObjectMapper>().stringify(map))
   }
 }
 
