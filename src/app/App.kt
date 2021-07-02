@@ -34,8 +34,6 @@ class App: Kooby({
   assets("/*", assetsDir.toPath())
   handleStaticPages(assetsDir, apiVersion)
 
-  get("/api/health") { "OK" }.accessPublic
-
   post("/api/js-error") {
     getLogger("js-error").error(ctx.body().value())
   }.accessPublic
