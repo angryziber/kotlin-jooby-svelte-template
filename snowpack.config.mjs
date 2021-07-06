@@ -56,7 +56,6 @@ export default {
     sourcemap: true
   },
   optimize: {
-    bundle: true,
     sourcemap: false,
     minify: true,
     target: 'es2020'
