@@ -7,9 +7,7 @@ import kotlinx.coroutines.runBlocking
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
-import java.io.ByteArrayInputStream
 import java.io.IOException
-import java.io.InputStream
 import java.net.http.HttpClient
 import java.net.http.HttpResponse
 import java.util.concurrent.CompletableFuture.completedFuture
@@ -21,7 +19,7 @@ class JsonHttpClientTest {
   @Test
   fun get() {
     val response = mockResponse(200, """{"hello": "World"}""")
-    every { httpClient.sendAsync<InputStream>(any(), any()) } returns completedFuture(response)
+    every { httpClient.sendAsync<String>(any(), any()) } returns completedFuture(response)
 
     runBlocking {
       val data = http.get<SomeData>("/some/data")
@@ -34,15 +32,15 @@ class JsonHttpClientTest {
   @Test
   fun `http error`() {
     val response = mockResponse(500, """{"error": "Error"}""")
-    every { httpClient.sendAsync<InputStream>(any(), any()) } returns completedFuture(response)
+    every { httpClient.sendAsync<String>(any(), any()) } returns completedFuture(response)
 
     assertThrows<IOException> { runBlocking { http.get<SomeData>("/error") } }
   }
 
   data class SomeData(val hello: String)
 
-  private fun mockResponse(status: Int, body: String) = mockk<HttpResponse<InputStream>> {
+  private fun mockResponse(status: Int, body: String) = mockk<HttpResponse<String>> {
     every { statusCode() } returns status
-    every { body() } returns ByteArrayInputStream(body.toByteArray())
+    every { body() } returns body
   }
 }

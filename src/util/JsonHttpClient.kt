@@ -11,7 +11,7 @@ import java.net.http.HttpClient
 import java.net.http.HttpRequest
 import java.net.http.HttpRequest.BodyPublishers.ofString
 import java.net.http.HttpResponse
-import java.net.http.HttpResponse.BodyHandlers.ofInputStream
+import java.net.http.HttpResponse.BodyHandlers.ofString
 import java.time.Duration.ofSeconds
 import kotlin.reflect.KClass
 
@@ -33,14 +33,14 @@ class JsonHttpClient(
   suspend fun <T: Any> request(urlSuffix: String, builder: HttpRequest.Builder.() -> HttpRequest.Builder, type: KClass<T>): T {
     val req = jsonReq(urlSuffix).builder().build()
     val start = System.nanoTime()
-    val res = http.sendAsync(req, ofInputStream()).await()
+    val res = http.sendAsync(req, ofString()).await()
     val ms = (System.nanoTime() - start) / 1000_000
+    val body = res.body()
     if (res.statusCode() < 300) {
-      logger.info("${req.method()} $urlSuffix in $ms ms")
-      return json.parse(res.body(), type)
+      logger.info("${req.method()} $urlSuffix in $ms ms: $body")
+      return json.parse(body, type)
     }
     else {
-      val body = res.body().readBytes().decodeToString()
       logger.error("Failed ${req.method()} $urlSuffix in $ms ms: ${res.statusCode()}: $body")
       errorHandler(res, body)
     }
@@ -52,5 +52,5 @@ class JsonHttpClient(
   suspend inline fun <reified T: Any> get(urlSuffix: String) = request<T>(urlSuffix) { GET() }
   suspend inline fun <reified T: Any> post(urlSuffix: String, o: Any?) = request<T>(urlSuffix) { POST(ofString(json.stringify(o))) }
   suspend inline fun <reified T: Any> put(urlSuffix: String, o: Any?) = request<T>(urlSuffix) { PUT(ofString(json.stringify(o))) }
-  suspend inline fun <reified T: Any> delete(urlSuffix: String, o: Any?) = request<T>(urlSuffix) { DELETE() }
+  suspend inline fun <reified T: Any> delete(urlSuffix: String) = request<T>(urlSuffix) { DELETE() }
 }
