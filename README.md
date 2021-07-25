@@ -79,7 +79,7 @@ This will bind to `127.0.0.1:65432` by default
 After clone:
 
 ```
-npm install
+npm install --legacy-peer-deps
 ```
 
 Then:

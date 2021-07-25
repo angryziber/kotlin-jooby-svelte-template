@@ -20,16 +20,13 @@ import util.stringify
  */
 abstract class E2ETest {
   companion object {
-    init { System.setProperty("application.env", "test,test-data") }
-
-    protected val app = App().apply {
-      serverOptions.port = 18097
-    }
-
+    val port = 18097
     init {
-      app.start()
-      Configuration.baseUrl = "http://localhost:" + app.serverOptions.port
+      System.setProperty("application.env", "test,test-data")
+      Configuration.baseUrl = "http://localhost:$port"
     }
+
+    val app = App().apply { serverOptions.port = port; start() }
   }
 
   val translate = Lang.translations["en"]!!

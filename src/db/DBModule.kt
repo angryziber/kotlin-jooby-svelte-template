@@ -14,8 +14,9 @@ import javax.sql.DataSource
 class DBModule: Extension {
   companion object {
     const val dbName = "app"
-    val hikariConfig = HikariConfig().apply {
-      jdbcUrl = System.getenv("DATABASE_URL")?.let { herokuDbUrlToJdbc(it) } ?: "jdbc:postgresql://${System.getenv("DB_HOST") ?: "localhost:65432"}/$dbName?user=$dbName&password=$dbName"
+
+    fun configure(dbSuffix: String) = HikariConfig().apply {
+      jdbcUrl = System.getenv("DATABASE_URL")?.let { herokuDbUrlToJdbc(it) } ?: "jdbc:postgresql://${System.getenv("DB_HOST") ?: "localhost:6432"}/$dbName$dbSuffix?user=$dbName&password=$dbName"
     }
 
     fun herokuDbUrlToJdbc(url: String): String {
@@ -25,7 +26,7 @@ class DBModule: Extension {
   }
 
   override fun install(app: Jooby) = app.run {
-    install(HikariModule(hikariConfig))
+    install(HikariModule(configure(if (app.environment.isActive("test")) "_test" else "")))
     require<DataSource>().migrate(app.environment.activeNames)
   }
 }

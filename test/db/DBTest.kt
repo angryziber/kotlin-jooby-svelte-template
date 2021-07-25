@@ -2,18 +2,20 @@ package db
 
 import com.zaxxer.hikari.HikariDataSource
 import com.zaxxer.hikari.pool.HikariPool
-import db.DBModule.Companion.dbName
 import org.junit.jupiter.api.extension.AfterEachCallback
 import org.junit.jupiter.api.extension.BeforeEachCallback
 import org.junit.jupiter.api.extension.ExtensionContext
 import org.junit.jupiter.api.extension.RegisterExtension
+import java.time.LocalDate
 
 abstract class DBTest {
   companion object {
+    val today = LocalDate.now()
+    val tomorrow = today.plusDays(1)
+    val yesterday = today.minusDays(1)
+
     val db = try {
-      HikariDataSource(DBModule.hikariConfig.apply {
-        jdbcUrl = jdbcUrl.replace("/$dbName", "/${dbName}_test")
-      }).apply {
+      HikariDataSource(DBModule.configure("_test")).apply {
         migrate(listOf("test", "test-data"))
       }
     } catch (e: HikariPool.PoolInitializationException) {
