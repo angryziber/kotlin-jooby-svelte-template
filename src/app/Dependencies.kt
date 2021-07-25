@@ -11,9 +11,7 @@ import io.jooby.Kooby
 import io.jooby.json.JacksonModule
 import io.jooby.put
 import java.net.http.HttpClient
-import java.time.Duration
 import java.time.Duration.ofSeconds
-import java.time.temporal.ChronoUnit.SECONDS
 
 val objectMapper = JacksonModule.create().disable(WRITE_DATES_AS_TIMESTAMPS).setSerializationInclusion(NON_NULL)
   .configure(FAIL_ON_UNKNOWN_PROPERTIES, false).registerModule(KotlinModule())!!

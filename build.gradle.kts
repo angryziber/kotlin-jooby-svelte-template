@@ -56,7 +56,7 @@ sourceSets {
 tasks.withType<KotlinCompile> {
   kotlinOptions {
     jvmTarget = "11"
-    freeCompilerArgs = listOf("-Xjsr305=strict -progressive")
+    freeCompilerArgs += "-Xjsr305=strict -progressive"
     javaParameters = true
   }
   finalizedBy("generateTSTypes")
