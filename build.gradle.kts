@@ -39,7 +39,7 @@ dependencies {
   testImplementation("org.assertj:assertj-core:3.15.0")
   testImplementation("com.codeborne:selenide:5.10.0")
 
-  jvm2dts("com.codeborne:jvm2dts:1.4.0")
+  jvm2dts("com.codeborne:jvm2dts:1.5.1")
 }
 
 sourceSets {
