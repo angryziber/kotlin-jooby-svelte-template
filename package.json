@@ -6,7 +6,7 @@
   },
   "scripts": {
     "build": "snowpack build && npm run build-autoprefixer && cp -ru public build",
-    "build-autoprefixer": "postcss -u autoprefixer --no-map --replace build/public/css/*.css",
+    "build-autoprefixer": "postcss -u autoprefixer --no-map --replace public/css/*.css",
     "watch": "snowpack dev",
     "gen-icon-sprite": "npx svgo --config ui/assets/icons-svgo.json -f ui/assets/icons && npx svg-sprite --config ui/assets/icons-svg-sprite.json ui/assets/icons/*.svg",
     "test": "web-test-runner {i18n,ui}/**/*.test.ts"
