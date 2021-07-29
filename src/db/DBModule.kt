@@ -16,7 +16,7 @@ class DBModule: Extension {
     const val dbName = "app"
 
     fun configure(dbSuffix: String) = HikariConfig().apply {
-      jdbcUrl = System.getenv("DATABASE_URL")?.let { herokuDbUrlToJdbc(it) } ?: "jdbc:postgresql://${System.getenv("DB_HOST") ?: "localhost:6432"}/$dbName$dbSuffix?user=$dbName&password=$dbName"
+      jdbcUrl = System.getenv("DATABASE_URL")?.let { herokuDbUrlToJdbc(it) } ?: "jdbc:postgresql://${System.getenv("DB_HOST") ?: "localhost:65432"}/$dbName$dbSuffix?user=$dbName&password=$dbName"
     }
 
     fun herokuDbUrlToJdbc(url: String): String {
