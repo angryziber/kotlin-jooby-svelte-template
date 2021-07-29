@@ -2,6 +2,7 @@ package db
 
 import org.intellij.lang.annotations.Language
 import java.net.URL
+import java.sql.Connection
 import java.sql.PreparedStatement
 import java.sql.ResultSet
 import java.time.Instant
@@ -31,12 +32,11 @@ fun DataSource.exec(@Language("SQL") expr: String, values: Sequence<Any?> = empt
 }
 
 fun DataSource.insert(table: String, values: Map<String, *>): Int =
-  exec(insertExpr(table, values), values.values.asSequence())
+  exec(insertExpr(table, values), setValues(values))
 
 fun DataSource.upsert(table: String, values: Map<String, *>, uniqueFields: String = "id"): Int {
-  val valuesByIndex = values.values.asSequence()
   return exec(insertExpr(table, values) +
-    " on conflict ($uniqueFields) do update set ${setExpr(values)}", valuesByIndex + valuesByIndex)
+    " on conflict ($uniqueFields) do update set ${setExpr(values)}", setValues(values) + setValues(values))
 }
 
 private fun insertExpr(table: String, values: Map<String, *>) = """
@@ -44,7 +44,7 @@ private fun insertExpr(table: String, values: Map<String, *>) = """
     values (${values.entries.joinToString { (it.value as? SqlExpr)?.expr(it.key) ?: "?" }})""".trimIndent()
 
 fun DataSource.update(table: String, where: Map<String, Any?>, values: Map<String, *>): Int =
-  exec("update $table set ${setExpr(values)}${whereExpr(where)}", values.values.asSequence() + whereValues(where))
+  exec("update $table set ${setExpr(values)}${whereExpr(where)}", setValues(values) + whereValues(where))
 
 fun DataSource.delete(table: String, where: Map<String, Any?>): Int =
   exec("delete from $table${whereExpr(where)}", whereValues(where))
@@ -64,23 +64,24 @@ private fun whereExpr(k: String, v: Any?) = when(v) {
 
 private fun inExpr(k: String, v: Iterable<*>) = "$k in (${v.joinToString { "?" }})"
 
-private fun whereValues(where: Map<String, Any?>) = where.values.asSequence().filterNotNull().flatMap { it.toIterable() }
+private fun setValues(values: Map<String, Any?>) = values.values.asSequence().flatMap { it.flatExpr() }
+private fun Any?.flatExpr(): Iterable<Any?> = if (this is SqlExpr) values else listOf(this)
 
+private fun whereValues(where: Map<String, Any?>) = where.values.asSequence().filterNotNull().flatMap { it.toIterable() }
 private fun Any?.toIterable(): Iterable<Any?> = when (this) {
   is Array<*> -> toList()
   is Iterable<*> -> this
-  is SqlExpr -> values
-  else -> listOf(this)
+  else -> flatExpr()
 }
 
-operator fun PreparedStatement.set(i: Int, value: Any?) = setObject(i, toDBType(value))
+operator fun PreparedStatement.set(i: Int, value: Any?) = setObject(i, connection.toDBType(value))
 fun PreparedStatement.setAll(values: Sequence<Any?>) = values.forEachIndexed { i, v -> this[i + 1] = v }
 
-private fun toDBType(v: Any?): Any? = when(v) {
+private fun Connection.toDBType(v: Any?): Any? = when(v) {
   is Enum<*> -> v.name
   is Instant -> v.atOffset(UTC)
-  is Period, is URL -> v.toString()
-  is Collection<*> -> v.map { it.toString() }.toTypedArray()
+  is Period, is URL, is Currency -> v.toString()
+  is Collection<*> -> createArrayOf(if (v.firstOrNull() is UUID) "uuid" else "varchar", v.toTypedArray())
   else -> v
 }
 
@@ -114,6 +115,10 @@ open class SqlOp(val operator: String, val value: Any?): SqlExpr(operator, value
 
 class Between(from: Any, to: Any): SqlExpr("", from, to) {
   override fun expr(key: String) = "$key between ? and ?"
+}
+
+class BetweenExcl(from: Any, to: Any): SqlExpr("", from, to) {
+  override fun expr(key: String) = "$key >= ? and $key < ?"
 }
 
 class NullOrOp(operator: String, value: Any?): SqlOp(operator, value) {

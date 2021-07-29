@@ -1,5 +1,6 @@
 package db
 
+import util.c
 import util.toType
 import java.net.URL
 import java.sql.Date
@@ -12,6 +13,7 @@ import java.util.*
 import kotlin.reflect.KClass
 import kotlin.reflect.KProperty1
 import kotlin.reflect.KType
+import kotlin.reflect.full.hasAnnotation
 import kotlin.reflect.full.isSubclassOf
 import kotlin.reflect.full.memberProperties
 import kotlin.reflect.full.primaryConstructor
@@ -25,7 +27,8 @@ interface BaseModel {
 inline fun <reified T: Any> T.toValues() = toValuesSkipping()
 
 inline fun <reified T: Any> T.toValuesSkipping(vararg skip: KProperty1<T, *>): Map<String, Any?> =
-  (T::class.memberProperties - skip).filter { it.javaField != null }.map { it.name to it.get(this) }.toMap()
+  (T::class.memberProperties - skip).filter { it.javaField != null }
+    .associate { it.name to it.javaField?.apply { trySetAccessible() }?.get(this) }
 
 inline fun <reified T: Any> ResultSet.fromValues(vararg values: Pair<KProperty1<T, *>, Any?>) = fromValues(T::class, *values)
 
@@ -40,8 +43,12 @@ private fun fromDBType(v: Any?, target: KType): Any? = when(target.jvmErasure) {
   LocalDate::class -> (v as? Date)?.toLocalDate()
   LocalDateTime::class -> (v as Timestamp).toLocalDateTime()
   URL::class -> v?.let { URL(v as String) }
+  Currency::class -> (v as String?)?.c
   List::class -> ((v as java.sql.Array).array as Array<*>).map { fromDBType(it, target.arguments[0].type!!) }.toList()
   Set::class -> ((v as java.sql.Array).array as Array<*>).map { fromDBType(it, target.arguments[0].type!!) }.toSet()
-  else -> if (target.jvmErasure.isSubclassOf(Enum::class)) (v as String).toType(target)
-  else v
+  else -> when {
+    target.jvmErasure.isSubclassOf(Enum::class) -> (v as String?)?.toType(target)
+    target.jvmErasure.hasAnnotation<JvmInline>() -> (v as String?)?.let { target.jvmErasure.primaryConstructor!!.call(it) }
+    else -> v
+  }
 }
