@@ -3,5 +3,5 @@ const preprocess = require('svelte-preprocess')
 
 module.exports = {
   dev: process.env.NODE_ENV === 'development',
-  preprocess: preprocess({typescript: {compilerOptions: {target: 'es2020'}}})
+  preprocess: preprocess({typescript: {compilerOptions: {target: 'es2021'}}})
 }
