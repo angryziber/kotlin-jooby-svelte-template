@@ -11,7 +11,7 @@ import kotlinx.coroutines.slf4j.MDCContext
 
 fun Kooby.registerRoutes() {
   coroutine {
-    launchContext { it + MDCContext() + TransactionCoroutineContext() }
+    launchContext { MDCContext() + TransactionCoroutineContext() }
 
     mvc<HealthRoutes>()
     mvc<AuthController>()

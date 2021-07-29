@@ -2,8 +2,8 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import java.io.ByteArrayOutputStream
 
 plugins {
-  kotlin("jvm") version "1.5.10"
-  kotlin("kapt") version "1.5.10"
+  kotlin("jvm") version "1.5.21"
+  kotlin("kapt") version "1.5.21"
 }
 
 repositories {
@@ -13,7 +13,7 @@ repositories {
 val jvm2dts by configurations.creating
 
 dependencies {
-  val joobyVersion = "2.9.6"
+  val joobyVersion = "2.10.0"
   kapt("io.jooby:jooby-apt:$joobyVersion")
 
   implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
