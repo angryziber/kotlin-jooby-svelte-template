@@ -19,7 +19,7 @@ const plugins = [
 if (!isTest) {
   const sassCmd = 'sass -I node_modules ui/assets/scss:public/css'
   plugins.push(['@snowpack/plugin-run-script', {
-    cmd: `${sassCmd} --no-source-map --style=compressed`, watch: `${sassCmd} --embed-source-map --watch`
+    cmd: `${sassCmd} --no-source-map --style=compressed && cp -fr public/css build/public/css`, watch: `${sassCmd} --embed-source-map --watch`
   }])
 }
 
