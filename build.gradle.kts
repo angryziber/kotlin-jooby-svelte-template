@@ -30,7 +30,7 @@ dependencies {
   implementation("ch.qos.logback:logback-classic:1.2.3")
   implementation("org.slf4j:jul-to-slf4j:1.7.30")
   implementation("org.liquibase:liquibase-core:4.4.1")
-  implementation("org.postgresql:postgresql:42.2.18")
+  implementation("org.postgresql:postgresql:42.2.23")
 
   testImplementation("io.mockk:mockk:1.12.0")
   testImplementation("org.junit.jupiter:junit-jupiter:5.6.0")
