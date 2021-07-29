@@ -29,15 +29,14 @@ dependencies {
   implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.12.0")
   implementation("ch.qos.logback:logback-classic:1.2.3")
   implementation("org.slf4j:jul-to-slf4j:1.7.30")
-  implementation("org.liquibase:liquibase-core:4.2.2")
+  implementation("org.liquibase:liquibase-core:4.4.1")
   implementation("org.postgresql:postgresql:42.2.18")
-  implementation("javax.mail:mail:1.4.7")
 
-  testImplementation("io.mockk:mockk:1.11.0")
+  testImplementation("io.mockk:mockk:1.12.0")
   testImplementation("org.junit.jupiter:junit-jupiter:5.6.0")
   testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.6.0")
-  testImplementation("org.assertj:assertj-core:3.15.0")
-  testImplementation("com.codeborne:selenide:5.10.0")
+  testImplementation("org.assertj:assertj-core:3.20.2")
+  testImplementation("com.codeborne:selenide:5.23.0")
 
   jvm2dts("com.codeborne:jvm2dts:1.5.1")
 }
