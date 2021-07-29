@@ -1,5 +1,4 @@
 import snowpackPlugin from '@snowpack/web-test-runner-plugin'
-import {puppeteerLauncher} from '@web/test-runner-puppeteer'
 
 // Needed by "@snowpack/web-test-runner-plugin"
 process.env.NODE_ENV = 'test'
@@ -11,7 +10,6 @@ export default {
   plugins: [
     snowpackPlugin()
   ],
-  browsers: [puppeteerLauncher({launchOptions: {args: ['--no-sandbox']}})],
   testRunnerHtml: testFramework =>
     `<html>
       <body>
