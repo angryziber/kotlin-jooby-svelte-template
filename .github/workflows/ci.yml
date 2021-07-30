@@ -40,13 +40,13 @@ jobs:
       - run: ./gradlew jar
 
       - name: Start Test DB
-        run: docker-compose -p app up -d db && sleep 3 && docker-compose logs
+        run: docker-compose up -d db && sleep 3 && docker-compose logs
       - name: Test Server
         run: ./gradlew --info test
       - name: E2E Tests
         run: ./gradlew --info -Pheadless=true e2eTest
       - name: Stop Test DB
-        run: docker-compose -p app down
+        run: docker-compose down
 
       - uses: actions/upload-artifact@v2
         if: always()
