@@ -38,7 +38,7 @@ dependencies {
   testImplementation("org.assertj:assertj-core:3.20.2")
   testImplementation("com.codeborne:selenide:5.23.0")
 
-  jvm2dts("com.codeborne:jvm2dts:1.4.0")
+  jvm2dts("com.codeborne:jvm2dts:1.5.2")
 }
 
 sourceSets {
@@ -70,7 +70,7 @@ tasks.register("generateTSTypes") {
     project.file("ui/api/types.ts").writeText(ByteArrayOutputStream().use { out ->
       project.exec {
         standardOutput = out
-        commandLine = """java -classpath ${(jvm2dts + sourceSets.main.get().runtimeClasspath).asPath}
+        commandLine = """java -classpath ${(jvm2dts + sourceSets.main.get().runtimeClasspath).asPath} --illegal-access=permit
           jvm2dts.Main -exclude $excludeClassNamesRegex -classesDir ${project.buildDir}/classes/kotlin/main -excludeDir $excludedPackages""".split("\\s+".toRegex())
       }
       out.toString()
