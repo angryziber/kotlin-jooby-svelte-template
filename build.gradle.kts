@@ -27,7 +27,7 @@ dependencies {
   implementation("io.jooby:jooby-jackson:$joobyVersion")
   implementation("io.jooby:jooby-hikari:$joobyVersion")
   implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.12.0")
-  implementation("ch.qos.logback:logback-classic:1.2.6")
+  implementation("ch.qos.logback:logback-classic:1.2.5")
   implementation("org.slf4j:jul-to-slf4j:1.7.32")
   implementation("org.liquibase:liquibase-core:4.4.3")
   implementation("org.postgresql:postgresql:42.2.23")
