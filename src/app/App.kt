@@ -6,6 +6,7 @@ import db.DBModule
 import db.RequestTransactionHandler
 import io.jooby.HeadHandler
 import io.jooby.Kooby
+import jobs.startJobs
 import org.slf4j.LoggerFactory.getLogger
 import java.io.File
 
@@ -41,4 +42,6 @@ class App: Kooby({
   post("/api/csp-report") {
     getLogger("csp-report").warn(ctx.body().value())
   }.accessPublic
+
+  startJobs()
 })

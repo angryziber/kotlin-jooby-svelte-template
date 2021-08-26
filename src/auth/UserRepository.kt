@@ -11,9 +11,7 @@ class UserRepository(
   private val hashingService: HashingService,
   private val random: SecureRandom
 ): BaseRepository(db, "users") {
-  private val mapper: ResultSet.() -> User = {
-    User(getId(), getString("login"), getEnum("role"), getString("lang"), getString("name"), getString("email"), getInstant("createdAt"))
-  }
+  private val mapper: ResultSet.() -> User = { fromValues() }
 
   fun get(id: UUID) = db.query(table, id, mapper)
 
