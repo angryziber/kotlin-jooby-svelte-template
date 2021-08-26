@@ -9,6 +9,7 @@ import kotlinx.coroutines.*
 import kotlinx.coroutines.CoroutineStart.UNDISPATCHED
 import kotlinx.coroutines.slf4j.MDCContext
 import org.slf4j.LoggerFactory
+import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit
 import java.util.concurrent.TimeUnit.MINUTES
@@ -21,7 +22,7 @@ class JobRunner(private val db: DataSource): Extension, CoroutineScope {
   private val executor = Executors.newScheduledThreadPool(3)
   override val coroutineContext = executor.asCoroutineDispatcher()
   private val seq = AtomicLong()
-  private val runningJobs = mutableSetOf<kotlinx.coroutines.Job>()
+  private val runningJobs = ConcurrentHashMap.newKeySet<kotlinx.coroutines.Job>()
 
   override fun install(app: Jooby) {
     app.onStop(::gracefulStop)
