@@ -64,7 +64,7 @@ tasks.withType<KotlinCompile> {
 tasks.register("generateTSTypes") {
   dependsOn("classes")
   doLast {
-    val excludeClassNamesRegex = ".*(Service|Repository|Controller|Logger|Job|Module)\$"
+    val excludeClassNamesRegex = ".*(Service|Repository|Controller|Logger|Job|Runner|Module)\$"
     val excludedPackages = "app,util,db"
 
     project.file("ui/api/types.ts").writeText(ByteArrayOutputStream().use { out ->
