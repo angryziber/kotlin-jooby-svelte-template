@@ -2,8 +2,8 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import java.io.ByteArrayOutputStream
 
 plugins {
-  kotlin("jvm") version "1.5.30"
-  kotlin("kapt") version "1.5.30"
+  kotlin("jvm") version "1.6.0"
+  kotlin("kapt") version "1.6.0"
 }
 
 repositories {
@@ -13,30 +13,30 @@ repositories {
 val jvm2dts by configurations.creating
 
 dependencies {
-  val joobyVersion = "2.10.0"
+  val joobyVersion = "2.11.0"
   kapt("io.jooby:jooby-apt:$joobyVersion")
 
   implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
   implementation("org.jetbrains.kotlin:kotlin-reflect")
   implementation("org.jetbrains.kotlin:kotlin-script-runtime")
-  implementation("org.jetbrains.kotlinx:kotlinx-coroutines-jdk8:1.5.1")
-  implementation("org.jetbrains.kotlinx:kotlinx-coroutines-slf4j:1.5.1")
+  implementation("org.jetbrains.kotlinx:kotlinx-coroutines-jdk8:1.5.2")
+  implementation("org.jetbrains.kotlinx:kotlinx-coroutines-slf4j:1.5.2")
   implementation("io.jooby:jooby:$joobyVersion")
   implementation("io.jooby:jooby-netty:$joobyVersion")
   implementation("io.jooby:jooby-pebble:$joobyVersion")
   implementation("io.jooby:jooby-jackson:$joobyVersion")
   implementation("io.jooby:jooby-hikari:$joobyVersion")
-  implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.12.0")
-  implementation("ch.qos.logback:logback-classic:1.2.5")
+  implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.13.0")
+  implementation("ch.qos.logback:logback-classic:1.2.7")
   implementation("org.slf4j:jul-to-slf4j:1.7.32")
-  implementation("org.liquibase:liquibase-core:4.4.3")
-  implementation("org.postgresql:postgresql:42.2.23")
+  implementation("org.liquibase:liquibase-core:4.6.1")
+  implementation("org.postgresql:postgresql:42.3.1")
 
   testImplementation("io.mockk:mockk:1.12.0")
-  testImplementation("org.junit.jupiter:junit-jupiter:5.7.2")
-  testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.7.2")
-  testImplementation("org.assertj:assertj-core:3.20.2")
-  testImplementation("com.codeborne:selenide:5.23.3")
+  testImplementation("org.junit.jupiter:junit-jupiter:5.8.1")
+  testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.8.1")
+  testImplementation("org.assertj:assertj-core:3.21.0")
+  testImplementation("com.codeborne:selenide:6.0.3")
 
   jvm2dts("com.codeborne:jvm2dts:1.5.2")
 }
