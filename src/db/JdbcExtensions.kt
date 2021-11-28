@@ -34,10 +34,8 @@ fun DataSource.exec(@Language("SQL") expr: String, values: Sequence<Any?> = empt
 fun DataSource.insert(table: String, values: Map<String, *>): Int =
   exec(insertExpr(table, values), setValues(values))
 
-fun DataSource.upsert(table: String, values: Map<String, *>, uniqueFields: String = "id"): Int {
-  return exec(insertExpr(table, values) +
-    " on conflict ($uniqueFields) do update set ${setExpr(values)}", setValues(values) + setValues(values))
-}
+fun DataSource.upsert(table: String, values: Map<String, *>, uniqueFields: String = "id"): Int =
+  exec(insertExpr(table, values) + " on conflict ($uniqueFields) do update set ${setExpr(values)}", setValues(values) + setValues(values))
 
 private fun insertExpr(table: String, values: Map<String, *>) = """
   insert into $table (${values.keys.joinToString()})
@@ -49,7 +47,7 @@ fun DataSource.update(table: String, where: Map<String, Any?>, values: Map<Strin
 fun DataSource.delete(table: String, where: Map<String, Any?>): Int =
   exec("delete from $table${whereExpr(where)}", whereValues(where))
 
-private fun setExpr(values: Map<String, *>) = values.keys.joinToString { "$it = ?" }
+private fun setExpr(values: Map<String, *>) = values.entries.joinToString { it.key + " = " + ((it.value as? SqlExpr)?.expr(it.key) ?: "?") }
 
 private fun whereExpr(where: Map<String, Any?>) = if (where.isEmpty()) "" else " where " +
   where.entries.joinToString(" and ") { (k, v) -> whereExpr(k, v) }
@@ -99,8 +97,9 @@ fun ResultSet.getIntOrNull(column: String) = getObject(column)?.let { (it as Num
 fun String.toId(): UUID = UUID.fromString(this)
 
 inline fun <reified T: Enum<T>> ResultSet.getEnum(column: String) = enumValueOf<T>(getString(column))
+inline fun <reified T: Enum<T>> ResultSet.getEnumOrNull(column: String) = getString(column)?.let { enumValueOf<T>(it) }
 
-open class SqlExpr(@Language("SQL") protected val expr: String, val values: Iterable<*> = emptyList<Any>()) {
+open class SqlExpr(@Language("SQL") protected val expr: String, val values: Collection<*> = emptyList<Any>()) {
   constructor(expr: String, vararg values: Any?): this(expr, values.toList())
   open fun expr(key: String) = expr
 }
@@ -109,9 +108,11 @@ class SqlComputed(@Language("SQL") expr: String): SqlExpr(expr) {
   override fun expr(key: String) = "$key = $expr"
 }
 
-open class SqlOp(val operator: String, val value: Any?): SqlExpr(operator, value) {
-  override fun expr(key: String) = "$key $operator ?"
+open class SqlOp(val operator: String, value: Any? = null): SqlExpr(operator, if (value != null) listOf(value) else emptyList()) {
+  override fun expr(key: String) = "$key $operator" + ("?".takeIf { values.isNotEmpty() } ?: "")
 }
+
+val notNull = SqlOp("is not null")
 
 class Between(from: Any, to: Any): SqlExpr("", from, to) {
   override fun expr(key: String) = "$key between ? and ?"
@@ -125,7 +126,7 @@ class NullOrOp(operator: String, value: Any?): SqlOp(operator, value) {
   override fun expr(key: String) = "($key is null or $key $operator ?)"
 }
 
-class NotIn(values: Iterable<*>): SqlExpr("", values) {
+class NotIn(values: Collection<*>): SqlExpr("", values) {
   constructor(vararg values: Any?): this(values.toList())
   override fun expr(key: String) = inExpr(key, values).replace(" in ", " not in ")
 }
