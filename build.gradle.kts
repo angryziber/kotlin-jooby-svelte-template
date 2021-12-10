@@ -68,10 +68,14 @@ tasks.register("generateTSTypes") {
     val excludedPackages = "app,util,db"
 
     project.file("ui/api/types.ts").writeText(ByteArrayOutputStream().use { out ->
-      project.exec {
+      project.javaexec {
         standardOutput = out
-        commandLine = """java -classpath ${(jvm2dts + sourceSets.main.get().runtimeClasspath).asPath} --illegal-access=permit
-          jvm2dts.Main -exclude $excludeClassNamesRegex -classesDir ${project.buildDir}/classes/kotlin/main -excludeDir $excludedPackages""".split("\\s+".toRegex())
+        mainClass.set("jvm2dts.Main")
+        jvmArgs = listOf("--add-exports=java.base/jdk.internal.org.objectweb.asm=ALL-UNNAMED")
+        classpath = jvm2dts + sourceSets.main.get().runtimeClasspath
+        args("-exclude", excludeClassNamesRegex,
+             "-classesDir", "${project.buildDir}/classes/kotlin/main",
+             "-excludeDir", excludedPackages)
       }
       out.toString()
     })
