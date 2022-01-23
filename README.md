@@ -2,7 +2,7 @@
 
 **Note:** I no longer use this template for new projects:
 * For Kotlin with coroutines on server-side I have created [Klite](https://github.com/angryziber/klite) framework (it also contains a sample project)
-* On the client side I still use Svelte with the same structure as here, but built by Vite instead of Snowpack. It's lighter and easier to configure.
+* On the client side I still use Svelte with the same structure as here, but built by Vite instead of Snowpack. It does the same, but lighter and easier to configure. Switching is easy.
 
 ---
 
