@@ -5,7 +5,7 @@
         <option name="envFilePath" value="" />
         <option name="secondarySourceFiles">
           <list>
-            <option value="../paywerk/paywerk/docker-compose.yml" />
+            <option value="docker-compose.yml" />
           </list>
         </option>
         <option name="services">
@@ -13,9 +13,7 @@
             <option value="db" />
           </list>
         </option>
-        <option name="sourceFilePath" value="../paywerk/paywerk/docker-compose.override.yml" />
-        <option name="upExitCodeFromService" value="" />
-        <option name="upTimeout" value="" />
+        <option name="sourceFilePath" value="docker-compose.override.yml" />
       </settings>
     </deployment>
     <method v="2" />
